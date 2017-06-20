@@ -58,6 +58,17 @@ app.get('/', function(req, resp) {
   resp.render('index.hbs');
 });
 
+/**************autocomplete request****************/
+app.get('/autocomplete/', function(request, response, next) {
+  var selection = request.query.selection;
+  var choices = ['ActionScript', 'AppleScript', 'Asp', 'Assembly', 'BASIC', 'Batch', 'C', 'C++', 'CSS', 'Clojure', 'COBOL', 'ColdFusion', 'Erlang', 'Fortran', 'Groovy', 'Haskell', 'HTML', 'Java', 'JavaScript', 'Lisp', 'Perl', 'PHP', 'PowerShell', 'Python', 'Ruby', 'Scala', 'Scheme', 'SQL', 'TeX', 'XML'];
+  var suggestions = [];
+  for (var i=0;i<choices.length;i++)
+    if (~choices[i].toLowerCase().indexOf(selection)) suggestions.push(choices[i]);
+  response.json({suggestions: suggestions});
+})
+
+
 let PORT = process.env.PORT || 9000;
 app.listen(PORT, function () {
   console.log('Listening on port ' + PORT);
