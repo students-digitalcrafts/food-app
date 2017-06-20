@@ -13,14 +13,25 @@ const promise = require('bluebird');
 const pgp = require('pg-promise')({
   promiseLib: promise,
 });
-const db = pgp({
+//Development database settings
+const db = pgp(process.env.DATABASE_URL||{
   host: 'localhost',
   // NOTE: change to your preferred port for development --
   // Must match your Postico settings
   port: 9001,
   database: 'fooddev',
   user: 'postgres',
-  });
+});
+
+// Production database settings
+
+// const db = require('pg');
+//
+// db.defaults.ssl = true;
+// db.connect(process.env.DATABASE_URL, function(err, client) {
+//   if (err) throw err;
+//   console.log('Connected to prod postgres')
+// });
 
 // NOTE: Sample query: Un-Comment to check connection to database
 // db.query("SELECT * FROM restaurant")
@@ -35,7 +46,7 @@ const db = pgp({
 const yelp = require('yelp-fusion');
 const yelp_token = process.env.YELP_ACCESS_TOKEN;
 const yelp_client = yelp.client(yelp_token);
-
+//
 // NOTE: Sample query: Un-Comment to check connection to Yelp-Fusion API
 // NOTE: Must have .env file with YELP_ACCESS_TOKEN to use API
 // yelp_client.search({
