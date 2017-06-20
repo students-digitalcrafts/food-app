@@ -4,7 +4,8 @@
   "description": "## Contributors ![logo-blue3](https://user-images.githubusercontent.com/13789291/27301823-3f40b39e-54fa-11e7-8d8b-9b8308c48922.png) * [Ronda Wylie](http://wylieweb.io) * [Ryan Leon](http://ryansimonleon.com) * [Felipe Imanishi](http://www.fimanishi.com) * [Aspen Hollyer](http://aspenhollyer.com)",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node backend.js"
   },
   "repository": {
     "type": "git",
