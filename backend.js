@@ -14,22 +14,24 @@ const pgp = require('pg-promise')({
   promiseLib: promise,
 });
 //Development database settings
-// const db = pgp({
-//   host: 'localhost',
-//   // NOTE: change to your preferred port for development --
-//   // Must match your Postico settings
-//   port: 9001,
-//   database: 'fooddev',
-//   user: 'postgres',
-//   });
-//Production database settings
-const pg = require('pg');
-
-pg.defaults.ssl = true;
-pg.connect(process.env.DATABASE_URL, function(err, client) {
-  if (err) throw err;
-  console.log('Connected to prod postgres')
+const db = pgp(process.env.DATABASE_URL||{
+  host: 'localhost',
+  // NOTE: change to your preferred port for development --
+  // Must match your Postico settings
+  port: 9001,
+  database: 'fooddev',
+  user: 'postgres',
 });
+
+// Production database settings
+
+// const db = require('pg');
+//
+// db.defaults.ssl = true;
+// db.connect(process.env.DATABASE_URL, function(err, client) {
+//   if (err) throw err;
+//   console.log('Connected to prod postgres')
+// });
 
 // NOTE: Sample query: Un-Comment to check connection to database
 // db.query("SELECT * FROM restaurant")
