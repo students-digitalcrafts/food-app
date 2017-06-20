@@ -24,18 +24,16 @@ Existing services such as Zagat alleviate these problems, but they cater to well
 
 Enter **Food for My Mood**, an app written *by local foodies, for local foodies*. We take the positive crowdsourcing features of large apps like Yelp, and combine those with our own carefully curated database of restaurants and dishes. The result is the stuff foodie dreams are made of.
 
-------
+----
 
-## Group Project Week: Jun 19-26
-### Monday, June 19th
-Last week, we carried out a discovery meeting and did some basic project planning. Today, we set goals and decided on a high-level structure for our app.
-
-#### MVP (Minimum Viable Product)
+### MVP (Minimum Viable Product)
 - [ ] searchable database of local restaurants and dishes
 - [ ] ability to search by food category (e.g. hot dog, taco)
 - [ ] ability to search by restaurant (and receive recommendations of the best dishes on the menu)
 
-#### Stretch Goals
+---
+
+### Stretch Goals
 - [ ] retrieve open/close hours from Google Places API, filter dishes by breakfast/lunch/dinner
 - [ ] allow user to search restaurants by mood
 - [ ] allow user to filter data in various ways (distance, dietary restrictions, etc.)
@@ -43,6 +41,13 @@ Last week, we carried out a discovery meeting and did some basic project plannin
 - [ ] add social media, SMS buttons to share restaurant location
 - [ ] upvote/downvote buttons for restaurants, dishes
 - [ ] description for each restaurant
+- [ ] set up caching (Redis?)
+
+------
+
+## Group Project Week: Jun 19-26
+### Monday, June 19th
+Last week, we carried out a discovery meeting and did some basic project planning. Today, we set goals and decided on a high-level structure for our app.
 
 #### Goals for Tomorrow
 - [ ] Basic home page with text input, search button
@@ -62,11 +67,15 @@ We hit the ground running with everyone ssh'ing into the development database to
 * changed 'Spicy' column in the Dishes table from a boolean to 1-5 scale
 * added 'Busy' column to the Restaurants table with options for 'rarely', 'during peak', 'always', or 'reservation required'
 
-#### Goals for Tomorrow
+#### Main Goals
 - [ ] Basic home page with text input, search button
 - [ ] Autocomplete API
 - [x] Database with appropriate fields **- Done! Jun. 20 (Ryan)**
 - [x] Backend communicates with Yelp API and our database **- Done! Jun. 20 (Aspen)**
+
+#### Other Tasks
+- [x] Set up deployment to Heroku **-Done! Jun. 20 (Ryan)**
+- [ ] Accept search parameters, query database/Yelp, and return results to front end
 
 #### Challenges
 * SQL is hard. An actual excerpt from Ryan's terminal:
