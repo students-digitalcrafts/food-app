@@ -22,6 +22,7 @@
     "bluebird": "^3.5.0",
     "body-parser": "^1.17.2",
     "express": "^4.15.3",
-    "pg-promise": "^5.9.3"
+    "pg-promise": "^5.9.3",
+    "yelp-fusion": "^1.0.3"
   }
 }
