@@ -62,16 +62,34 @@ We hit the ground running with everyone ssh'ing into the development database to
 * changed 'Spicy' column in the Dishes table from a boolean to 1-5 scale
 * added 'Busy' column to the Restaurants table with options for 'rarely', 'during peak', 'always', or 'reservation required'
 
+#### Goals for Tomorrow
+- [ ] Basic home page with text input, search button
+- [ ] Autocomplete API
+- [x] Database with appropriate fields **- Done! Jun. 20 (Ryan)**
+- [x] Backend communicates with Yelp API and our database **- Done! Jun. 20 (Aspen)**
+
+#### Challenges
+* SQL is hard. An actual excerpt from Ryan's terminal:
+```
+$ q/
+$ /q
+$ /q
+$ \q
+```
+
 
 -----
 
 ## Technologies Used
-Node.js
-Express
-Axios
-Handlebars
-Materialize
-Bootstrap
-HTML
-CSS/Less
-JavaScript
+### Team Tools
+Git | GitHub | Atom | Trello | Slack
+
+### Database
+PostgreSQL | SSH | Postico
+
+### Server-Side
+JavaScript | Node.js | Express
+
+### Front-End
+HTML5 | CSS3 | JavaScript
+Bootstrap | Materialize | Less
