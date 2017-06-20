@@ -47,13 +47,21 @@ Last week, we carried out a discovery meeting and did some basic project plannin
 #### Goals for Tomorrow
 - [ ] Basic home page with text input, search button
 - [ ] Autocomplete API
-- [ ] Database with appropriate fields
-- [ ] Backend communicates with Yelp API and our database
+- [x] Database with appropriate fields **- Done! Jun. 20 (Ryan)**
+- [x] Backend communicates with Yelp API and our database **- Done! Jun. 20 (Aspen)**
 
 #### Challenges
 * We discovered Yelp API does not provide business hours, so we will have to access these using a separate API
 * Defining the database structure was difficult. We went through several iterations, deciding which tables to use and what relationships should exist among them.
 * UX: The design of the homepage was difficult. At first, we provided way too many options for the user. We realized it would be a better user experience to have just a search bar on the home page. Then, users can select various options to further filter and sort data on the listing display page.
+
+----
+
+### Tuesday, June 20th
+We hit the ground running with everyone ssh'ing into the development database to add our favorite local restaurants and dishes. We worked on making sure that our fields were useful for sorting and filtering the data. We made adjustments as needed, for example:
+* changed 'Spicy' column in the Dishes table from a boolean to 1-5 scale
+* added 'Busy' column to the Restaurants table with options for 'rarely', 'during peak', 'always', or 'reservation required'
+
 
 -----
 
