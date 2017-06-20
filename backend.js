@@ -17,10 +17,11 @@ const db = pgp({
   host: 'localhost',
   // NOTE: change to your preferred port for development --
   // Must match your Postico settings
-  port: 9001,
+  port: 7000,
   database: 'fooddev',
   user: 'postgres',
   });
+
 
 // NOTE: Sample query: Un-Comment to check connection to database
 // db.query("SELECT * FROM restaurant")
@@ -58,14 +59,26 @@ app.get('/', function(req, resp) {
   resp.render('index.hbs');
 });
 
+
 /**************autocomplete request****************/
 app.get('/autocomplete/', function(request, response, next) {
-  var selection = request.query.selection;
-  var choices = ['ActionScript', 'AppleScript', 'Asp', 'Assembly', 'BASIC', 'Batch', 'C', 'C++', 'CSS', 'Clojure', 'COBOL', 'ColdFusion', 'Erlang', 'Fortran', 'Groovy', 'Haskell', 'HTML', 'Java', 'JavaScript', 'Lisp', 'Perl', 'PHP', 'PowerShell', 'Python', 'Ruby', 'Scala', 'Scheme', 'SQL', 'TeX', 'XML'];
+  var selection = '%'+ request.query.selection +'%';
+  //var choices = ['ActionScript', 'AppleScript', 'Asp', 'Assembly', 'BASIC', 'Batch', 'C', 'C++', 'CSS', 'Clojure', 'COBOL', 'ColdFusion', 'Erlang', 'Fortran', 'Groovy', 'Haskell', 'HTML', 'Java', 'JavaScript', 'Lisp', 'Perl', 'PHP', 'PowerShell', 'Python', 'Ruby', 'Scala', 'Scheme', 'SQL', 'TeX', 'XML'];
+  //var suggestions = [];
+  //for (var i=0;i<choices.length;i++)
+    //if (~choices[i].toLowerCase().indexOf(selection)) suggestions.push(choices[i]);
   var suggestions = [];
-  for (var i=0;i<choices.length;i++)
-    if (~choices[i].toLowerCase().indexOf(selection)) suggestions.push(choices[i]);
-  response.json({suggestions: suggestions});
+  db.any(`SELECT name FROM restaurant WHERE name ILIKE '${selection}'`)
+  .then(function(result) {
+    result.forEach(function(item){
+      suggestions.push(item.name);
+    })
+    return suggestions;
+  })
+  .then(function(suggestions){
+    console.log(suggestions);
+    response.json({suggestions: suggestions});
+  })
 })
 
 

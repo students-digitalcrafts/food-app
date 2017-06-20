@@ -26,16 +26,18 @@
                       var config = {
                         params: {selection: term},
                       }
-                      //sends the input to the backend
+                      //sends the get request with input to the backend
                       var temp;
                       axios.get('/autocomplete/', config)
                         .then(function(result){
-                          console.log(result.data.suggestions);
+                          temp = result.data.suggestions;
+                          console.log(temp);
+                          suggest(temp);
                         })
                         .catch(function(error) {
                           console.error(error);
                         });
-                      suggest(temp);
+
                   }
               });
 
