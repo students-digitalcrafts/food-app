@@ -17,9 +17,12 @@
   },
   "homepage": "https://github.com/students-digitalcrafts/food-app#readme",
   "dependencies": {
+    "apicache": "^0.8.7",
     "axios": "^0.16.2",
     "bluebird": "^3.5.0",
+    "body-parser": "^1.17.2",
     "express": "^4.15.3",
-    "pg-promise": "^5.9.3"
+    "pg-promise": "^5.9.3",
+    "yelp-fusion": "^1.0.3"
   }
 }
