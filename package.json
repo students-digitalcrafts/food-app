@@ -1,0 +1,25 @@
+{
+  "name": "food-app",
+  "version": "1.0.0",
+  "description": "## Contributors ![logo-blue3](https://user-images.githubusercontent.com/13789291/27301823-3f40b39e-54fa-11e7-8d8b-9b8308c48922.png) * [Ronda Wylie](http://wylieweb.io) * [Ryan Leon](http://ryansimonleon.com) * [Felipe Imanishi](http://www.fimanishi.com) * [Aspen Hollyer](http://aspenhollyer.com)",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/students-digitalcrafts/food-app.git"
+  },
+  "author": "Aspen",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/students-digitalcrafts/food-app/issues"
+  },
+  "homepage": "https://github.com/students-digitalcrafts/food-app#readme",
+  "dependencies": {
+    "axios": "^0.16.2",
+    "bluebird": "^3.5.0",
+    "express": "^4.15.3",
+    "pg-promise": "^5.9.3"
+  }
+}
