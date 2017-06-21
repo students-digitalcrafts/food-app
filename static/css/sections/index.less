@@ -1,0 +1,22 @@
+body {
+ color: @primary-color-dark;
+}
+
+div {
+    margin-top: 50px;
+}
+
+/*********** Search Bar Colors ************/
+/* label color */
+ .input-field label {
+   color: @primary-color-dark;
+ }
+ /* label focus color */
+ .input-field input[type=text]:focus + label {
+   color: @accent-color;
+ }
+ /* label underline focus color */
+ .input-field input[type=text]:focus {
+   border-bottom: 1px solid @accent-color;
+   box-shadow: 0 1px 0 0 @accent-color;
+ }
