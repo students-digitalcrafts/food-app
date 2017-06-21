@@ -71,11 +71,11 @@ app.get('/search', function (req, resp, next) {
   // dish, dietary restrictions, etc.
   let query = "SELECT * FROM restaurant WHERE restaurant.name ILIKE '%$1#%'";
   let fields;
-  db.any(query, term)
+  db.one(query, term)
     // If the Yelp fields have been queried in the last week, do nothing.
     // Else, hit the Yelp API, save the data, update the last_updated field.
-    .then(function (results_array) {
-      let last_updated = results_array[0].last_updated;
+    .then(function (result) {
+      let last_updated = result.last_updated;
       // if the last_updated field is NOT NULL and is < 7 days old (UTC)
       if(last_updated && (Date.now() - last_updated) < 604800000) {
           ; // do nothing
@@ -116,7 +116,7 @@ app.get('/search', function (req, resp, next) {
           console.error(err);
         });
       }
-      resp.render('search_results.hbs', {results: results_array});
+      resp.render('search_results.hbs', {result: result});
     })
     .catch(next);
 });

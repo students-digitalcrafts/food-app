@@ -7,18 +7,16 @@
   <body>
     <h1>Search Results</h1>
     <ul>
-  {{#each results}}
     <li>
-      <img src="{{image_url}}" width="150"><br>
-      <strong>{{name}}</strong><br>
-      Atmosphere: {{atmosphere}}<br>
-      Parking: {{parking}}<br>
-      Busy: {{busy}}<br>
-      Description: {{description}}<br>
-      Phone: {{phone}}<br>
-      Address: {{address}}
+      <img src="{{result.image_url}}" width="150"><br>
+      <strong>{{result.name}}</strong><br>
+      Atmosphere: {{result.atmosphere}}<br>
+      Parking: {{result.parking}}<br>
+      Busy: {{result.busy}}<br>
+      Description: {{result.description}}<br>
+      Phone: {{result.phone}}<br>
+      Address: {{result.address}}
     </li>
-  {{/each}}
 </ul>
   </body>
 </html>
