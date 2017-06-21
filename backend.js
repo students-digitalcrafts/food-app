@@ -80,6 +80,7 @@ function sentenceCase (str) {
 }
 
 /**************autocomplete request****************/
+
 app.get('/autocomplete/', function(request, response, next) {
   //
   var selection = '%'+ request.query.selection +'%';
