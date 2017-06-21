@@ -8,7 +8,7 @@
   <body>
     <h1>AutoComplete</h1>
     <input id="search" type="text" name="search">
-    <script src="static/js/auto-complete.min.js"></script>
+    <script src="static/js/auto-complete.js"></script>
     <script src="static/js/axios.min.js"></script>
     <script>
       // initialize
@@ -31,7 +31,6 @@
                       axios.get('/autocomplete/', config)
                         .then(function(result){
                           temp = result.data.suggestions;
-                          console.log(temp);
                           suggest(temp);
                         })
                         .catch(function(error) {

@@ -80,13 +80,12 @@ function sentenceCase (str) {
 }
 
 /**************autocomplete request****************/
+
 app.get('/autocomplete/', function(request, response, next) {
+  //
   var selection = '%'+ request.query.selection +'%';
-  //var choices = ['ActionScript', 'AppleScript', 'Asp', 'Assembly', 'BASIC', 'Batch', 'C', 'C++', 'CSS', 'Clojure', 'COBOL', 'ColdFusion', 'Erlang', 'Fortran', 'Groovy', 'Haskell', 'HTML', 'Java', 'JavaScript', 'Lisp', 'Perl', 'PHP', 'PowerShell', 'Python', 'Ruby', 'Scala', 'Scheme', 'SQL', 'TeX', 'XML'];
-  //var suggestions = [];
-  //for (var i=0;i<choices.length;i++)
-    //if (~choices[i].toLowerCase().indexOf(selection)) suggestions.push(choices[i]);
   var suggestions = [];
+  //retrieves suggestion names from category
   db.any(`SELECT name FROM category WHERE name ILIKE '${selection}'`)
   .then(function(results1) {
     results1.forEach(function(item){
@@ -105,7 +104,12 @@ app.get('/autocomplete/', function(request, response, next) {
     results3.forEach(function(item){
       suggestions.push(sentenceCase(item.name));
     })
-    response.json({suggestions: suggestions});
+    if (suggestions.length === 0) {
+      response.json({suggestions: ["No match was found"]});
+    }
+    else {
+      response.json({suggestions: suggestions});
+    }
   })
 })
 
