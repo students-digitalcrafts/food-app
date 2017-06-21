@@ -27,7 +27,7 @@ Enter **Food for My Mood**, an app written *by local foodies, for local foodies*
 ----
 
 ### MVP (Minimum Viable Product)
-- [ ] searchable database of local restaurants and dishes
+- [x] searchable database of local restaurants and dishes **- Done(ish)! Jun 21 (Ryan, Felipe)**
 - [ ] ability to search by food category (e.g. hot dog, taco)
 - [ ] ability to search by restaurant (and receive recommendations of the best dishes on the menu)
 
@@ -107,16 +107,17 @@ $ \q
 #### Goals From Yesterday + Other Tasks
 - [x] Save data from Yelp API to database **- Done! Jun. 21 (Aspen)**
 - [ ] Accept type of cuisine, category, and dietary restriction as search parameters
-- [ ] Start working on UX/UI
-- [ ] Render search results
+- [x] Start working on UX/UI **- Done! Jun. 21 (Ronda, Aspen Ryan)**
+- [x] Render search results **- Done! Jun. 21 (Aspen, Felipe)**
 - [ ] Create basic restaurant/dish detail template
 - [x] Create function to only hit Yelp API every 7 days **- Done! Jun. 21 (Aspen)**
 - [ ] Every team member: Add 10 more restaurants/dishes to database
 - [ ] Add SVGs to show our tech stack
-- [ ] Merge all changes and deploy!
+- [x] Merge all changes and deploy! **- Done! Jun. 21 (Ryan + Heroku = Magic)**
 
 #### Challenges
-
+* Heroku was not accepting our Yelp access token as a config variable for some reason. We had to use the Heroku Command Line Interface to force the access token.
+* The production database load process had to be turned into a script so that it could be repeated easily.
 
 #### Goals for Tomorrow
 
