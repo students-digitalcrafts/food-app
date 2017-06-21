@@ -18,7 +18,7 @@ const db = pgp(process.env.DATABASE_URL||{
   host: 'localhost',
   // NOTE: change to your preferred port for development --
   // Must match your Postico settings
-  port: 9001,
+  port: 7000,
   database: 'fooddev',
   user: 'postgres',
 });
@@ -32,6 +32,7 @@ const db = pgp(process.env.DATABASE_URL||{
 //   if (err) throw err;
 //   console.log('Connected to prod postgres')
 // });
+
 
 // NOTE: Sample query: Un-Comment to check connection to database
 // db.query("SELECT * FROM restaurant")
@@ -68,6 +69,46 @@ app.use(body_parser.urlencoded({extended: false}));
 app.get('/', function (req, resp) {
   resp.render('index.hbs');
 });
+//function that capitolize first letter of each word for autocomplete
+function sentenceCase (str) {
+  if ((str===null) || (str===''))
+       return false;
+  else
+   str = str.toString();
+
+ return str.replace(/\w\S*/g, function(txt){return txt.charAt(0).toUpperCase() + txt.substr(1).toLowerCase();});
+}
+
+/**************autocomplete request****************/
+app.get('/autocomplete/', function(request, response, next) {
+  var selection = '%'+ request.query.selection +'%';
+  //var choices = ['ActionScript', 'AppleScript', 'Asp', 'Assembly', 'BASIC', 'Batch', 'C', 'C++', 'CSS', 'Clojure', 'COBOL', 'ColdFusion', 'Erlang', 'Fortran', 'Groovy', 'Haskell', 'HTML', 'Java', 'JavaScript', 'Lisp', 'Perl', 'PHP', 'PowerShell', 'Python', 'Ruby', 'Scala', 'Scheme', 'SQL', 'TeX', 'XML'];
+  //var suggestions = [];
+  //for (var i=0;i<choices.length;i++)
+    //if (~choices[i].toLowerCase().indexOf(selection)) suggestions.push(choices[i]);
+  var suggestions = [];
+  db.any(`SELECT name FROM category WHERE name ILIKE '${selection}'`)
+  .then(function(results1) {
+    results1.forEach(function(item){
+      suggestions.push(sentenceCase(item.name));
+    })
+    //return suggestions;
+    return db.any(`SELECT name FROM diet_rest WHERE name ILIKE '${selection}'`);
+  })
+  .then(function (results2) {
+    results2.forEach(function(item){
+      suggestions.push(sentenceCase(item.name));
+    })
+    return db.any(`SELECT name FROM restaurant WHERE name ILIKE '${selection}'`);
+  })
+  .then(function(results3){
+    results3.forEach(function(item){
+      suggestions.push(sentenceCase(item.name));
+    })
+    response.json({suggestions: suggestions});
+  })
+})
+
 
 /********* Search Engine ***********/
 // NOTE: Currently works for restaurant names only!

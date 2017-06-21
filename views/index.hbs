@@ -3,8 +3,45 @@
   <head>
     <meta charset="utf-8">
     <title>TESTING</title>
+    <link rel="stylesheet" href="static/css/auto-complete.css">
   </head>
   <body>
-    <h1>Testing -- CONNECTED! :)</h1>
+    <h1>AutoComplete</h1>
+    <input id="search" type="text" name="search">
+    <script src="static/js/auto-complete.min.js"></script>
+    <script src="static/js/axios.min.js"></script>
+    <script>
+      // initialize
+
+      //auto complete function
+      var autoComplete = new autoComplete({
+                  selector: '#search',
+                  //autocomplete works after 2 characters are typed
+                  minChars: 2,
+
+                  source: function(term, suggest){
+                      term = term.toLowerCase();
+                      //var choices = ['ActionScript', 'AppleScript', 'Asp', 'Assembly', 'BASIC', 'Batch', 'C', 'C++', 'CSS', 'Clojure', 'COBOL', 'ColdFusion', 'Erlang', 'Fortran', 'Groovy', 'Haskell', 'HTML', 'Java', 'JavaScript', 'Lisp', 'Perl', 'PHP', 'PowerShell', 'Python', 'Ruby', 'Scala', 'Scheme', 'SQL', 'TeX', 'XML'];
+                      //creates the search input term from the user
+                      var config = {
+                        params: {selection: term},
+                      }
+                      //sends the get request with input to the backend
+                      var temp;
+                      axios.get('/autocomplete/', config)
+                        .then(function(result){
+                          temp = result.data.suggestions;
+                          console.log(temp);
+                          suggest(temp);
+                        })
+                        .catch(function(error) {
+                          console.error(error);
+                        });
+
+                  }
+              });
+
+    </script>
+
   </body>
 </html>
