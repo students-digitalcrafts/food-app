@@ -69,7 +69,8 @@ app.use(body_parser.urlencoded({extended: false}));
 app.get('/', function (req, resp) {
   resp.render('index.hbs');
 });
-//function that capitolize first letter of each word for autocomplete
+
+//function that capitalizes first letter of each word in a string
 function sentenceCase (str) {
   if ((str===null) || (str===''))
        return false;
@@ -81,31 +82,50 @@ function sentenceCase (str) {
 
 /**************autocomplete request****************/
 app.get('/autocomplete/', function(request, response, next) {
+  // gets the user inputs and adds % signs to both ends so it can accept characters on both sides on ILIKE
   var selection = '%'+ request.query.selection +'%';
-  //var choices = ['ActionScript', 'AppleScript', 'Asp', 'Assembly', 'BASIC', 'Batch', 'C', 'C++', 'CSS', 'Clojure', 'COBOL', 'ColdFusion', 'Erlang', 'Fortran', 'Groovy', 'Haskell', 'HTML', 'Java', 'JavaScript', 'Lisp', 'Perl', 'PHP', 'PowerShell', 'Python', 'Ruby', 'Scala', 'Scheme', 'SQL', 'TeX', 'XML'];
-  //var suggestions = [];
-  //for (var i=0;i<choices.length;i++)
-    //if (~choices[i].toLowerCase().indexOf(selection)) suggestions.push(choices[i]);
   var suggestions = [];
-  db.any(`SELECT name FROM category WHERE name ILIKE '${selection}'`)
+// queries for all cuisine types names
+db.any(`SELECT name FROM cuisine_type WHERE name ILIKE '${selection}'`)
   .then(function(results1) {
-    results1.forEach(function(item){
-      suggestions.push(sentenceCase(item.name));
-    })
-    //return suggestions;
-    return db.any(`SELECT name FROM diet_rest WHERE name ILIKE '${selection}'`);
+  // for loop to add all the results to the array that will be passed back
+  results1.forEach(function(item){
+    suggestions.push(sentenceCase(item.name));
   })
-  .then(function (results2) {
+  // queries for all category names
+  return db.any(`SELECT name FROM category WHERE name ILIKE '${selection}'`)
+  })
+  .then(function(results2) {
+    // for loop to add all the results to the array that will be passed back
     results2.forEach(function(item){
       suggestions.push(sentenceCase(item.name));
     })
-    return db.any(`SELECT name FROM restaurant WHERE name ILIKE '${selection}'`);
+    // queries for all dietary restriction names
+    return db.any(`SELECT name FROM diet_rest WHERE name ILIKE '${selection}'`);
   })
-  .then(function(results3){
+  .then(function (results3) {
+    // for loop to add all the results to the array that will be passed back
     results3.forEach(function(item){
       suggestions.push(sentenceCase(item.name));
     })
-    response.json({suggestions: suggestions});
+    // queries for all the restaurant names
+    return db.any(`SELECT name FROM restaurant WHERE name ILIKE '${selection}'`);
+  })
+  .then(function(results4){
+    // for loop to add all the results to the array that will be passed back
+    results4.forEach(function(item){
+      suggestions.push(sentenceCase(item.name));
+    })
+    if (suggestions.length === 0){
+      // if no matches return "No match was found"
+      response.json({suggestions:["No match was found"]});
+    }
+    else {
+      // return the suggestions to the query to the frontend api
+      response.json({suggestions: suggestions});
+    }
+
+
   })
 })
 
@@ -172,4 +192,5 @@ app.get('/search', function (req, resp, next) {
 let PORT = process.env.PORT || 9000;
 app.listen(PORT, function () {
   console.log('Listening on port ' + PORT);
+
 });
