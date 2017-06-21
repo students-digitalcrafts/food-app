@@ -81,6 +81,7 @@ function sentenceCase (str) {
 }
 
 /**************autocomplete request****************/
+
 app.get('/autocomplete/', function(request, response, next) {
   // gets the user inputs and adds % signs to both ends so it can accept characters on both sides on ILIKE
   var selection = '%'+ request.query.selection +'%';
@@ -126,7 +127,6 @@ db.any(`SELECT name FROM cuisine_type WHERE name ILIKE '${selection}'`)
     }
   });
 });
-
 
 /********* Search Engine ***********/
 // NOTE: Currently works for restaurant names only!
