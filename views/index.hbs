@@ -35,8 +35,10 @@
       <br><br><br>
 
       <div class="input-field col s10">
-        <input id="search" type="text" name="search">
-        <label for="search" data-error="wrong" data-success="right">I'm in the mood for . . .</label>
+        <form id="search_form" action="/search/" method="GET">
+          <input id="search" type="text" name="search">
+          <label for="search">I'm in the mood for . . .</label>
+        </form>
       </div>
 
       <div class="center-align">
@@ -77,6 +79,7 @@
         },
         // when the user selects an item, sends a get request with the selected item
         onSelect: function(event, term, item){
+          console.log(term);
           if(term !== message_not_found){
             // if the user chooses a valid item, submits the form
             document.getElementById("search_form").submit();
