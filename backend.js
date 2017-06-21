@@ -136,7 +136,9 @@ db.any(`SELECT name FROM cuisine_type WHERE name ILIKE '${selection}'`)
 // To test on your dev server: localhost:9000/search?search_term=piola
 app.get('/search/', function (req, resp, next) {
   let term = req.query.search_term.toLowerCase();
-  let query = `SELECT * FROM restaurant WHERE restaurant.name = '${term}'`;
+  console.log(term);
+  let termquote = term.replace("'","''");
+  let query = `SELECT * FROM restaurant WHERE restaurant.name = '${termquote}'`;
   let fields;
   db.one(query, term)
     // If the Yelp fields have been queried in the last week, do nothing.
