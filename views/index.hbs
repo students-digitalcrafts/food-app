@@ -7,40 +7,48 @@
   </head>
   <body>
     <h1>AutoComplete</h1>
-    <input id="search" type="text" name="search">
-    <script src="static/js/auto-complete.js"></script>
+    <form id="search_form" action="/search/" method="GET">
+      <input id="search" type="text" name="search_term">
+    </form>
+    <script src="static/js/auto-complete.min.js"></script>
     <script src="static/js/axios.min.js"></script>
     <script>
       // initialize
-
+      var message_not_found = "No match was found";
       //auto complete function
       var autoComplete = new autoComplete({
-                  selector: '#search',
-                  //autocomplete works after 2 characters are typed
-                  minChars: 2,
-
-                  source: function(term, suggest){
-                      term = term.toLowerCase();
-                      //var choices = ['ActionScript', 'AppleScript', 'Asp', 'Assembly', 'BASIC', 'Batch', 'C', 'C++', 'CSS', 'Clojure', 'COBOL', 'ColdFusion', 'Erlang', 'Fortran', 'Groovy', 'Haskell', 'HTML', 'Java', 'JavaScript', 'Lisp', 'Perl', 'PHP', 'PowerShell', 'Python', 'Ruby', 'Scala', 'Scheme', 'SQL', 'TeX', 'XML'];
-                      //creates the search input term from the user
-                      var config = {
-                        params: {selection: term},
-                      }
-                      //sends the get request with input to the backend
-                      var temp;
-                      axios.get('/autocomplete/', config)
-                        .then(function(result){
-                          temp = result.data.suggestions;
-                          suggest(temp);
-                        })
-                        .catch(function(error) {
-                          console.error(error);
-                        });
-
-                  }
-              });
-
+        selector: '#search',
+        //autocomplete works after 2 characters are typed
+        minChars: 2,
+        source: function(term, suggest){
+          term = term.toLowerCase();
+          // adds the data to be passed through the api via get, in this case the user's partial input
+          var config = {
+            params: {selection: term},
+          }
+          //sends the get request with input to the backend
+          axios.get('/autocomplete/', config)
+            // receives the list with string for the suggestions from the backend
+            .then(function(result){
+              // displays the suggestions in the input
+              suggest(result.data.suggestions);
+            })
+            .catch(function(error) {
+              console.error(error);
+            });
+        },
+        // when the user selects an item, sends a get request with the selected item
+        onSelect: function(event, term, item){
+          if(term !== message_not_found){
+            // if the user chooses a valid item, submits the form
+            document.getElementById("search_form").submit();
+          }
+          else{
+            // if the user clicks on the "No match was found" message, cleans the input value
+            document.getElementById("search").value = "";
+          }
+        }
+      });
     </script>
-
   </body>
 </html>
