@@ -60,15 +60,12 @@ app.get('/', function (req, resp) {
 
 /********* Search Engine ***********/
 // NOTE: Currently works for restaurant names only!
-// NOTE: Currently returns only one result!
 // Accepts GET parameters from search input and returns matching result
 // from database
 
 // To test on your dev server: localhost:9000/search?search_term=piola
 app.get('/search', function (req, resp, next) {
   let term = req.query.search_term;
-  // NOTE: Update query to reflect other possible search parameters:
-  // dish, dietary restrictions, etc.
   let query = `SELECT * FROM restaurant WHERE restaurant.name = '${term}'`;
   let fields;
   db.one(query, term)
@@ -81,8 +78,6 @@ app.get('/search', function (req, resp, next) {
           ; // do nothing
       } else {
         // hit Yelp API
-        // NOTE: Need to update this to loop over multiple results and contact
-        // the Yelp API for each one
         console.log("Contacting Yelp API");
         yelp_client.search({
           term: term,
@@ -91,7 +86,6 @@ app.get('/search', function (req, resp, next) {
           // save desired data from Yelp API's JSON response
           let api_response = response.jsonBody.businesses[0];
           fields = {
-            //NOTE: Need to update 'name', currently only works for restaurant names
             name: term,
             last_updated: Date.now,
             image_url: api_response.image_url,
@@ -106,7 +100,7 @@ app.get('/search', function (req, resp, next) {
             phone = ${phone}, \
             address = ${address}, \
             last_updated = ${last_updated} \
-            WHERE name = ${name}"; //NOTE: Update 'name' here too!!
+            WHERE name = ${name}";
           db.result(query, fields)
           .then(function (result) {
             console.log(result);
@@ -120,16 +114,6 @@ app.get('/search', function (req, resp, next) {
     })
     .catch(next);
 });
-
-/* NOTE: Steps for searching:
-1. receive restaurant name, query database - DONE
-2. check restaurant table last_updated - DONE
-3. if last_updated null or >7 days old
-      A. hit Yelp API - DONE
-      B. save data from Yelp API and add timestamp.now to last_updated - DONE
-4. query db, return results array
-5. display on front end
-*/
 
 
 let PORT = process.env.PORT || 9000;
