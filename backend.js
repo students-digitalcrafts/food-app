@@ -69,7 +69,7 @@ app.get('/search', function (req, resp, next) {
   let term = req.query.search_term;
   // NOTE: Update query to reflect other possible search parameters:
   // dish, dietary restrictions, etc.
-  let query = "SELECT * FROM restaurant WHERE restaurant.name ILIKE '%$1#%'";
+  let query = `SELECT * FROM restaurant WHERE restaurant.name = '${term}'`;
   let fields;
   db.one(query, term)
     // If the Yelp fields have been queried in the last week, do nothing.
