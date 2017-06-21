@@ -42,6 +42,7 @@ Enter **Food for My Mood**, an app written *by local foodies, for local foodies*
 - [ ] upvote/downvote buttons for restaurants, dishes
 - [ ] description for each restaurant
 - [ ] set up caching (Redis?)
+- [ ] allow multiple users to input preferences, return a suitable restaurant for them to have dinner together
 
 ------
 
@@ -50,10 +51,10 @@ Enter **Food for My Mood**, an app written *by local foodies, for local foodies*
 Last week, we carried out a discovery meeting and did some basic project planning. Today, we set goals and decided on a high-level structure for our app.
 
 #### Goals for Tomorrow
-- [ ] Basic home page with text input, search button
-- [ ] Autocomplete API
-- [x] Database with appropriate fields **- Done! Jun. 20 (Ryan)**
-- [x] Backend communicates with Yelp API and our database **- Done! Jun. 20 (Aspen)**
+* Basic home page with text input, search button
+* Autocomplete API
+* Database with appropriate fields
+* Backend communicates with Yelp API and our database
 
 #### Challenges
 * We discovered Yelp API does not provide business hours, so we will have to access these using a separate API
@@ -67,15 +68,13 @@ We hit the ground running with everyone ssh'ing into the development database to
 * changed 'Spicy' column in the Dishes table from a boolean to 1-5 scale
 * added 'Busy' column to the Restaurants table with options for 'rarely', 'during peak', 'always', or 'reservation required'
 
-#### Main Goals
-- [ ] Basic home page with text input, search button
-- [ ] Autocomplete API
+#### Goals From Yesterday + Other Tasks
+- [x] Basic home page with text input, ~~search button~~ **- Done! Jun. 20 (Felipe, Ronda)**
+- [x] Autocomplete API **- Done! Jun. 20 (Felipe, Ronda)**
 - [x] Database with appropriate fields **- Done! Jun. 20 (Ryan)**
 - [x] Backend communicates with Yelp API and our database **- Done! Jun. 20 (Aspen)**
-
-#### Other Tasks
 - [x] Set up deployment to Heroku **-Done! Jun. 20 (Ryan)**
-- [ ] Accept search parameters, query database/Yelp, and return results to front end
+- [ ] Accept search parameters, query database/Yelp, and return results to front end **- Partially complete - search by restaurant name only. Jun. 20 (Aspen)**
 
 #### Challenges
 * SQL is hard. An actual excerpt from Ryan's terminal:
@@ -85,6 +84,41 @@ $ /q
 $ /q
 $ \q
 ```
+* Deploying to Heroku, configuring database for production.
+* Connecting a front-end JavaScript plugin to back-end and database for our Autocomplete feature.
+* Initial database structure did not meet our needs. We decided to implement cross-reference tables.
+* Creating a search engine that will query the Yelp API only when previously cached information is more than a week old.
+
+#### Goals for Tomorrow
+* Save data from Yelp API to database
+* Accept type of cuisine, category, and dietary restriction as search parameters
+* Start working on UX/UI
+* Render search results
+* Create basic restaurant/dish detail template
+* Create function to only hit Yelp API every 7 days
+* Every team member: Add 10 more restaurants/dishes to database
+* Merge all changes and deploy!
+
+-----
+
+### Wednesday, June 21st
+
+
+#### Goals From Yesterday + Other Tasks
+- [x] Save data from Yelp API to database **- Done! Jun. 21 (Aspen)**
+- [ ] Accept type of cuisine, category, and dietary restriction as search parameters
+- [ ] Start working on UX/UI
+- [ ] Render search results
+- [ ] Create basic restaurant/dish detail template
+- [x] Create function to only hit Yelp API every 7 days **- Done! Jun. 21 (Aspen)**
+- [ ] Every team member: Add 10 more restaurants/dishes to database
+- [ ] Add SVGs to show our tech stack
+- [ ] Merge all changes and deploy!
+
+#### Challenges
+
+
+#### Goals for Tomorrow
 
 
 -----
