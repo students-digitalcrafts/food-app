@@ -8,7 +8,16 @@
     <h1>Search Results</h1>
     <ul>
   {{#each results}}
-    <li><strong>{{name}}</strong>: {{atmosphere}} -- {{description}}</li>
+    <li>
+      <img src="{{image_url}}" width="150"><br>
+      <strong>{{name}}</strong><br>
+      Atmosphere: {{atmosphere}}<br>
+      Parking: {{parking}}<br>
+      Busy: {{busy}}<br>
+      Description: {{description}}<br>
+      Phone: {{phone}}<br>
+      Address: {{address}}
+    </li>
   {{/each}}
 </ul>
   </body>
