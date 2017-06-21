@@ -18,7 +18,7 @@ const db = pgp(process.env.DATABASE_URL||{
   host: 'localhost',
   // NOTE: change to your preferred port for development --
   // Must match your Postico settings
-  port: 9001,
+  port: 8080,
   database: 'fooddev',
   user: 'postgres',
 });
@@ -136,7 +136,10 @@ db.any(`SELECT name FROM cuisine_type WHERE name ILIKE '${selection}'`)
 // To test on your dev server: localhost:9000/search?search_term=piola
 app.get('/search/', function (req, resp, next) {
   let term = req.query.search_term.toLowerCase();
-  // RYAN HAS TO DEAL WITH ' HERE
+  console.log(term);
+  let termquote = term.replace("'","''");
+  let query = `SELECT * FROM restaurant WHERE restaurant.name = '${termquote}'`;
+
   let fields;
   // Checks if the user input is a cuisine_type, if it is, pass it to the frontend
   db.many(`SELECT DISTINCT restaurant.* FROM restaurant \
