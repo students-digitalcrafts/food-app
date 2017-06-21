@@ -67,6 +67,8 @@ app.get('/', function (req, resp) {
 // To test on your dev server: localhost:9000/search?search_term=piola
 app.get('/search', function (req, resp, next) {
   let term = req.query.search_term;
+  // NOTE: Update query to reflect other possible search parameters:
+  // dish, dietary restrictions, etc.
   let query = "SELECT * FROM restaurant WHERE restaurant.name ILIKE '%$1#%'";
   let fields;
   db.any(query, term)
@@ -79,6 +81,8 @@ app.get('/search', function (req, resp, next) {
           ; // do nothing
       } else {
         // hit Yelp API
+        // NOTE: Need to update this to loop over multiple results and contact
+        // the Yelp API for each one
         console.log("Contacting Yelp API");
         yelp_client.search({
           term: term,
