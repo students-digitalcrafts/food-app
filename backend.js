@@ -136,55 +136,143 @@ db.any(`SELECT name FROM cuisine_type WHERE name ILIKE '${selection}'`)
 // To test on your dev server: localhost:9000/search?search_term=piola
 app.get('/search/', function (req, resp, next) {
   let term = req.query.search_term.toLowerCase();
-  let query = `SELECT * FROM restaurant WHERE restaurant.name = '${term}'`;
+  // RYAN HAS TO DEAL WITH ' HERE
   let fields;
-  db.one(query, term)
-    // If the Yelp fields have been queried in the last week, do nothing.
-    // Else, hit the Yelp API, save the data, update the last_updated field.
-    .then(function (result) {
-      let last_updated = result.last_updated;
-      // if the last_updated field is NOT NULL and is < 7 days old (UTC)
-      if(last_updated && (Date.now() - last_updated) < 604800000) {
-        resp.render('search_results.hbs', {result: result});
-      } else {
-        // hit Yelp API
-        console.log("Contacting Yelp API");
-        yelp_client.search({
-          term: term,
-          location: 'houston, tx'
-        }).then(response => {
-          // save desired data from Yelp API's JSON response
-          let api_response = response.jsonBody.businesses[0];
-          fields = {
-            name: term,
-            last_updated: Date.now,
-            image_url: api_response.image_url,
-            yelp_id: api_response.id,
-            phone: api_response.phone,
-            address: api_response.location.display_address.join(', ')
-          };
-          // SQL statement to save fields to database
-          let query = "UPDATE restaurant \
-            SET image_url = ${image_url}, \
-            yelp_id = ${yelp_id}, \
-            phone = ${phone}, \
-            address = ${address}, \
-            last_updated = ${last_updated} \
-            WHERE name = ${name}";
-          db.result(query, fields)
-          .then(function (update_result) {
-            // Takes fields from API response and merges them with db result fields
-            result = Object.assign(result, fields);
-            resp.render('search_results.hbs', {result: result});
-            pgp.end();
-          });
-        }).catch(err => {
-          console.error(err);
-        });
-      }
+  db.many(`SELECT DISTINCT restaurant.* FROM restaurant \
+          JOIN dish ON dish.restaurant_id = restaurant.id \
+          JOIN cuisine_type ON dish.cuisine_type_id = cuisine_type.id \
+          WHERE cuisine_type.name = '${term}'`)
+    .then(function(result){
+      result.forEach(function (item){
+        console.log(item);
+      })
+      resp.send(result);
     })
-    .catch(next);
-});
+    .catch(function (next){
+      db.many(`SELECT DISTINCT restaurant.* FROM restaurant \
+              JOIN dish ON dish.restaurant_id = restaurant.id \
+              JOIN category_dish_join ON category_dish_join.dish_id = dish.id \
+              JOIN category ON category_dish_join.category_id = category.id \
+              WHERE category.name = '${term}'`)
+        .then(function(result){
+          result.forEach(function (item){
+            console.log(item);
+          })
+          resp.send(result);
+        })
+        .catch(function (next){
+          console.log("test");
+          console.log(term);
+          db.many(`SELECT DISTINCT restaurant.* FROM restaurant \
+                  JOIN dish ON dish.restaurant_id = restaurant.id \
+                  JOIN diet_rest_dish_join ON diet_rest_dish_join.dish_id = dish.id \
+                  JOIN diet_rest ON diet_rest_dish_join.diet_rest_id = diet_rest.id \
+                  WHERE diet_rest.name = '${term}'`)
+            .then(function(result){
+              result.forEach(function (item){
+                console.log(item);
+              })
+              resp.send(result);
+            })
+            .catch(function (next){
+              db.one(`SELECT * FROM restaurant WHERE name = '${term}'`)
+                .then(function(result){
+                  let last_updated = result.last_updated;
+                  // if the last_updated field is NOT NULL and is < 7 days old (UTC)
+                  if(last_updated && (Date.now() - last_updated) < 604800000) {
+                    resp.render('search_results.hbs', {result: result});
+                  } else {
+                    // hit Yelp API
+                    console.log("Contacting Yelp API");
+                    yelp_client.search({
+                      term: term,
+                      location: 'houston, tx'
+                    }).then(response => {
+                      // save desired data from Yelp API's JSON response
+                      let api_response = response.jsonBody.businesses[0];
+                      fields = {
+                        name: term,
+                        last_updated: Date.now,
+                        image_url: api_response.image_url,
+                        yelp_id: api_response.id,
+                        phone: api_response.phone,
+                        address: api_response.location.display_address.join(', ')
+                      };
+                      // SQL statement to save fields to database
+                      let query = "UPDATE restaurant \
+                        SET image_url = ${image_url}, \
+                        yelp_id = ${yelp_id}, \
+                        phone = ${phone}, \
+                        address = ${address}, \
+                        last_updated = ${last_updated} \
+                        WHERE name = ${name}";
+                      db.result(query, fields)
+                      .then(function (update_result) {
+                        // Takes fields from API response and merges them with db result fields
+                        result = Object.assign(result, fields);
+                        resp.render('search_results.hbs', {result: result});
+                        pgp.end();
+                      });
+                    }).catch(err => {
+                      console.error(err);
+                    });
+                  }
+                })
+                .catch(function (next){
+                  resp.send("Not found");
+                })
+            })
+        })
+    })
+  });
+
+  // db.one(query, term)
+  //   // If the Yelp fields have been queried in the last week, do nothing.
+  //   // Else, hit the Yelp API, save the data, update the last_updated field.
+  //   .then(function (result) {
+  //     let last_updated = result.last_updated;
+  //     // if the last_updated field is NOT NULL and is < 7 days old (UTC)
+  //     if(last_updated && (Date.now() - last_updated) < 604800000) {
+  //       resp.render('search_results.hbs', {result: result});
+  //     } else {
+  //       // hit Yelp API
+  //       console.log("Contacting Yelp API");
+  //       yelp_client.search({
+  //         term: term,
+  //         location: 'houston, tx'
+  //       }).then(response => {
+  //         // save desired data from Yelp API's JSON response
+  //         let api_response = response.jsonBody.businesses[0];
+  //         fields = {
+  //           name: term,
+  //           last_updated: Date.now,
+  //           image_url: api_response.image_url,
+  //           yelp_id: api_response.id,
+  //           phone: api_response.phone,
+  //           address: api_response.location.display_address.join(', ')
+  //         };
+  //         // SQL statement to save fields to database
+  //         let query = "UPDATE restaurant \
+  //           SET image_url = ${image_url}, \
+  //           yelp_id = ${yelp_id}, \
+  //           phone = ${phone}, \
+  //           address = ${address}, \
+  //           last_updated = ${last_updated} \
+  //           WHERE name = ${name}";
+  //         db.result(query, fields)
+  //         .then(function (update_result) {
+  //           // Takes fields from API response and merges them with db result fields
+  //           result = Object.assign(result, fields);
+  //           resp.render('search_results.hbs', {result: result});
+  //           pgp.end();
+  //         });
+  //       }).catch(err => {
+  //         console.error(err);
+  //       });
+  //     }
+  //   })
+  //   .catch(next);
+// });
 
 
 let PORT = process.env.PORT || 9000;
