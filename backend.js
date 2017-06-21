@@ -18,7 +18,7 @@ const db = pgp(process.env.DATABASE_URL||{
   host: 'localhost',
   // NOTE: change to your preferred port for development --
   // Must match your Postico settings
-  port: 7000,
+  port: 9001,
   database: 'fooddev',
   user: 'postgres',
 });
@@ -127,7 +127,7 @@ app.get('/search', function (req, resp, next) {
       let last_updated = result.last_updated;
       // if the last_updated field is NOT NULL and is < 7 days old (UTC)
       if(last_updated && (Date.now() - last_updated) < 604800000) {
-          ; // do nothing
+        resp.render('search_results.hbs', {result: result});
       } else {
         // hit Yelp API
         console.log("Contacting Yelp API");
@@ -154,15 +154,16 @@ app.get('/search', function (req, resp, next) {
             last_updated = ${last_updated} \
             WHERE name = ${name}";
           db.result(query, fields)
-          .then(function (result) {
-            console.log(result);
+          .then(function (update_result) {
+            // Takes fields from API response and merges them with db result fields
+            result = Object.assign(result, fields);
+            resp.render('search_results.hbs', {result: result});
             pgp.end();
           });
         }).catch(err => {
           console.error(err);
         });
       }
-      resp.render('search_results.hbs', {result: result});
     })
     .catch(next);
 });
