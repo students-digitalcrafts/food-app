@@ -73,9 +73,9 @@ app.get('/search', function (req, resp, next) {
     // If the Yelp fields have been queried in the last week, do nothing.
     // Else, hit the Yelp API, save the data, update the last_updated field.
     .then(function (results_array) {
-      let last_updated = (Date.now() - results_array[0].last_updated);
+      let last_updated = results_array[0].last_updated;
       // if the last_updated field is NOT NULL and is < 7 days old (UTC)
-      if(results_array[0].last_updated && last_updated < 604800000) {
+      if(last_updated && (Date.now() - last_updated) < 604800000) {
           ; // do nothing
       } else {
         // hit Yelp API
@@ -102,7 +102,7 @@ app.get('/search', function (req, resp, next) {
             phone = ${phone}, \
             address = ${address}, \
             last_updated = ${last_updated} \
-            WHERE name = ${name}";
+            WHERE name = ${name}"; //NOTE: Update 'name' here too!!
           db.result(query, fields)
           .then(function (result) {
             console.log(result);
