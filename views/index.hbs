@@ -7,14 +7,14 @@
   </head>
   <body>
     <h1>AutoComplete</h1>
-    <form id="search_form" action="/search" method="GET">
-      <input id="search" type="text" name="search">
+    <form id="search_form" action="/search/" method="GET">
+      <input id="search" type="text" name="search_term">
     </form>
     <script src="static/js/auto-complete.min.js"></script>
     <script src="static/js/axios.min.js"></script>
     <script>
       // initialize
-
+      var message_not_found = "No match was found";
       //auto complete function
       var autoComplete = new autoComplete({
         selector: '#search',
@@ -22,29 +22,33 @@
         minChars: 2,
         source: function(term, suggest){
           term = term.toLowerCase();
+          // adds the data to be passed through the api via get, in this case the user's partial input
           var config = {
             params: {selection: term},
           }
           //sends the get request with input to the backend
-          var temp;
           axios.get('/autocomplete/', config)
+            // receives the list with string for the suggestions from the backend
             .then(function(result){
-              temp = result.data.suggestions;
-              console.log(temp);
-              suggest(temp);
+              // displays the suggestions in the input
+              suggest(result.data.suggestions);
             })
             .catch(function(error) {
               console.error(error);
             });
-        }
-        onSelect: function(e, term, item){
-          var input = document.getElementById("search");
-          input.value = item;
-          document.getElementById("search_form").submit();
+        },
+        // when the user selects an item, sends a get request with the selected item
+        onSelect: function(event, term, item){
+          if(term !== message_not_found){
+            // if the user chooses a valid item, submits the form
+            document.getElementById("search_form").submit();
+          }
+          else{
+            // if the user clicks on the "No match was found" message, cleans the input value
+            document.getElementById("search").value = "";
+          }
         }
       });
-
     </script>
-
   </body>
 </html>

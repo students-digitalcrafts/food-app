@@ -124,10 +124,8 @@ db.any(`SELECT name FROM cuisine_type WHERE name ILIKE '${selection}'`)
       // return the suggestions to the query to the frontend api
       response.json({suggestions: suggestions});
     }
-
-
-  })
-})
+  });
+});
 
 
 /********* Search Engine ***********/
@@ -136,8 +134,8 @@ db.any(`SELECT name FROM cuisine_type WHERE name ILIKE '${selection}'`)
 // from database
 
 // To test on your dev server: localhost:9000/search?search_term=piola
-app.get('/search', function (req, resp, next) {
-  let term = req.query.search_term;
+app.get('/search/', function (req, resp, next) {
+  let term = req.query.search_term.toLowerCase();
   let query = `SELECT * FROM restaurant WHERE restaurant.name = '${term}'`;
   let fields;
   db.one(query, term)
