@@ -138,6 +138,7 @@ app.get('/search/', function (req, resp, next) {
   let term = req.query.search_term.toLowerCase();
   // RYAN HAS TO DEAL WITH ' HERE
   let fields;
+  // Checks if the user input is a cuisine_type, if it is, pass it to the frontend
   db.many(`SELECT DISTINCT restaurant.* FROM restaurant \
           JOIN dish ON dish.restaurant_id = restaurant.id \
           JOIN cuisine_type ON dish.cuisine_type_id = cuisine_type.id \
@@ -149,6 +150,7 @@ app.get('/search/', function (req, resp, next) {
       resp.send(result);
     })
     .catch(function (next){
+      // Checks if the user input is a category, if it is, pass it to the frontend
       db.many(`SELECT DISTINCT restaurant.* FROM restaurant \
               JOIN dish ON dish.restaurant_id = restaurant.id \
               JOIN category_dish_join ON category_dish_join.dish_id = dish.id \
@@ -161,8 +163,7 @@ app.get('/search/', function (req, resp, next) {
           resp.send(result);
         })
         .catch(function (next){
-          console.log("test");
-          console.log(term);
+          // Checks if the user input is a diet_rest, if it is, pass it to the frontend
           db.many(`SELECT DISTINCT restaurant.* FROM restaurant \
                   JOIN dish ON dish.restaurant_id = restaurant.id \
                   JOIN diet_rest_dish_join ON diet_rest_dish_join.dish_id = dish.id \
@@ -175,6 +176,7 @@ app.get('/search/', function (req, resp, next) {
               resp.send(result);
             })
             .catch(function (next){
+              // Checks if the user input is a restaurant, if it is, pass it to the frontend
               db.one(`SELECT * FROM restaurant WHERE name = '${term}'`)
                 .then(function(result){
                   let last_updated = result.last_updated;
