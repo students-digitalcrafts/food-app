@@ -109,7 +109,7 @@ Today, Ronda worked on the front end and design, including the logo concept. Asp
 - [x] Accept type of cuisine, category, and dietary restriction as search parameters **- Done! Jun. 21 (Felipe)**
 - [x] Start working on UX/UI **- Done! Jun. 21 (Ronda, Aspen, Ryan)**
 - [x] Render search results **- Done! Jun. 21 (Aspen, Felipe)**
-- [ ] Create basic restaurant/dish detail template 
+- [x] Create basic restaurant/dish detail template **- Done! Jun. 22 (Aspen)** 
 - [x] Create function to only hit Yelp API every 7 days **- Done! Jun. 21 (Aspen)**
 - [x] Add 10 more restaurants/dishes to database **Done! Jun. 21 (Aspen, Ronda, Ryan)**
 - [ ] Add SVGs to show our tech stack
@@ -120,13 +120,37 @@ Today, Ronda worked on the front end and design, including the logo concept. Asp
 * The production database load process had to be turned into a script so that it could be updated easily.
 
 #### Goals for Tomorrow
-- [ ] Create basic template for listings page
-- [ ] Create basic template for restaurant detail page
+- [x] Create basic template for listings page
+- [x] Create basic template for restaurant detail page
 - [ ] Add SVGs to illustrate our tech stack
-- [ ] Connect backend to frontend to display search results
-- [ ] Add logic to display detail page for restaurant searches, listings page for all other searches
+- [x] Connect backend to frontend to display search results
+- [x] Add logic to display detail page for restaurant searches, listings page for all other searches
 - [ ] Create 404 page in case faulty search parameters are submitted
-- [ ] Fix 503 server error on Heroku
+- [x] Fix 503 server error on Heroku
+
+-----
+
+### Thursday, June 22nd
+Add details
+
+#### Goals From Yesterday + Other Tasks
+- [x] Create basic template for listings page
+- [x] Create basic template for restaurant detail page
+- [ ] Add SVGs to illustrate our tech stack
+- [x] Connect backend to frontend to display search results
+- [x] Add logic to display detail page for restaurant searches, listings page for all other searches
+- [ ] Create 404 page in case faulty search parameters are submitted
+- [x] Fix 503 server error on Heroku
+
+#### Challenges
+* Heroku was not accepting our Yelp access token as a config variable for some reason. We had to use the Heroku Command Line Interface to force the access token.
+* The production database load process had to be turned into a script so that it could be updated easily.
+
+#### Goals for Tomorrow
+*
+*
+*
+*
 
 -----
 
