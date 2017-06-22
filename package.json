@@ -23,6 +23,7 @@
     "bluebird": "^3.5.0",
     "body-parser": "^1.17.2",
     "express": "^4.15.3",
+    "express-session": "^1.15.3",
     "hbs": "^4.0.1",
     "materialize-css": "^0.98.2",
     "pg-promise": "^5.9.3",
