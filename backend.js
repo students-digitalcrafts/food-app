@@ -18,7 +18,7 @@ const db = pgp(process.env.DATABASE_URL||{
   host: 'localhost',
   // NOTE: change to your preferred port for development --
   // Must match your Postico settings
-  port: 8080,
+  port: 9001,
   database: 'fooddev',
   user: 'postgres',
 });
@@ -85,7 +85,9 @@ function sentenceCase (str) {
 app.get('/autocomplete/', function(request, response, next) {
   // gets the user inputs and adds % signs to both ends so it can accept characters on both sides on ILIKE
   var selection = '%'+ request.query.selection +'%';
+  selection = selection.replace("'","''");
   var suggestions = [];
+
 // queries for all cuisine types names
 db.any(`SELECT name FROM cuisine_type WHERE name ILIKE '${selection}'`)
   .then(function(results1) {
@@ -180,7 +182,7 @@ app.get('/search/', function (req, resp, next) {
             })
             .catch(function (next){
               // Checks if the user input is a restaurant, if it is, pass it to the frontend
-              db.one(`SELECT * FROM restaurant WHERE name = '${term}'`)
+              db.one(`SELECT * FROM restaurant WHERE name = '${termquote}'`)
                 .then(function(result){
                   let last_updated = result.last_updated;
                   // if the last_updated field is NOT NULL and is < 7 days old (UTC)
@@ -279,6 +281,23 @@ app.get('/search/', function (req, resp, next) {
   //   .catch(next);
 // });
 
+//Get user location
+var getPosition = function (options) {
+  return new Promise(function (resolve, reject) {
+    navigator.geolocation.getCurrentPosition(resolve, reject, options);
+  });
+}
+//Sample promise chain for coordinates
+  getPosition()
+    .then((position) => {
+      return position;
+    })
+    .then((position) => {
+      console.log(position.coords.latitude+', ' +position.coords.longitude)
+    })
+    .catch((err) => {
+      console.error(err.message);
+    });
 
 let PORT = process.env.PORT || 9000;
 app.listen(PORT, function () {
