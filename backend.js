@@ -138,7 +138,6 @@ db.any(`SELECT name FROM cuisine_type WHERE name ILIKE '${selection}'`)
 // To test on your dev server: localhost:9000/search?search_term=piola
 app.get('/search/', function (req, resp, next) {
   let term = req.query.search_term.toLowerCase();
-  console.log(term);
   let termquote = term.replace("'","''");
   let query = `SELECT * FROM restaurant WHERE restaurant.name = '${termquote}'`;
 
@@ -281,6 +280,15 @@ app.get('/search/', function (req, resp, next) {
   //   .catch(next);
 // });
 
+//Add restaurant form
+app.get('/add_restaurant/', function (req, resp) {
+  resp.render('add_restaurant.hbs');
+});
+
+app.post('/submit_restaurant/', function (req, resp) {
+
+})
+
 //Get user location
 var getPosition = function (options) {
   return new Promise(function (resolve, reject) {
@@ -288,16 +296,18 @@ var getPosition = function (options) {
   });
 }
 //Sample promise chain for coordinates
-  getPosition()
-    .then((position) => {
-      return position;
-    })
-    .then((position) => {
-      console.log(position.coords.latitude+', ' +position.coords.longitude)
-    })
-    .catch((err) => {
-      console.error(err.message);
-    });
+  // getPosition()
+  //   .then((position) => {
+  //     return position;
+  //   })
+  //   .then((position) => {
+  //     console.log(position.coords.latitude+', ' +position.coords.longitude)
+  //   })
+  //   .catch((err) => {
+  //     console.error(err.message);
+  //   });
+
+
 
 let PORT = process.env.PORT || 9000;
 app.listen(PORT, function () {
