@@ -143,14 +143,19 @@ Add details
 - [x] Fix 503 server error on Heroku
 
 #### Challenges
-* Heroku was not accepting our Yelp access token as a config variable for some reason. We had to use the Heroku Command Line Interface to force the access token.
-* The production database load process had to be turned into a script so that it could be updated easily.
+* Customizing the Materialize framework Sass files and recompiling them
+* Writing a query to retrieve restaurants with multiple dietary restrictions
+* Troubleshoot Heroku production environment - database was not connecting
+* Figuring out how to filter by and update templates using handlebars partials.
 
 #### Goals for Tomorrow
-*
-*
-*
-*
+* Create a custom 404 page
+* Add a mood table to the database
+* Add server-side logic to search by mood
+* Server-side logic to filter/order by on listings page
+* Front-end logic to filter/order by on listings page
+* Connect to Google Places API to get restaurant hours
+* Add a map to listings and/or detail page
 
 -----
 
