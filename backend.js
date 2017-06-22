@@ -65,6 +65,7 @@ app.set('view engine', 'hbs');
 app.use('/static', express.static('static'));
 app.use('/axios', express.static('node_modules/axios/dist'));
 app.use(body_parser.urlencoded({extended: false}));
+app.use(body_parser.json());
 app.use(session({
   secret: process.env.SECRET_KEY || 'dev',
   resave: true,
@@ -144,7 +145,7 @@ app.get('/search/', function (req, resp, next) {
   let term = req.query.search_term.toLowerCase();
   // replace ' with '' for querying purposes
   let termquote = term.replace("'","''");
-
+  console.log(termquote);
   let fields;
   // Checks if the user input is a cuisine_type, if it is, pass it to the frontend
   db.many(`SELECT DISTINCT restaurant.* FROM restaurant \
@@ -152,7 +153,7 @@ app.get('/search/', function (req, resp, next) {
           JOIN cuisine_type ON dish.cuisine_type_id = cuisine_type.id \
           WHERE cuisine_type.name = '${termquote}'`)
     .then(function(result){
-      request.session.list = result;
+      req.session.list = result;
       result.forEach(function (item){
         console.log(item.name);
       })
@@ -167,7 +168,7 @@ app.get('/search/', function (req, resp, next) {
               JOIN category ON category_dish_join.category_id = category.id \
               WHERE category.name = '${termquote}'`)
         .then(function(result){
-          request.session.list = result;
+          req.session.list = result;
           result.forEach(function (item){
             console.log(item);
           })
@@ -181,7 +182,7 @@ app.get('/search/', function (req, resp, next) {
                   JOIN diet_rest ON diet_rest_dish_join.diet_rest_id = diet_rest.id \
                   WHERE diet_rest.name = '${termquote}'`)
             .then(function(result){
-              request.session.list = result;
+              req.session.list = result;
               result.forEach(function (item){
                 console.log(item);
               })
@@ -191,7 +192,7 @@ app.get('/search/', function (req, resp, next) {
               // Checks if the user input is a restaurant, if it is, pass it to the frontend
               db.one(`SELECT * FROM restaurant WHERE name = '${termquote}'`)
                 .then(function(result){
-                  request.session.list = result;
+                  req.session.list = result;
                   let last_updated = result.last_updated;
                   // if the last_updated field is NOT NULL and is < 7 days old (UTC)
                   if(last_updated && (Date.now() - last_updated) < 604800000) {
@@ -242,8 +243,8 @@ app.get('/search/', function (req, resp, next) {
   });
 
   /********* Filter Engine ***********/
-  app.get("/filter/", function(request, response, next){
-  
+  app.post("/filter/", function(request, response, next){
+    console.log(request.body);
   })
 
 let PORT = process.env.PORT || 9000;
