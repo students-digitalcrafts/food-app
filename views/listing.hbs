@@ -34,6 +34,49 @@
         </div><!-- .row -->
         {{/each}}
       </ul>
+      <form id="filter" onsubmit="checkFilter(); return false;">
+        <div class="switch">
+          <label for="gluten free">
+          <input id="gluten free" type="checkbox" name="diet_rest"/>
+          <span class="lever"></span>
+          Gluten Free</label>
+          <label for="vegetarian possible">
+          <input id="vegetarian possible" type="checkbox" name="diet_rest"/>
+          <span class="lever"></span>
+          Vegetarian Possible</label>
+          <label for="vegan">
+          <input id="vegan" type="checkbox" name="diet_rest"/>
+          <span class="lever"></span>
+          Vegan</label>
+          <label for="halal/kosher">
+          <input id="halal/kosher" type="checkbox" name="diet_rest"/>
+          <span class="lever"></span>
+          Halal/Kosher</label>
+          <label for="low carb">
+          <input id="low carb" type="checkbox" name="diet_rest"/>
+          <span class="lever"></span>
+          Low Carb</label>
+          <label for="dive">
+          <input id="dive" type="checkbox" name="atmosphere"/>
+          <span class="lever"></span>
+          Dive</label>
+          <label for="casual">
+          <input id="casual" type="checkbox" name="atmosphere"/>
+          <span class="lever"></span>
+          Casual</label>
+          <label for="fancy">
+          <input id="fancy" type="checkbox" name="atmosphere"/>
+          <span class="lever"></span>
+          Fancy</label>
+          <label for="open now">
+          <input id="open now" type="checkbox" name="open_now"/>
+          <span class="lever"></span>
+          Open Now</label>
+        </div>
+
+        <input id="food quickness" type="text" name="food_quickness"/>
+        <input type="submit" />
+      </form>
 
     </div><!-- .container -->
 
@@ -44,8 +87,29 @@
     <script src="/static/js/axios.min.js"></script>
     <script src="/static/js/hbs-helpers.js"></script>
 
-    </script>
     <script>
+      // function checkValue(){
+      //   console.log(document.getElementById("gluten free").checked);
+      // }
+
+      function checkFilter (){
+        var config = {diet_rest: [], atmosphere: [], open_now: false, food_quickness: 0};
+        var list = [];
+        var elements = document.getElementById("filter").elements;
+        for (var i=0; i < elements.length-2; i++){
+          if(elements[i].checked){
+            // config[elements.name].push(elements[i].id);
+            console.log(elements[i].getAttribute("name"));
+            config[elements[i].getAttribute("name")].push(elements[i].id);
+          }
+        }
+        console.log(config);
+        // axios.post("/filter/", config)
+        //   .then(function(result){
+        //     console.log(result);
+        //   })
+        return false;
+      }
     </script>
   </body>
 </html>
