@@ -18,7 +18,7 @@ const db = pgp(process.env.DATABASE_URL||{
   host: 'localhost',
   // NOTE: change to your preferred port for development --
   // Must match your Postico settings
-  port: 8080,
+  port: 9001,
   database: 'fooddev',
   user: 'postgres',
 });
