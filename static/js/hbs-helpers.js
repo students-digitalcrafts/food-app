@@ -1,0 +1,1 @@
+/* Contains custom helper functions for handlebars templates */
