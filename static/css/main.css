@@ -1600,11 +1600,18 @@
 .transparent-text {
   color: transparent !important; }
 
-img {
-  width: 200px;
-  height: 200px; }
-
 body {
-  background-color: #e51c23; }
+  background-color: #41545e;
+  color: #c6d2d8; }
+
+h1 {
+  font-size: 2em; }
+
+.logo-img {
+  width: 225px;
+  height: 225px; }
+
+.search-main {
+  color: #FFFFFF; }
 
 /*# sourceMappingURL=main.css.map */

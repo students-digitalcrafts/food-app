@@ -243,6 +243,25 @@ app.get('/search/', function (req, resp, next) {
         })
     })
   });
+/********* restaurant a-z page ***********/
+//list of restaurants a-z that link to the individual restaurant pages.
+app.get('/restaurants/', function (request, response, next) {
+  db.query(`SELECT name FROM restaurant ORDER BY name`)
+  .then(function(results) {
+    console.log(results);
+    console.log(results[0].name);
+    for (let x = 0; x < results.length; x++) {
+
+      results[x].namehtml = results[x].name.replace(/'/g,"%27");
+      results[x].namehtml = results[x].name.replace(/ /g, "+");
+    }
+    response.render('restaurants.hbs', {results: results});
+  })
+  .catch(next);
+
+
+});
+
 
 /************ Restaurant Detail Page ***************/
 

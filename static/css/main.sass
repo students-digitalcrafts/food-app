@@ -1,7 +1,13 @@
 @import "../../node_modules/materialize-css/sass/components/color"
-img
-  width: 200px
-  height: 200px
+@import "../../node_modules/materialize-css/sass/components/variables"
 
 body
-  background-color: color("materialize-red", "base")
+  background-color: $primary-color-dark
+  color: lighten($primary-color-light, 20%)
+
+h1
+  font-size: 2em
+
+.logo-img
+  width: 225px
+  height: 225px
