@@ -18,7 +18,7 @@ const db = pgp(process.env.DATABASE_URL||{
   host: 'localhost',
   // NOTE: change to your preferred port for development --
   // Must match your Postico settings
-  port: 8080,
+  port: 9001,
   database: 'fooddev',
   user: 'postgres',
 });
@@ -129,28 +129,26 @@ db.any(`SELECT name FROM cuisine_type WHERE name ILIKE '${selection}'`)
 });
 
 /********* Search Engine ***********/
-// NOTE: Currently works for restaurant names only!
 // Accepts GET parameters from search input and returns matching result
-// from database
+// from database NOTE: rendering a new page (needs to be done)
 
 // To test on your dev server: localhost:9000/search?search_term=piola
 app.get('/search/', function (req, resp, next) {
   let term = req.query.search_term.toLowerCase();
-  console.log(term);
+  // replace ' with '' for querying purposes
   let termquote = term.replace("'","''");
-  let query = `SELECT * FROM restaurant WHERE restaurant.name = '${termquote}'`;
 
   let fields;
   // Checks if the user input is a cuisine_type, if it is, pass it to the frontend
   db.many(`SELECT DISTINCT restaurant.* FROM restaurant \
           JOIN dish ON dish.restaurant_id = restaurant.id \
           JOIN cuisine_type ON dish.cuisine_type_id = cuisine_type.id \
-          WHERE cuisine_type.name = '${term}'`)
+          WHERE cuisine_type.name = '${termquote}'`)
     .then(function(result){
       result.forEach(function (item){
-        console.log(item);
+        console.log(item.name);
       })
-      resp.send(result);
+      resp.render("listing.hbs", {results: result});
     })
     .catch(function (next){
       // Checks if the user input is a category, if it is, pass it to the frontend
@@ -158,7 +156,7 @@ app.get('/search/', function (req, resp, next) {
               JOIN dish ON dish.restaurant_id = restaurant.id \
               JOIN category_dish_join ON category_dish_join.dish_id = dish.id \
               JOIN category ON category_dish_join.category_id = category.id \
-              WHERE category.name = '${term}'`)
+              WHERE category.name = '${termquote}'`)
         .then(function(result){
           result.forEach(function (item){
             console.log(item);
@@ -171,7 +169,7 @@ app.get('/search/', function (req, resp, next) {
                   JOIN dish ON dish.restaurant_id = restaurant.id \
                   JOIN diet_rest_dish_join ON diet_rest_dish_join.dish_id = dish.id \
                   JOIN diet_rest ON diet_rest_dish_join.diet_rest_id = diet_rest.id \
-                  WHERE diet_rest.name = '${term}'`)
+                  WHERE diet_rest.name = '${termquote}'`)
             .then(function(result){
               result.forEach(function (item){
                 console.log(item);
@@ -180,7 +178,7 @@ app.get('/search/', function (req, resp, next) {
             })
             .catch(function (next){
               // Checks if the user input is a restaurant, if it is, pass it to the frontend
-              db.one(`SELECT * FROM restaurant WHERE name = '${term}'`)
+              db.one(`SELECT * FROM restaurant WHERE name = '${termquote}'`)
                 .then(function(result){
                   let last_updated = result.last_updated;
                   // if the last_updated field is NOT NULL and is < 7 days old (UTC)
@@ -230,55 +228,6 @@ app.get('/search/', function (req, resp, next) {
         })
     })
   });
-
-  // db.one(query, term)
-  //   // If the Yelp fields have been queried in the last week, do nothing.
-  //   // Else, hit the Yelp API, save the data, update the last_updated field.
-  //   .then(function (result) {
-  //     let last_updated = result.last_updated;
-  //     // if the last_updated field is NOT NULL and is < 7 days old (UTC)
-  //     if(last_updated && (Date.now() - last_updated) < 604800000) {
-  //       resp.render('search_results.hbs', {result: result});
-  //     } else {
-  //       // hit Yelp API
-  //       console.log("Contacting Yelp API");
-  //       yelp_client.search({
-  //         term: term,
-  //         location: 'houston, tx'
-  //       }).then(response => {
-  //         // save desired data from Yelp API's JSON response
-  //         let api_response = response.jsonBody.businesses[0];
-  //         fields = {
-  //           name: term,
-  //           last_updated: Date.now,
-  //           image_url: api_response.image_url,
-  //           yelp_id: api_response.id,
-  //           phone: api_response.phone,
-  //           address: api_response.location.display_address.join(', ')
-  //         };
-  //         // SQL statement to save fields to database
-  //         let query = "UPDATE restaurant \
-  //           SET image_url = ${image_url}, \
-  //           yelp_id = ${yelp_id}, \
-  //           phone = ${phone}, \
-  //           address = ${address}, \
-  //           last_updated = ${last_updated} \
-  //           WHERE name = ${name}";
-  //         db.result(query, fields)
-  //         .then(function (update_result) {
-  //           // Takes fields from API response and merges them with db result fields
-  //           result = Object.assign(result, fields);
-  //           resp.render('search_results.hbs', {result: result});
-  //           pgp.end();
-  //         });
-  //       }).catch(err => {
-  //         console.error(err);
-  //       });
-  //     }
-  //   })
-  //   .catch(next);
-// });
-
 
 let PORT = process.env.PORT || 9000;
 app.listen(PORT, function () {
