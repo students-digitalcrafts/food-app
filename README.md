@@ -102,25 +102,31 @@ $ \q
 -----
 
 ### Wednesday, June 21st
-
+Today, Ronda worked on the front end and design, including the logo concept. Aspen worked on the search engine, then moved to design using Google's material design. Ryan worked on the restructuring the database to meet our needs and configuring settings for production on Heroku. Felipe worked on finishing the autocomplete API, then moved to the server side, adding queries to search by food category, cuisine type, and dietary restrictions. 
 
 #### Goals From Yesterday + Other Tasks
 - [x] Save data from Yelp API to database **- Done! Jun. 21 (Aspen)**
-- [ ] Accept type of cuisine, category, and dietary restriction as search parameters
-- [x] Start working on UX/UI **- Done! Jun. 21 (Ronda, Aspen Ryan)**
+- [x] Accept type of cuisine, category, and dietary restriction as search parameters **- Done! Jun. 21 (Felipe)**
+- [x] Start working on UX/UI **- Done! Jun. 21 (Ronda, Aspen, Ryan)**
 - [x] Render search results **- Done! Jun. 21 (Aspen, Felipe)**
-- [ ] Create basic restaurant/dish detail template
+- [ ] Create basic restaurant/dish detail template 
 - [x] Create function to only hit Yelp API every 7 days **- Done! Jun. 21 (Aspen)**
-- [ ] Every team member: Add 10 more restaurants/dishes to database
+- [x] Add 10 more restaurants/dishes to database **Done! Jun. 21 (Aspen, Ronda, Ryan)**
 - [ ] Add SVGs to show our tech stack
 - [x] Merge all changes and deploy! **- Done! Jun. 21 (Ryan + Heroku = Magic)**
 
 #### Challenges
 * Heroku was not accepting our Yelp access token as a config variable for some reason. We had to use the Heroku Command Line Interface to force the access token.
-* The production database load process had to be turned into a script so that it could be repeated easily.
+* The production database load process had to be turned into a script so that it could be updated easily.
 
 #### Goals for Tomorrow
-
+- [ ] Create basic template for listings page
+- [ ] Create basic template for restaurant detail page
+- [ ] Add SVGs to illustrate our tech stack
+- [ ] Connect backend to frontend to display search results
+- [ ] Add logic to display detail page for restaurant searches, listings page for all other searches
+- [ ] Create 404 page in case faulty search parameters are submitted
+- [ ] Fix 503 server error on Heroku
 
 -----
 
