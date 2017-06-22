@@ -144,7 +144,6 @@ app.get('/search/', function (req, resp, next) {
   let term = req.query.search_term.toLowerCase();
   // replace ' with '' for querying purposes
   let termquote = term.replace("'","''");
-
   let fields;
   // Checks if the user input is a cuisine_type, if it is, pass it to the frontend
   db.many(`SELECT DISTINCT restaurant.* FROM restaurant \
@@ -152,7 +151,7 @@ app.get('/search/', function (req, resp, next) {
           JOIN cuisine_type ON dish.cuisine_type_id = cuisine_type.id \
           WHERE cuisine_type.name = '${termquote}'`)
     .then(function(result){
-      request.session.list = result;
+      req.session.list = result;
       result.forEach(function (item){
         console.log(item.name);
       })
@@ -167,7 +166,7 @@ app.get('/search/', function (req, resp, next) {
               JOIN category ON category_dish_join.category_id = category.id \
               WHERE category.name = '${termquote}'`)
         .then(function(result){
-          request.session.list = result;
+          req.session.list = result;
           result.forEach(function (item){
             console.log(item);
           })
@@ -181,7 +180,7 @@ app.get('/search/', function (req, resp, next) {
                   JOIN diet_rest ON diet_rest_dish_join.diet_rest_id = diet_rest.id \
                   WHERE diet_rest.name = '${termquote}'`)
             .then(function(result){
-              request.session.list = result;
+              req.session.list = result;
               result.forEach(function (item){
                 console.log(item);
               })
@@ -189,13 +188,14 @@ app.get('/search/', function (req, resp, next) {
             })
             .catch(function (next){
               // Checks if the user input is a restaurant, if it is, pass it to the frontend
-              db.one(`SELECT * FROM restaurant WHERE name = '${termquote}'`)
+              db.one(`SELECT * FROM restaurant \
+                WHERE name = '${termquote}'`)
                 .then(function(result){
-                  request.session.list = result;
+                  req.session.restaurant = result;
                   let last_updated = result.last_updated;
                   // if the last_updated field is NOT NULL and is < 7 days old (UTC)
                   if(last_updated && (Date.now() - last_updated) < 604800000) {
-                    resp.render('search_results.hbs', {result: result});
+                    resp.redirect('/detail/');
                   } else {
                     // hit Yelp API
                     console.log("Contacting Yelp API");
@@ -225,7 +225,9 @@ app.get('/search/', function (req, resp, next) {
                       .then(function (update_result) {
                         // Takes fields from API response and merges them with db result fields
                         result = Object.assign(result, fields);
-                        resp.render('search_results.hbs', {result: result, term: req.query.search_term});
+                        req.session.restaurant = result;
+                        // NOTE: Add redirect to detail page
+                        resp.redirect('/detail/');
                         pgp.end();
                       });
                     }).catch(err => {
@@ -240,6 +242,20 @@ app.get('/search/', function (req, resp, next) {
         })
     })
   });
+
+app.get("/detail/", function(req, resp, next) {
+  let restaurant = req.session.restaurant;
+  let query = `SELECT * FROM dish \
+    WHERE restaurant_id = ${restaurant.id}`;
+  db.any(query)
+    .then(function(result){
+      req.session.dishes = result;
+      result.forEach(function (item){
+        console.log(item);
+      })
+      resp.render('detail.hbs', {restaurant: restaurant, dishes: req.session.dishes});
+    })
+})
 
   // NOTE: Redirect to detail page when searching restaurant
   // write query to get matching dishes
