@@ -149,7 +149,7 @@ app.get('/search/', function (req, resp, next) {
         console.log(item.name);
       })
       // Pass search term to display on Listings page
-      resp.render("listing.hbs", {results: result, term: req.query.search_term});
+      resp.render("listing.hbs", {results: result, term: term});
     })
     .catch(function (next){
       // Checks if the user input is a category, if it is, pass it to the frontend
@@ -162,7 +162,7 @@ app.get('/search/', function (req, resp, next) {
           result.forEach(function (item){
             console.log(item);
           })
-          resp.render("listing.hbs", {results: result, term: req.query.search_term});
+          resp.render("listing.hbs", {results: result, term: term});
         })
         .catch(function (next){
           // Checks if the user input is a diet_rest, if it is, pass it to the frontend
@@ -175,7 +175,7 @@ app.get('/search/', function (req, resp, next) {
               result.forEach(function (item){
                 console.log(item);
               })
-              resp.render("listing.hbs", {results: result, term: req.query.search_term});
+              resp.render("listing.hbs", {results: result, term: term});
             })
             .catch(function (next){
               // Checks if the user input is a restaurant, if it is, pass it to the frontend
