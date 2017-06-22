@@ -1605,6 +1605,14 @@ body {
   color: #c6d2d8; }
 
 h1 {
-  font-size: 2em; }
+  font-size: 2.5em;
+  font-weight: 600; }
+
+h2 {
+  font-size: 1.8em; }
+
+strong {
+  font-size: 1.2em;
+  font-weight: 500; }
 
 /*# sourceMappingURL=listing.css.map */
