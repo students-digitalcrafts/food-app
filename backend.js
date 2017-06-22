@@ -69,7 +69,7 @@ app.use(session({
   secret: process.env.SECRET_KEY || 'dev',
   resave: true,
   saveUninitialized: false,
-  cookie: {maxAge: 60000}
+  cookie: {maxAge: 9000000}
 }));
 
 /************** Server *******************/
@@ -243,22 +243,25 @@ app.get('/search/', function (req, resp, next) {
     })
   });
 
+/************ Restaurant Detail Page ***************/
+
+//NOTE: Fix this page to use slug rather than GET params
+
 app.get("/detail/", function(req, resp, next) {
+  // Restaurant selected by the user, assigned from GET params in search
   let restaurant = req.session.restaurant;
+  // Select dishes that correspond to the restaurant
   let query = `SELECT * FROM dish \
     WHERE restaurant_id = ${restaurant.id}`;
   db.any(query)
-    .then(function(result){
-      req.session.dishes = result;
+    .then(function(result) {
+      console.log(result);
       result.forEach(function (item){
         console.log(item);
       })
-      resp.render('detail.hbs', {restaurant: restaurant, dishes: req.session.dishes});
+      resp.render('detail.hbs', {restaurant: restaurant, dishes: result});
     })
 })
-
-  // NOTE: Redirect to detail page when searching restaurant
-  // write query to get matching dishes
 
 
   /********* Filter Engine ***********/
