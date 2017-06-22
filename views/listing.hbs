@@ -8,21 +8,28 @@
     <link href="http://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/0.98.2/css/materialize.min.css">
     <link rel="stylesheet" href="/static/css/materialize.min.css">
+    <link rel="stylesheet" href="/static/css/listing.css">
+
+    <style>
+      h1 {
+        font-size:
+      }
+    </style>
 
   </head>
   <body>
 
     <div class="container">
 
-      <h1>Results for '{{term}}'</h1>
+      <h1>results for '{{term}}'</h1>
       <ul>
         {{#each results}}
         <div class="row">
           <li>
             <div class="col s3">
-              <img src="{{image_url}}" width="150"><br>
+              <img src="{{image_url}}" class="responsive-img"><br>
             </div>
-            <div class="col s7">
+            <div class="col s9">
               <!------ NOTE: Add link to restaurant detail page ------>
               <strong><a href="#">{{name}}</a></strong><br>
               {{atmosphere}} atmosphere | {{parking}} parking | {{busy}}<br>
@@ -41,6 +48,9 @@
     <!------ NOTE: Fix reference to Google Fonts (see error in console) --->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/0.98.2/js/materialize.min.js"></script>
     <script src="/static/js/axios.min.js"></script>
+    <script src="/static/js/hbs-helpers.js"></script>
+
+    </script>
     <script>
       var listing = [];
       // {{#each results}}
