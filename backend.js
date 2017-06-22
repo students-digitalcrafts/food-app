@@ -65,6 +65,7 @@ app.set('view engine', 'hbs');
 app.use('/static', express.static('static'));
 app.use('/axios', express.static('node_modules/axios/dist'));
 app.use(body_parser.urlencoded({extended: false}));
+app.use(body_parser.json());
 app.use(session({
   secret: process.env.SECRET_KEY || 'dev',
   resave: true,
@@ -265,9 +266,11 @@ app.get("/detail/", function(req, resp, next) {
 
 
   /********* Filter Engine ***********/
-  app.get("/filter/", function(request, response, next){
 
-  })
+app.post("/filter/", function(request, response, next){
+  console.log(request.body);
+
+})
 
 
 let PORT = process.env.PORT || 9000;
