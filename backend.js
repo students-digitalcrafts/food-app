@@ -69,7 +69,7 @@ app.use(session({
   secret: process.env.SECRET_KEY || 'dev',
   resave: true,
   saveUninitialized: false,
-  cookie: {maxAge: 9000000}
+  cookie: {maxAge: 900000}
 }));
 
 /************** Server *******************/
