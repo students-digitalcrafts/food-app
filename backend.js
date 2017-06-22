@@ -230,6 +230,9 @@ app.get('/search/', function (req, resp, next) {
     })
   });
 
+  // NOTE: Redirect to detail page when searching restaurant
+  // write query to get matching dishes
+
 let PORT = process.env.PORT || 9000;
 app.listen(PORT, function () {
   console.log('Listening on port ' + PORT);
