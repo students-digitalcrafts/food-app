@@ -153,7 +153,11 @@ app.get('/search/', function (req, resp, next) {
           WHERE cuisine_type.name = '${termquote}'`)
     .then(function(result){
       request.session.list = result;
-      resp.render("listing.hbs", {results: result});
+      result.forEach(function (item){
+        console.log(item.name);
+      })
+      // Pass search term to display on Listings page
+      resp.render("listing.hbs", {results: result, term: term});
     })
     .catch(function (next){
       // Checks if the user input is a category, if it is, pass it to the frontend
@@ -167,7 +171,7 @@ app.get('/search/', function (req, resp, next) {
           result.forEach(function (item){
             console.log(item);
           })
-          resp.send(result);
+          resp.render("listing.hbs", {results: result, term: term});
         })
         .catch(function (next){
           // Checks if the user input is a diet_rest, if it is, pass it to the frontend
@@ -181,7 +185,7 @@ app.get('/search/', function (req, resp, next) {
               result.forEach(function (item){
                 console.log(item);
               })
-              resp.send(result);
+              resp.render("listing.hbs", {results: result, term: term});
             })
             .catch(function (next){
               // Checks if the user input is a restaurant, if it is, pass it to the frontend
@@ -221,7 +225,7 @@ app.get('/search/', function (req, resp, next) {
                       .then(function (update_result) {
                         // Takes fields from API response and merges them with db result fields
                         result = Object.assign(result, fields);
-                        resp.render('search_results.hbs', {result: result});
+                        resp.render('search_results.hbs', {result: result, term: req.query.search_term});
                         pgp.end();
                       });
                     }).catch(err => {
