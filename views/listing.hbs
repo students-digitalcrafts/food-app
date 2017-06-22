@@ -7,7 +7,7 @@
     <!------------------ STYLES ------------------>
     <link href="http://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/0.98.2/css/materialize.min.css">
-    <link rel="stylesheet" href="static/css/materialize.min.css">
+    <link rel="stylesheet" href="/static/css/materialize.min.css">
 
   </head>
   <body>
@@ -23,11 +23,11 @@
               <img src="{{image_url}}" width="150"><br>
             </div>
             <div class="col s7">
-              <!------ Add link to restaurant detail page ------>
+              <!------ NOTE: Add link to restaurant detail page ------>
               <strong><a href="#">{{name}}</a></strong><br>
               {{atmosphere}} atmosphere | {{parking}} parking | {{busy}}<br>
               Description: {{description}}<br>
-              {{address}} | Phone: {{phone}}
+              <a href="http://maps.google.com/?q={{address}}">{{address}}</a> | Phone: <a href="tel:{{phone}}">{{phone}}</a>
             </div>
           </li>
         </div><!-- .row -->
@@ -38,8 +38,9 @@
 
     <!------------------- SCRIPTS ------------------->
     <script type="text/javascript" src="https://code.jquery.com/jquery-2.1.1.min.js"></script>
+    <!------ NOTE: Fix reference to Google Fonts (see error in console) --->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/0.98.2/js/materialize.min.js"></script>
-    <script src="static/js/axios.min.js"></script>
+    <script src="/static/js/axios.min.js"></script>
     <script>
       var listing = [];
       // {{#each results}}
