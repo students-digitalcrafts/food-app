@@ -299,7 +299,7 @@ app.post("/filter/", function(request, response, next){
   if(toFilter["diet_rest"]){
     var diet_restQuery = "id IN (SELECT DISTINCT restaurant_id FROM restaurant_diet_rest_join WHERE )";
     if(bodyLength > 1){
-      diet_restQuery += " AND "
+      diet_restQuery += " AND ";
     }
   }
   //var atmosphereQuery = "(" + toFilter["atmosphere"].toString() + ")";
