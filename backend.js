@@ -275,10 +275,10 @@ app.get("/detail/", function(req, resp, next) {
     WHERE restaurant_id = ${restaurant.id}`;
   db.any(query)
     .then(function(result) {
-      console.log(result);
-      result.forEach(function (item){
-        console.log(item);
-      })
+      // console.log(result);
+      // result.forEach(function (item){
+      //   console.log(item);
+      // })
       resp.render('detail.hbs', {restaurant: restaurant, dishes: result});
     })
 })

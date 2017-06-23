@@ -28,8 +28,8 @@ Enter **Food for My Mood**, an app written *by local foodies, for local foodies*
 
 ### MVP (Minimum Viable Product)
 - [x] searchable database of local restaurants and dishes **- Done(ish)! Jun 21 (Ryan, Felipe)**
-- [ ] ability to search by food category (e.g. hot dog, taco)
-- [ ] ability to search by restaurant (and receive recommendations of the best dishes on the menu)
+- [x] ability to search by food category (e.g. hot dog, taco) **- Done! Jun. 22**
+- [x] ability to search by restaurant (and receive recommendations of the best dishes on the menu) **- Done! Jun. 22**
 
 ---
 
@@ -40,7 +40,7 @@ Enter **Food for My Mood**, an app written *by local foodies, for local foodies*
 - [ ] add Google Maps to display restaurant locations
 - [ ] add social media, SMS buttons to share restaurant location
 - [ ] upvote/downvote buttons for restaurants, dishes
-- [ ] description for each restaurant
+- [x] description for each restaurant **- Done! Jun. 22**
 - [ ] set up caching (Redis?)
 - [ ] allow multiple users to input preferences, return a suitable restaurant for them to have dinner together
 
@@ -49,6 +49,10 @@ Enter **Food for My Mood**, an app written *by local foodies, for local foodies*
 ## Group Project Week: Jun 19-26
 ### Monday, June 19th
 Last week, we carried out a discovery meeting and did some basic project planning. Today, we set goals and decided on a high-level structure for our app.
+
+#### Schemas and Tables
+The database is the backbone of this app, so we spent a lot of time thinking about how to organize our data in a useful, efficient way.
+![Database Ideas](readme-imgs/db-draft.jpg)
 
 #### Goals for Tomorrow
 * Basic home page with text input, search button
@@ -85,7 +89,7 @@ $ /q
 $ \q
 ```
 * Deploying to Heroku, configuring database for production.
-* Connecting a front-end JavaScript plugin to back-end and database for our Autocomplete feature.
+* Connecting a front-end JavaScript plugin to back-end and database for our autocomplete feature.
 * Initial database structure did not meet our needs. We decided to implement cross-reference tables.
 * Creating a search engine that will query the Yelp API only when previously cached information is more than a week old.
 
@@ -102,17 +106,21 @@ $ \q
 -----
 
 ### Wednesday, June 21st
-Today, Ronda worked on the front end and design, including the logo concept. Aspen worked on the search engine, then moved to design using Google's material design. Ryan worked on the restructuring the database to meet our needs and configuring settings for production on Heroku. Felipe worked on finishing the autocomplete API, then moved to the server side, adding queries to search by food category, cuisine type, and dietary restrictions. 
+Today, Ronda worked on the front end and design, including the logo concept. Aspen worked on the search engine, then moved to design using Google's material design. Ryan worked on the restructuring the database to meet our needs and configuring settings for production on Heroku. Felipe worked on finishing the autocomplete API, then moved to the server side, adding queries to search by food category, cuisine type, and dietary restrictions.
+
+#### Tossing Around Design Ideas
+Since people are usually on the go when looking for a restaurant, we went for a mobile-first design. There are three main templates: The search page, the listings page to display search results, and the detail page to display details for a particular restaurant.
+![Simple wireframes](readme-imgs/wireframe.jpg)
 
 #### Goals From Yesterday + Other Tasks
 - [x] Save data from Yelp API to database **- Done! Jun. 21 (Aspen)**
 - [x] Accept type of cuisine, category, and dietary restriction as search parameters **- Done! Jun. 21 (Felipe)**
 - [x] Start working on UX/UI **- Done! Jun. 21 (Ronda, Aspen, Ryan)**
 - [x] Render search results **- Done! Jun. 21 (Aspen, Felipe)**
-- [x] Create basic restaurant/dish detail template **- Done! Jun. 22 (Aspen)** 
+- [x] Create basic restaurant/dish detail template **- Done! Jun. 22 (Aspen)**
 - [x] Create function to only hit Yelp API every 7 days **- Done! Jun. 21 (Aspen)**
 - [x] Add 10 more restaurants/dishes to database **Done! Jun. 21 (Aspen, Ronda, Ryan)**
-- [ ] Add SVGs to show our tech stack
+- [ ] Add icons to show our tech stack
 - [x] Merge all changes and deploy! **- Done! Jun. 21 (Ryan + Heroku = Magic)**
 
 #### Challenges
@@ -120,50 +128,84 @@ Today, Ronda worked on the front end and design, including the logo concept. Asp
 * The production database load process had to be turned into a script so that it could be updated easily.
 
 #### Goals for Tomorrow
-- [x] Create basic template for listings page
-- [x] Create basic template for restaurant detail page
-- [ ] Add SVGs to illustrate our tech stack
-- [x] Connect backend to frontend to display search results
-- [x] Add logic to display detail page for restaurant searches, listings page for all other searches
-- [ ] Create 404 page in case faulty search parameters are submitted
-- [x] Fix 503 server error on Heroku
+* Create basic template for listings page
+* Create basic template for restaurant detail page
+* Add SVGs to illustrate our tech stack
+* Connect backend to frontend to display search results
+* Add logic to display detail page for restaurant searches, listings page for all other searches
+* Create 404 page in case faulty search parameters are submitted
+* Fix 503 server error on Heroku
 
 -----
 
 ### Thursday, June 22nd
-Add details
+Today was our deadline to deploy a minimum viable product. We met our goal! The app is now live at [FoodForMyMood.Com](http://foodformymood.com). We still have a lot of features to add, as well as existing features to optimize.
 
 #### Goals From Yesterday + Other Tasks
-- [x] Create basic template for listings page
-- [x] Create basic template for restaurant detail page
-- [ ] Add SVGs to illustrate our tech stack
-- [x] Connect backend to frontend to display search results
-- [x] Add logic to display detail page for restaurant searches, listings page for all other searches
+- [x] Create basic template for listings page **- Done! Jun. 22 (Aspen)**
+- [x] Create basic template for restaurant detail page **- Done! Jun. 22 (Aspen)**
+- [x] Customize Materialize Sass files **- Done! Jun. 22 (Ronda, Aspen)**
+- [x] Finish logo **- Done! Jun. 22 (Ronda)**
+- [x] Add icons to illustrate our tech stack **- Done! Jun. 22**
+- [x] Connect backend to frontend to display search results **- Done! Jun. 22 (Felipe)**
+- [x] Add logic to display detail page for restaurant searches, listings page for all other searches **- Done! Jun. 22 (Felipe, Aspen)**
 - [ ] Create 404 page in case faulty search parameters are submitted
-- [x] Fix 503 server error on Heroku
+- [x] Fix 503 server error on Heroku **- Done! Jun. 22 (Ryan)**
 
 #### Challenges
-* Heroku was not accepting our Yelp access token as a config variable for some reason. We had to use the Heroku Command Line Interface to force the access token.
-* The production database load process had to be turned into a script so that it could be updated easily.
+* Customizing the Materialize framework Sass files and recompiling them
+* Creating server-side logic to differentiate searches for specific restaurants from other searches, and redirect straight to the detail page for the restaurant for a better user experience
+* Writing a query to retrieve restaurants with multiple dietary restrictions. Ryan came up with this wizardry!
+
+```sql
+SELECT t1.restaurant_id
+FROM (SELECT * FROM restaurant_diet_rest_join WHERE diet_rest_id = 1) as t1 JOIN
+(SELECT * FROM restaurant_diet_rest_join WHERE diet_rest_id = 2) as t2 ON t1.restaurant_id = t2.restaurant_id
+JOIN (SELECT * FROM restaurant_diet_rest_join WHERE diet_rest_id =3) AS t3 ON t1.restaurant_id = t3.restaurant_id;
+```
+
+* Troubleshooting Heroku production environment: the database was not connecting
+* Figuring out how to filter by and update templates using handlebars partials.
 
 #### Goals for Tomorrow
-*
-*
-*
-*
+* Create a custom 404 page
+* Add a mood table to the database
+* Add server-side logic to search by mood
+* Server-side logic to filter/order by on listings page
+* Front-end logic to filter/order by on listings page
+* Connect to Google Places API to get restaurant hours
+* Add a map to listings and/or detail page
+
+-----
+
+### Thursday, June 22nd
+
+
+#### Goals From Yesterday + Other Tasks
+- [ ] Create a custom 404 page
+- [ ] Add a mood table to the database
+- [ ] Add server-side logic to search by mood
+- [ ] Server-side logic to filter/order by on listings page
+- [ ] Front-end logic to filter/order by on listings page
+- [ ] Connect to Google Places API to get restaurant hours
+- [ ] Add a map to listings and/or detail page
+
+#### Challenges
+
+#### Goals for Tomorrow
+
 
 -----
 
 ## Technologies Used
 ### Team Tools
-Git | GitHub | Atom | Trello | Slack
+![git icon](readme-imgs/git.png) Git | ![github icon](readme-imgs/github.png) GitHub | ![atom icon](readme-imgs/atom.png) Atom | ![trello icon](readme-imgs/trello.png) Trello | Slack
 
-### Database
-PostgreSQL | SSH | Postico
-
-### Server-Side
-JavaScript | Node.js | Express
+### Back-End
+![postgres icon](readme-imgs/postgresql.png) PostgreSQL | Postico | ![node icon](readme-imgs/nodejs.png) Node.js | Express | ![heroku icon](readme-imgs/heroku.png) Heroku
 
 ### Front-End
-HTML5 | CSS3 | JavaScript
-Bootstrap | Materialize | Less
+![html5 icon](readme-imgs/html5.png) HTML5 | ![css3 icon](readme-imgs/css3.png) CSS3 | ![javascript icon](readme-imgs/js_badge.png) JavaScript | ![materializecss icon](readme-imgs/materializecss.png) Materialize | ![sass icon](readme-imgs/sass.png) Sass
+
+### Design
+![illustrator icon](readme-imgs/illustrator.png) Illustrator | ![photoshop icon](readme-imgs/photoshop.png) Photoshop
