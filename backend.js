@@ -153,9 +153,6 @@ app.get('/search/', function (req, resp, next) {
           WHERE cuisine_type.name = '${termquote}'`)
     .then(function(result){
       req.session.list = result;
-      result.forEach(function (item){
-        console.log(item.name);
-      })
       // Pass search term to display on Listings page
       resp.render("listing.hbs", {results: result, term: term});
     })
@@ -168,9 +165,6 @@ app.get('/search/', function (req, resp, next) {
               WHERE category.name = '${termquote}'`)
         .then(function(result){
           req.session.list = result;
-          result.forEach(function (item){
-            console.log(item);
-          })
           resp.render("listing.hbs", {results: result, term: term});
         })
         .catch(function (next){
@@ -182,9 +176,6 @@ app.get('/search/', function (req, resp, next) {
                   WHERE diet_rest.name = '${termquote}'`)
             .then(function(result){
               req.session.list = result;
-              result.forEach(function (item){
-                console.log(item);
-              })
               resp.render("listing.hbs", {results: result, term: term});
             })
             .catch(function (next){
@@ -297,12 +288,33 @@ app.post("/filter/", function(request, response, next){
     }
   }
   if(toFilter["diet_rest"]){
-    var diet_restQuery = "id IN (SELECT DISTINCT restaurant_id FROM restaurant_diet_rest_join WHERE )";
+    var diet_restQuery = "id IN (SELECT DISTINCT restaurant_id FROM restaurant_diet_rest_join WHERE ";
+    toFilter["diet_rest"].forEach(function(item){
+      diet_restQuery += "diet_rest_id=" + item + " OR ";
+    })
+    diet_restQuery = diet_restQuery.slice(0,-4) + ")";
     if(bodyLength > 1){
       diet_restQuery += " AND ";
     }
   }
-  //var atmosphereQuery = "(" + toFilter["atmosphere"].toString() + ")";
+  else{
+    var diet_restQuery = "";
+  }
+  if(toFilter["atmosphere"]){
+    var atmosphereQuery = "atmosphere IN ('" + toFilter["atmosphere"].toString() + "')";
+    atmosphereQuery = atmosphereQuery.replace(",", "\',\'");
+    if(bodyLength > 2){
+      atmosphereQuery += " AND ";
+    }
+  }
+  else{
+    var atmosphereQuery = "";
+  }
+  //console.log(query+diet_restQuery+atmosphereQuery);
+  db.any(query+diet_restQuery+atmosphereQuery)
+    .then(function (result){
+      console.log(result);
+    })
   // console.log(request.body);
   response.json("test");
 })
