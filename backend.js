@@ -290,8 +290,24 @@ app.get("/detail/", function(req, resp, next) {
   /********* Filter Engine ***********/
 
 app.post("/filter/", function(request, response, next){
-  console.log(request.body);
-
+  let query = `SELECT * FROM restaurant WHERE `;
+  var toFilter = {};
+  var bodyLength = 0;
+  for(var key in request.body){
+    if (request.body[key].length > 0){
+      toFilter[key] = request.body[key];
+      bodyLength += 1;
+    }
+  }
+  if(toFilter["diet_rest"]){
+    var diet_restQuery = "id IN (SELECT DISTINCT restaurant_id FROM restaurant_diet_rest_join WHERE )";
+    if(bodyLength > 1){
+      diet_restQuery += " AND "
+    }
+  }
+  //var atmosphereQuery = "(" + toFilter["atmosphere"].toString() + ")";
+  // console.log(request.body);
+  response.json("test");
 })
 
 
