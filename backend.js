@@ -279,7 +279,10 @@ app.get("/detail/", function(req, resp, next) {
       // result.forEach(function (item){
       //   console.log(item);
       // })
-      resp.render('detail.hbs', {restaurant: restaurant, dishes: result});
+      resp.render('detail.hbs', {
+        restaurant: restaurant,
+        dishes: result,
+        map_key: process.env.GOOGLE_STATIC_MAP_KEY});
     })
 })
 
