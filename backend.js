@@ -308,64 +308,82 @@ app.get("/detail/", function(req, resp, next) {
   /********* Filter Engine ***********/
 
 app.post("/filter/", function(request, response, next){
+  // generates an object that will store the filter attributes
   var toFilter = {};
+  // check for the length of toFilter
   var bodyLength = 0;
+  // list of restaruant ids that were rendered in the listing page
   var restId = []
+  // pulls the restaurants objects from the session.list and pushes the restaurant id to the restId list
   request.session.list.forEach(function(item){
     restId.push(item.id);
   });
+  // creates a query that queries the restaurants by id from the restId list
   var restIdQuery = "id IN (" + restId.toString() + ") AND ";
   let query = `SELECT * FROM restaurant WHERE ` + restIdQuery;
+  // generates an object that will store the filter attributes sent through a POST internal api
   for(var key in request.body){
     if (request.body[key].length > 0){
       toFilter[key] = request.body[key];
       bodyLength += 1;
     }
   }
+  // if the user filters by any dietary restrition, creates a query that will query for all of them using the logical operator OR
   if(toFilter["diet_rest"]){
     var diet_restQuery = "id IN (SELECT DISTINCT restaurant_id FROM restaurant_diet_rest_join WHERE ";
     toFilter["diet_rest"].forEach(function(item){
       diet_restQuery += "diet_rest_id=" + item + " OR ";
     })
+    // removes the OR from the last adition in the forEach
     diet_restQuery = diet_restQuery.slice(0,-4) + ")";
+    // if there is filter by atmosphere or food_quickness, adds AND to the end of the query
     if(bodyLength > 1){
       diet_restQuery += " AND ";
     }
   }
+  // if it doesn't filter by dietary restriction, sets the query to an empty string
   else{
     var diet_restQuery = "";
   }
+  // if the user filters by any atmosphere, creates a query that will query for all of them through a tuple of cases
   if(toFilter["atmosphere"]){
+    // converts the list of atmosphere options selected by the user into a string
     var atmosphereQuery = "atmosphere IN ('" + toFilter["atmosphere"].toString() + "')";
+    // add single quotes to each element to be used in the query
     atmosphereQuery = atmosphereQuery.replace(",", "\',\'");
+    // if there is filter by food_quickness, adds AND to the end of the query
     if(toFilter["food_quickness"]){
       atmosphereQuery += " AND ";
     }
   }
+  // if it doesn't filter by atmosphere, sets the query to an empty string
   else{
     var atmosphereQuery = "";
   }
+  // if the user filters by open now, queries YELP's api to check and return a boolean value
   if(toFilter["open_now"]){
     // NOTE: add promise for yelp open now
     // restId is a list with all the rendered restaurants
   }
   else{
-    var open_nowQuery = "";
+    var open_nowQuery = ""; // to be deleted
   }
+  // if toFilter is an empty object (the user hasn't filtered), returns the list from the previous search, that was stored in sessions.list
   if(Object.keys(toFilter).length === 0 && toFilter.constructor === Object){
-    response.render('partials/list.hbs', {results: request.session.list});
+    // sends the list from the previous search to a partial, sends the partial html text to the frontend to be rendered
+    response.render('partials/list.hbs', {layout: false, results: request.session.list});
   }
+  // if the user filtered, apply the query
   else{
     db.any(query+diet_restQuery+atmosphereQuery)
       .then(function (result){
-        response.render('partials/list.hbs', {results: result});
+        // sends the query results to a partial, sends the partial html text to the frontend to be rendered
+        response.render('partials/list.hbs', {layout: false, results: result});
       })
       .catch(function(error){
-        console.log("error is here");
         console.error(error);
       })
   }
-
 })
 
 //Add restaurant form
