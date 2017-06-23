@@ -1,0 +1,69 @@
+<title>{{title}}</title>
+
+{{# if req.body.submitted}}
+  <h2>You entered:</h2>
+  Name: {{req.body.name}}<br>
+  Atmosphere: {{req.body.atmosphere}}<br>
+  Parking: {{req.body.parking}}<br>
+  Busy: {{req.body.busy}}<br>
+  Food Quickness: {{req.body.food_quickness}}<br>
+  Description: {{req.body.description}}<br>
+  Dietary restrictions:
+    <ul>
+      {{#each req.body.diet_rest}}
+        <li>{{this}}</li>
+      {{/each}}
+    </ul>
+  <h2>Thanks for submitting! Submit again below?</h2>
+{{/if}}
+
+<br>
+<form action="/submit_restaurant" method="POST">
+  <input type="hidden" name="submitted" value=true>
+
+  <label>Restaurant Name</label>
+  <input type="text" name="name">
+  <br><br>
+  <label>Atmosphere</label>
+    <select name="atmosphere">
+        <option value="dive">Dive</option>
+        <option value="casual">Casual</option>
+        <option value="fancy">Fancy</option>
+    </select>
+  <br><br>
+  <label>Parking</label>
+    <select name="parking">
+        <option value="lot">Lot</option>
+        <option value="street">Street</option>
+        <option value="valet">Valet</option>
+    </select>
+  <br><br>
+  <label>Busy</label>
+    <select name="busy">
+        <option value="usually not busy">Usually not busy</option>
+        <option value="busy during peak">Busy during peak</option>
+        <option value="always busy">Always busy</option>
+        <option value="reservations">Reservations Recommended</option>
+    </select>
+  <br><br>
+  <label>Food Quickness (lower is faster)</label>
+    <select name="food_quickness">
+        <option value="1">1</option>
+        <option value="2">2</option>
+        <option value="3">3</option>
+    </select>
+  <br><br>
+  <label>Restaurant description</label><br>
+  <textarea rows="4" cols="50" name="description">
+  </textarea>
+  <br><br>
+  <label>Dietary Restrictions</label><br>
+    <input type="checkbox" name="diet_rest" value=1>Gluten-free<br>
+    <input type="checkbox" name="diet_rest" value=2>Vegetarian<br>
+    <input type="checkbox" name="diet_rest" value=3>Vegan<br>
+    <input type="checkbox" name="diet_rest" value=4>Halal/Kosher<br>
+    <input type="checkbox" name="diet_rest" value=5>Low Carb<br>
+  <button type="submit">Submit</button>
+</form>
+<br>
+<a href="/">Nevermind, take me home</a>
