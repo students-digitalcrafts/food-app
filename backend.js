@@ -96,7 +96,9 @@ function sentenceCase (str) {
 app.get('/autocomplete/', function(request, response, next) {
   // gets the user inputs and adds % signs to both ends so it can accept characters on both sides on ILIKE
   var selection = '%'+ request.query.selection +'%';
+  selection = selection.replace("'","''");
   var suggestions = [];
+
 // queries for all cuisine types names
 db.any(`SELECT name FROM cuisine_type WHERE name ILIKE '${selection}'`)
   .then(function(results1) {
@@ -146,6 +148,7 @@ db.any(`SELECT name FROM cuisine_type WHERE name ILIKE '${selection}'`)
 // To test on your dev server: localhost:9000/search?search_term=piola
 app.get('/search/', function (req, resp, next) {
   let term = req.query.search_term.toLowerCase();
+
   // replace ' with '' for querying purposes
   let termquote = term.replace("'","''");
   let fields;
@@ -183,6 +186,7 @@ app.get('/search/', function (req, resp, next) {
             })
             .catch(function (next){
               // Checks if the user input is a restaurant, if it is, pass it to the frontend
+
               db.one(`SELECT * FROM restaurant \
                 WHERE name = '${termquote}'`)
                 .then(function(result){
@@ -369,6 +373,100 @@ app.post("/filter/", function(request, response, next){
       })
   }
 })
+
+//Add restaurant form
+app.get('/add_restaurant/', function (req, resp) {
+  resp.render('add_restaurant.hbs', {title:'add new restaurant'});
+});
+
+app.post('/submit_restaurant/', function (request, resp, next) {
+  var req = request;
+  //Escape out of single quotes and convert restaurant name to lowercase
+  req.body.name = req.body.name.replace(/'/g,"''");
+  req.body.name = req.body.name.toLowerCase();
+  req.body.description = req.body.description.replace(/'/g,"''");
+  function insert_rest(req) {
+  //Insert in to Restaurant table
+    db.query(`INSERT INTO restaurant \
+      (name, atmosphere, parking, busy, food_quickness, description) \
+      VALUES ('${req.body.name}', '${req.body.atmosphere}', '${req.body.parking}', \
+        '${req.body.busy}', '${req.body.food_quickness}', '${req.body.description}');`)
+    .then(function(result0){
+  //Give id of newly inserted restaurant
+      return db.query(`SELECT id FROM restaurant ORDER BY id DESC LIMIT 1;`);
+    })
+  //Insert in to diet restriction join table
+    .then(function(result1){
+      if (req.body.diet_rest) {
+        for (let i = 0; i < req.body.diet_rest.length; i++) {
+          db.query(`INSERT INTO restaurant_diet_rest_join \
+            (restaurant_id, diet_rest_id) VALUES (${result1[0].id}, ${req.body.diet_rest[i]});`)
+        }
+          }
+    })
+    .then(function(result2) {
+      resp.render('add_restaurant.hbs', {req: req, result2: result2})
+    })
+    .catch(next);
+  }
+  insert_rest(req);
+});
+
+//Add dish form
+// app.get('/add_dish/', function (req, resp) {
+//   var
+//   db.query(`SELECT restaurant.name, dish.restaurant_id `)
+//   .then(function(dbresults){
+//     resp.render('add_dish.hbs', {title:'add new dish', dbresults:dbresults});
+//   })
+// });
+//
+// app.post('/submit_restaurant/', function (request, resp, next) {
+//   var req = request;
+//   function insert_rest(req) {
+//     console.log('req within insert_rest (name): '+req.body.name)
+//     db.query(`INSERT INTO restaurant \
+//       (name, atmosphere, parking, busy, food_quickness, description) \
+//       VALUES ('${req.body.name}', '${req.body.atmosphere}', '${req.body.parking}', \
+//         '${req.body.busy}', '${req.body.food_quickness}', '${req.body.description}');`)
+//     .then(function(result0){
+//       return db.query(`SELECT id FROM restaurant ORDER BY id DESC LIMIT 1;`);
+//     })
+//     .then(function(result1){
+//       console.log(result1[0].id)
+//       if (req.body.diet_rest) {
+//         for (let i = 0; i < req.body.diet_rest.length; i++) {
+//           db.query(`INSERT INTO restaurant_diet_rest_join \
+//             (restaurant_id, diet_rest_id) VALUES (${result1[0].id}, ${req.body.diet_rest[i]});`)
+//         }
+//           }
+//     })
+//     .then(function(result2) {
+//       resp.render('add_restaurant.hbs', {req: req, result2: result2, title:'add new dish again?'})
+//     })
+//     .catch(next);
+//   }
+//   insert_rest(req);
+// });
+
+//Get user location
+var getPosition = function (options) {
+  return new Promise(function (resolve, reject) {
+    navigator.geolocation.getCurrentPosition(resolve, reject, options);
+  });
+}
+//Sample promise chain for coordinates
+  // getPosition()
+  //   .then((position) => {
+  //     return position;
+  //   })
+  //   .then((position) => {
+  //     console.log(position.coords.latitude+', ' +position.coords.longitude)
+  //   })
+  //   .catch((err) => {
+  //     console.error(err.message);
+  //   });
+
 
 
 let PORT = process.env.PORT || 9000;
