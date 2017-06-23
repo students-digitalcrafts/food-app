@@ -302,8 +302,9 @@ app.get('/add_restaurant/', function (req, resp) {
 
 app.post('/submit_restaurant/', function (request, resp, next) {
   var req = request;
-  //Escape out of single quotes
+  //Escape out of single quotes and convert restaurant name to lowercase
   req.body.name = req.body.name.replace(/'/g,"''");
+  req.body.name = req.body.name.toLowerCase();
   req.body.description = req.body.description.replace(/'/g,"''");
   function insert_rest(req) {
   //Insert in to Restaurant table
@@ -315,7 +316,7 @@ app.post('/submit_restaurant/', function (request, resp, next) {
   //Give id of newly inserted restaurant
       return db.query(`SELECT id FROM restaurant ORDER BY id DESC LIMIT 1;`);
     })
-  //
+  //Insert in to diet restriction join table
     .then(function(result1){
       if (req.body.diet_rest) {
         for (let i = 0; i < req.body.diet_rest.length; i++) {
@@ -334,7 +335,11 @@ app.post('/submit_restaurant/', function (request, resp, next) {
 
 //Add dish form
 // app.get('/add_dish/', function (req, resp) {
-//   resp.render('add_dish.hbs', {title:'add new dish'});
+//   var
+//   db.query(`SELECT restaurant.name, dish.restaurant_id `)
+//   .then(function(dbresults){
+//     resp.render('add_dish.hbs', {title:'add new dish', dbresults:dbresults});
+//   })
 // });
 //
 // app.post('/submit_restaurant/', function (request, resp, next) {
