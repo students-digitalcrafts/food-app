@@ -276,7 +276,8 @@ results.forEach(function (item){
 
 /************ Restaurant Detail Page ***************/
 
-//NOTE: Fix this page to use slug rather than GET params
+// NOTE: Fix this page to use slug rather than GET params
+// NOTE: Unnecessary -- extended session length to 15 mins instead
 
 app.get("/detail/", function(req, resp, next) {
   // Restaurant selected by the user, assigned from GET params in search
@@ -286,10 +287,6 @@ app.get("/detail/", function(req, resp, next) {
     WHERE restaurant_id = ${restaurant.id}`;
   db.any(query)
     .then(function(result) {
-      // console.log(result);
-      // result.forEach(function (item){
-      //   console.log(item);
-      // })
       resp.render('detail.hbs', {
         restaurant: restaurant,
         dishes: result,

@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Food for My Mood</title>
+
+    <!------------------ Styles/Fonts ------------------>
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+    <script src="https://use.fontawesome.com/0b323d712f.js" async></script>
+
+    <link rel="stylesheet" href="/static/css/materialize.min.css">
+    <link rel="stylesheet" href="/static/css/auto-complete.css">
+    <link rel="stylesheet" href="/static/css/main.css">
+    <link rel="stylesheet" href="/static/css/listing.css">
+
+
+  </head>
+  <body>
+
+      <!---------------- Navbar ---------------->
+      <nav style="border: 0;">
+        <div class="nav-wrapper blue-grey lighten-2">
+          <a href="#" data-activates="pancake" class="button-collapse"><i class="material-icons">menu</i></a>
+          <ul class="right hide-on-med-and-down">
+            <li><a href="/">Home</a></li>
+            <li><a href="/restaurants/">Restaurants A-Z</a></li>
+            <li><a href="">Contribute</a></li>
+            <li><a href="">About</a></li>
+            <li><a href="">Github Repo</a></li>
+          </ul>
+          <ul class="side-nav orange-text" id="pancake">
+            <li><a href="/"><strong>Home</strong></a></li>
+            <div class="divider"></div>
+            <li><a href="/restaurants/">Restaurants A-Z</a></li>
+            <li><a href="">Contribute</a></li>
+            <li><a href="">About</a></li>
+            <li><a href="">Github Repo</a></li>
+          </ul>
+        </div>
+      </nav>
+
+{{{body}}}
+
+<!---------------- Base Layout Scripts --------------->
+<script type="text/javascript" src="https://code.jquery.com/jquery-2.1.1.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/0.98.2/js/materialize.min.js"></script>
+<script>
+  $(document).ready(function() {
+    $(".button-collapse").sideNav();
+  })
+</script>
+</body>
+</html>
