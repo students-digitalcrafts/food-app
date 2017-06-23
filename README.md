@@ -182,22 +182,25 @@ JOIN (SELECT * FROM restaurant_diet_rest_join WHERE diet_rest_id =3) AS t3 ON t1
 
 #### Goals From Yesterday + Other Tasks
 - [ ] Create a custom 404 page
-- [ ] Create A-Z listing to browse restaurants
-- [ ] Add a mood table to the database
+- [x] Create A-Z listing to browse restaurants **- Done! Jun. 23 (Ronda)**
+- [x] Add a mood table to the database **- Done! Jun. 23 (Ryan)**
 - [ ] Add server-side logic to search by mood
-- [ ] Server-side logic to filter/order by on listings page
-- [ ] Front-end logic to filter/order by on listings page
+- [x] Server-side logic to filter/order by on listings page **- Partially complete! (Filter) Jun. 23 (Felipe)**
+- [x] Front-end logic to filter/order by on listings page **- Done! Jun. 23 (Felipe)**
 - [ ] ~~Connect to Google Places API to get restaurant hours~~
 - [ ] When filtering by "open now", query Yelp-Fusion API for each restaurant in current session
 - [x] Add a map to listings and/or detail page **- Done! Jun. 23 (Aspen)**
+- [x] Create a form to easily add entries to the database **- Done! Jun. 23 (Ryan)**
 
 #### Challenges
 * Creating a new database table to store restaurant hours on various days of the week and writing the logic to check the table when filtering for "open now" restaurants, seemed to be more trouble than it was worth. However, we couldn't use the "open now" boolean data from the Yelp API, because we are caching data from the Yelp API for 7 days to improve performance. The solution is to send a new request to the Yelp API only when a user chooses to filter restaurants that are open now. This means it will take a little longer to check for open restaurants, but most users will experience better performance because other data from Yelp will still be cached.
 
-#### Goals for Tomorrow
+---------
 
+#### Weekend Tasks
+![weekend word](readme-imgs/weekend_tasks.jpg)
+![weekend work](readme-imgs/moods.jpg)
 
------
 
 ## Technologies Used
 ### Team Tools
