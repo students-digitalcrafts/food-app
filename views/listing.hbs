@@ -14,25 +14,8 @@
     <div class="container">
 
       <h1>results for '{{term}}'</h1>
-      <ul>
-        {{#each results}}
-        <div class="row">
-          <li>
-            <div class="col s3">
-              <br>
-              <img src="{{image_url}}" class="responsive-img"><br>
-            </div>
-            <div class="col s9">
-              <!------ NOTE: Add link to restaurant detail page ------>
-              <br>
-              <strong><a href="/search/?search_term={{name}}">{{name}}</a></strong><br>
-              {{description}}<br>
-              <a href="http://maps.google.com/?q={{address}}">{{address}}</a><br>
-            </div>
-          </li>
-        </div><!-- .row -->
-        <div class="divider"></div>
-        {{/each}}
+      <ul id="listing">
+        {{> list}}
       </ul>
       <form id="filter" onsubmit="checkFilter(); return false;">
         <div class="switch">
@@ -93,17 +76,21 @@
       // }
 
       function checkFilter (){
-        var config = {diet_rest: [], atmosphere: [], open_now: [], food_quickness: []};
+        var data = {diet_rest: [], atmosphere: [], open_now: [], food_quickness: []};
         var list = [];
         var elements = document.getElementById("filter").elements;
         for (var i=0; i < elements.length-2; i++){
           if(elements[i].checked){
-            config[elements[i].getAttribute("name")].push(elements[i].value);
+            data[elements[i].getAttribute("name")].push(elements[i].value);
           }
         }
-        axios.post("/filter/", config)
+        axios.post("/filter/", data, {responseType: 'text'})
           .then(function(result){
-            console.log(result.data);
+            console.log(result);
+            document.getElementById('listing').innerHTML = result.data;
+            //result.data.forEach(function(item){
+            //  console.log(item.name);
+            //})
           })
         return false;
       }

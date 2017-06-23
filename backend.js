@@ -61,7 +61,10 @@ const yelp_client = yelp.client(yelp_token);
 // });
 
 /*********** App Configuration **************/
+var hbs = require('hbs');
 app.set('view engine', 'hbs');
+hbs.registerPartials('views/partials');
+
 app.use('/static', express.static('static'));
 app.use('/axios', express.static('node_modules/axios/dist'));
 app.use(body_parser.urlencoded({extended: false}));
@@ -278,9 +281,14 @@ app.get("/detail/", function(req, resp, next) {
   /********* Filter Engine ***********/
 
 app.post("/filter/", function(request, response, next){
-  let query = `SELECT * FROM restaurant WHERE `;
   var toFilter = {};
   var bodyLength = 0;
+  var restId = []
+  request.session.list.forEach(function(item){
+    restId.push(item.id);
+  });
+  var restIdQuery = "id IN (" + restId.toString() + ") AND ";
+  let query = `SELECT * FROM restaurant WHERE ` + restIdQuery;
   for(var key in request.body){
     if (request.body[key].length > 0){
       toFilter[key] = request.body[key];
@@ -303,20 +311,34 @@ app.post("/filter/", function(request, response, next){
   if(toFilter["atmosphere"]){
     var atmosphereQuery = "atmosphere IN ('" + toFilter["atmosphere"].toString() + "')";
     atmosphereQuery = atmosphereQuery.replace(",", "\',\'");
-    if(bodyLength > 2){
+    if(toFilter["food_quickness"]){
       atmosphereQuery += " AND ";
     }
   }
   else{
     var atmosphereQuery = "";
   }
-  //console.log(query+diet_restQuery+atmosphereQuery);
-  db.any(query+diet_restQuery+atmosphereQuery)
-    .then(function (result){
-      console.log(result);
-    })
-  // console.log(request.body);
-  response.json("test");
+  if(toFilter["open_now"]){
+    // NOTE: add promise for yelp open now
+    // restId is a list with all the rendered restaurants
+  }
+  else{
+    var open_nowQuery = "";
+  }
+  if(Object.keys(toFilter).length === 0 && toFilter.constructor === Object){
+    response.render('partials/list.hbs', {results: request.session.list});
+  }
+  else{
+    db.any(query+diet_restQuery+atmosphereQuery)
+      .then(function (result){
+        response.render('partials/list.hbs', {results: result});
+      })
+      .catch(function(error){
+        console.log("error is here");
+        console.error(error);
+      })
+  }
+
 })
 
 
