@@ -17,16 +17,29 @@
     <!-- <h1>restaurants a-z</h1> -->
     <!-- 1. get and display restaurant names by alphabetical
     2. connect them to their website_url -->
-    <div class="row">
-      <ul class="col s12 center-align">
+    <!-- <div class="row">
+      <ul class="col s3 center-align">
       {{#each results}}
-        <li >
+        <li>
         <a class="orange-text" href="/search/?search_term={{namehtml}}"> {{name}} </a>
         </li>
-
         {{/each}}
       </ul>
-    </div>
+    </div> -->
+
+    <div class="row center-align">
+      <div class="col s12">
+        {{#each sorted}}
+          {{@key}}
+          {{#each this}}
+            <ul>
+              <li>
+                <a class="orange-text" href="/search/?search_term={{this.this.html}}">{{this.this.name}} </a>
+              </li>
+            </ul>
+          {{/each}}
+        {{/each}}
+      </div>
 
 
   </body>
