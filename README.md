@@ -52,7 +52,7 @@ Last week, we carried out a discovery meeting and did some basic project plannin
 
 #### Schemas and Tables
 The database is the backbone of this app, so we spent a lot of time thinking about how to organize our data in a useful, efficient way.
-![Database Ideas](readme-svgs/db-draft.jpg)
+![Database Ideas](readme-imgs/db-draft.jpg)
 
 #### Goals for Tomorrow
 * Basic home page with text input, search button
@@ -110,7 +110,7 @@ Today, Ronda worked on the front end and design, including the logo concept. Asp
 
 #### Tossing Around Design Ideas
 Since people are usually on the go when looking for a restaurant, we went for a mobile-first design. There are three main templates: The search page, the listings page to display search results, and the detail page to display details for a particular restaurant.
-![Simple wireframes](readme-svgs/wireframe.jpg)
+![Simple wireframes](readme-imgs/wireframe.jpg)
 
 #### Goals From Yesterday + Other Tasks
 - [x] Save data from Yelp API to database **- Done! Jun. 21 (Aspen)**
@@ -120,7 +120,7 @@ Since people are usually on the go when looking for a restaurant, we went for a 
 - [x] Create basic restaurant/dish detail template **- Done! Jun. 22 (Aspen)**
 - [x] Create function to only hit Yelp API every 7 days **- Done! Jun. 21 (Aspen)**
 - [x] Add 10 more restaurants/dishes to database **Done! Jun. 21 (Aspen, Ronda, Ryan)**
-- [ ] Add SVGs to show our tech stack
+- [ ] Add icons to show our tech stack
 - [x] Merge all changes and deploy! **- Done! Jun. 21 (Ryan + Heroku = Magic)**
 
 #### Challenges
@@ -146,7 +146,7 @@ Today was our deadline to deploy a minimum viable product. We met our goal! The 
 - [x] Create basic template for restaurant detail page **- Done! Jun. 22 (Aspen)**
 - [x] Customize Materialize Sass files **- Done! Jun. 22 (Ronda, Aspen)**
 - [x] Finish logo **- Done! Jun. 22 (Ronda)**
-- [ ] Add SVGs to illustrate our tech stack
+- [x] Add icons to illustrate our tech stack **- Done! Jun. 22**
 - [x] Connect backend to frontend to display search results **- Done! Jun. 22 (Felipe)**
 - [x] Add logic to display detail page for restaurant searches, listings page for all other searches **- Done! Jun. 22 (Felipe, Aspen)**
 - [ ] Create 404 page in case faulty search parameters are submitted
@@ -157,7 +157,7 @@ Today was our deadline to deploy a minimum viable product. We met our goal! The 
 * Creating server-side logic to differentiate searches for specific restaurants from other searches, and redirect straight to the detail page for the restaurant for a better user experience
 * Writing a query to retrieve restaurants with multiple dietary restrictions. Ryan came up with this wizardry!
 
-```
+```sql
 SELECT t1.restaurant_id
 FROM (SELECT * FROM restaurant_diet_rest_join WHERE diet_rest_id = 1) as t1 JOIN
 (SELECT * FROM restaurant_diet_rest_join WHERE diet_rest_id = 2) as t2 ON t1.restaurant_id = t2.restaurant_id
@@ -199,14 +199,13 @@ JOIN (SELECT * FROM restaurant_diet_rest_join WHERE diet_rest_id =3) AS t3 ON t1
 
 ## Technologies Used
 ### Team Tools
-Git | GitHub | Atom | Trello | Slack
+![git icon](readme-imgs/git.png) Git | ![github icon](readme-imgs/github.png) GitHub | ![atom icon](readme-imgs/atom.png) Atom | ![trello icon](readme-imgs/trello.png) Trello | Slack
 
-### Database
-PostgreSQL | SSH | Postico
-
-### Server-Side
-JavaScript | Node.js | Express
+### Back-End
+![postgres icon](readme-imgs/postgresql.png) PostgreSQL | Postico | ![node icon](readme-imgs/nodejs.png) Node.js | Express | ![heroku icon](readme-imgs/heroku.png) Heroku
 
 ### Front-End
-HTML5 | CSS3 | JavaScript
-Bootstrap | Materialize | Less
+![html5 icon](readme-imgs/html5.png) HTML5 | ![css3 icon](readme-imgs/css3.png) CSS3 | ![javascript icon](readme-imgs/js_badge.png) JavaScript | ![materializecss icon](readme-imgs/materializecss.png) Materialize | ![sass icon](readme-imgs/sass.png) Sass
+
+### Design
+![illustrator icon](readme-imgs/illustrator.png) Illustrator | ![photoshop icon](readme-imgs/photoshop.png) Photoshop
