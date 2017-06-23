@@ -242,24 +242,36 @@ app.get('/search/', function (req, resp, next) {
 app.get('/restaurants/', function (request, response, next) {
   db.query(`SELECT name FROM restaurant ORDER BY name`)
   .then(function(results) {
-    console.log(results);
-    console.log(results[0].name);
+    // console.log(results);
+    // console.log(results[0].name);
     for (let x = 0; x < results.length; x++) {
 
       results[x].namehtml = results[x].name.replace(/'/g,"%27");
       results[x].namehtml = results[x].name.replace(/ /g, "+");
     }
-    response.render('restaurants.hbs', {results: results});
+    var sorted = {};
+    var htmlname = [];
+results.forEach(function (item){
+  if(sorted[item.name[0]]){
+    sorted[item.name[0]].push({name: item.name, html: item.namehtml});
+  }
+  else{
+    sorted[item.name[0]] = [];
+    sorted[item.name[0]].push({name: item.name, html: item.namehtml});
+  }
+  console.log(sorted);
+})
+    response.render('restaurants.hbs', {results: results, sorted: sorted});
   })
   .catch(next);
-
 
 });
 
 
 /************ Restaurant Detail Page ***************/
 
-//NOTE: Fix this page to use slug rather than GET params
+// NOTE: Fix this page to use slug rather than GET params
+// NOTE: Unnecessary -- extended session length to 15 mins instead
 
 app.get("/detail/", function(req, resp, next) {
   // Restaurant selected by the user, assigned from GET params in search
@@ -269,11 +281,10 @@ app.get("/detail/", function(req, resp, next) {
     WHERE restaurant_id = ${restaurant.id}`;
   db.any(query)
     .then(function(result) {
-      // console.log(result);
-      // result.forEach(function (item){
-      //   console.log(item);
-      // })
-      resp.render('detail.hbs', {restaurant: restaurant, dishes: result});
+      resp.render('detail.hbs', {
+        restaurant: restaurant,
+        dishes: result,
+        map_key: process.env.GOOGLE_STATIC_MAP_KEY});
     })
 })
 
