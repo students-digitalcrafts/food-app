@@ -5,8 +5,8 @@
     <title>Listings</title>
 
     <!------------------ STYLES ------------------>
-    <link href="http://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/0.98.2/css/materialize.min.css">
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+    <script src="https://use.fontawesome.com/0b323d712f.js" async></script>
     <link rel="stylesheet" href="/static/css/materialize.min.css">
     <link rel="stylesheet" href="/static/css/listing.css">
 
@@ -17,29 +17,28 @@
       <div class="row center-align">
         <div class="col s12 center-align">
           <h1>{{restaurant.name}}</h1>
-        </div><!-- .col -->
-        <div class="col s12 m4 offset-m4 center-align">
+        </div>
+        <div class="col s10 offset-s1 m4 offset-m4 center-align">
           <img src="{{restaurant.image_url}}" class="responsive-img"><br>
-        </div><!-- .col -->
+        </div>
       </div><!-- .row -->
 
       <div class="row">
         <div class="col s12 center-align">
           {{restaurant.atmosphere}} atmosphere | {{restaurant.parking}} parking | {{restaurant.busy}}<br><br>
-        </div><!-- .col -->
+        </div>
         <div class="col s12">
-          Map: <a href="http://maps.google.com/?q={{restaurant.address}}">{{restaurant.address}}</a><br> Call: <a href="tel:{{restaurant.phone}}">{{restaurant.phone}}</a><br><br>
-          {{restaurant.description}}<br>
-        </div><!-- .col -->
+          {{restaurant.description}}
+        </div>
       </div><!-- .row -->
 
       <div class="divider"></div>
 
       <div class="row">
           <div class="col s12 center-align">
-            <h2>menu hilights</h2>
-          </div><!-- .col -->
-            {{#each dishes}}
+            <h2>we recommend</h2>
+          </div>
+          {{#each dishes}}
             <div class="col s11">
               <strong>{{this.name}}</strong>
               {{#if adventurous}}
@@ -54,23 +53,41 @@
             </div>
             <div class="col s12">
               {{this.description}}<br>
-              Spiciness: {{spice}}<br><br>
+              Spicy? <img src="/static/img/spicy-{{spice}}.png" alt="icon courtesy of http://www.flaticon.com/authors/madebyoliver">
+              <br><br>
             </div>
-            {{/each}}
-          </div><!-- .col -->
+          {{/each}}
       </div><!-- .row -->
+
+      <div class="divider"></div>
+
+      <div class="row">
+        <div class="col s12 center-align">
+          <h2>location</h2>
+        </div>
+        <div class="col s12">
+         <a href="http://maps.google.com/?q={{restaurant.address}}">
+           <button class="btn-floating waves-effect waves-light"><i class="small material-icons">navigation</i></button> {{restaurant.address}}
+         </a><br><br>
+         <a href="tel:{{restaurant.phone}}">
+           <button class="btn-floating waves-effect waves-light"><i class="small material-icons">phone</i></button> {{restaurant.phone}}
+          </a><br><br>
+        </div>
+        <div class="col s12 center-align">
+          <a href="http://maps.google.com/?q={{restaurant.address}}">
+            <img src="https://maps.googleapis.com/maps/api/staticmap?markers=color:blue%7C{{restaurant.address}}&size=300x300&zoom=14&key={{map_key}}" alt="Static Map Image">
+          </a>
+        </div>
+      </div><!-- .row -->
+
   </div><!-- .container -->
-
-    <!-- NOTE: use this form for filter -->
-
 
     <!------------------- SCRIPTS ------------------->
     <script type="text/javascript" src="https://code.jquery.com/jquery-2.1.1.min.js"></script>
-    <!------ NOTE: Fix reference to Google Fonts (see error in console) --->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/0.98.2/js/materialize.min.js"></script>
     <script src="/static/js/axios.min.js"></script>
     <script src="/static/js/hbs-helpers.js"></script>
-    
+
 
     <script>
     </script>
