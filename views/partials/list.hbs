@@ -1,0 +1,18 @@
+{{#each results}}
+<div class="row">
+  <li>
+    <div class="col s3">
+      <br>
+      <img src="{{image_url}}" class="responsive-img"><br>
+    </div>
+    <div class="col s9">
+      <!------ NOTE: Add link to restaurant detail page ------>
+      <br>
+      <strong><a href="/search/?search_term={{name}}">{{name}}</a></strong><br>
+      {{description}}<br>
+      <a href="http://maps.google.com/?q={{address}}">{{address}}</a><br>
+    </div>
+  </li>
+</div><!-- .row -->
+<div class="divider"></div>
+{{/each}}

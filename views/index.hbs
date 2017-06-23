@@ -1,107 +1,62 @@
-<!DOCTYPE html>
-<html>
-  <head>
-    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Food for My Mood</title>
+  <!----------------- Main ---------------->
+  <div class="container center-align">
+  <br><br><br>
+  <img class="logo-img" src="static/images/logo.png" alt="logo">
+  <br>
+  <div class="input-field col s10">
+    <form id="search_form" action="/search/" method="GET">
+      <div class="row">
+      <input id="search" type="text" name="search_term">
+      <label for="search">I'm in the mood for . . .</label>
+    </div>
+    </form>
+  </div>
 
-    <!------------------ STYLES ------------------>
-    <link href="http://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/0.98.2/css/materialize.min.css">
-    <link rel="stylesheet" href="node_modules/materialize-css/dist/css/materialize.min.css">
-    <link rel="stylesheet" href="static/css/auto-complete.css">
-    <link rel="stylesheet" href="static/css/main.css">
+  <div class="center-align">
+    <a class="waves-effect waves-light btn orange">I don't know! Help me decide.</a>
+  </div>
 
+</div><!-- .container -->
 
-  </head>
-  <body>
-
-      <!---------------- Navbar ---------------->
-      <nav style="border: 0;">
-        <div class="nav-wrapper blue-grey lighten-4">
-          <a href="#" data-activates="mobile-demo" class="button-collapse"><i class="material-icons">menu</i></a>
-          <ul class="right hide-on-med-and-down">
-            <li><a href="/restaurants/">Restaurants A-Z</a></li>
-            <li><a href="">Contribute</a></li>
-            <li><a href="">About</a></li>
-            <li><a href="">Github Repo</a></li>
-          </ul>
-          <ul class="side-nav orange-text" id="mobile-demo">
-            <li><a href="">Restaurants A-Z</a></li>
-            <li><a href="">Contribute</a></li>
-            <li><a href="">About</a></li>
-            <li><a href="">Github Repo</a></li>
-          </ul>
-        </div>
-      </nav>
-
-      <!----------------- Main ---------------->
-      <div class="container center-align">
-      <br><br><br>
-      <img class="logo-img" src="static/images/logo.png" alt="logo">
-      <br>
-      <div class="input-field col s10">
-        <form id="search_form" action="/search/" method="GET">
-          <div class="row">
-          <input id="search" type="text" name="search_term">
-          <label for="search">I'm in the mood for . . .</label>
-        </div>
-        </form>
-      </div>
-
-      <div class="center-align">
-        <a class="waves-effect waves-light btn orange">I don't know! Help me decide.</a>
-      </div>
-
-    </div><!-- .container -->
-
-    <!------------------- SCRIPTS ------------------->
-    <script type="text/javascript" src="https://code.jquery.com/jquery-2.1.1.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/0.98.2/js/materialize.min.js"></script>
-    <script src="static/js/axios.min.js"></script>
-    <script src="static/js/auto-complete.min.js"></script>
-    <script>
-      // initialize
-      var message_not_found = "No match was found";
-      //auto complete function
-      var autoComplete = new autoComplete({
-        selector: '#search',
-        //autocomplete works after 2 characters are typed
-        minChars: 2,
-        source: function(term, suggest){
-          term = term.toLowerCase();
-          // adds the data to be passed through the api via get, in this case the user's partial input
-          var config = {
-            params: {selection: term},
-          }
-          //sends the get request with input to the backend
-          axios.get('/autocomplete/', config)
-            // receives the list with string for the suggestions from the backend
-            .then(function(result){
-              // displays the suggestions in the input
-              suggest(result.data.suggestions);
-            })
-            .catch(function(error) {
-              console.error(error);
-            });
-        },
-        // when the user selects an item, sends a get request with the selected item
-        onSelect: function(event, term, item){
-          console.log(term);
-          if(term !== message_not_found){
-            // if the user chooses a valid item, submits the form
-            document.getElementById("search_form").submit();
-          }
-          else{
-            // if the user clicks on the "No match was found" message, cleans the input value
-            document.getElementById("search").value = "";
-          }
-        }
-      });
-
-      $(document).ready(function() {
-        $(".button-collapse").sideNav();
-      })
-    </script>
-  </body>
-</html>
+<!------------------- SCRIPTS ------------------->
+<script src="static/js/axios.min.js"></script>
+<script src="static/js/auto-complete.min.js"></script>
+<script>
+  // initialize
+  var message_not_found = "No match was found";
+  //auto complete function
+  var autoComplete = new autoComplete({
+    selector: '#search',
+    //autocomplete works after 2 characters are typed
+    minChars: 2,
+    source: function(term, suggest){
+      term = term.toLowerCase();
+      // adds the data to be passed through the api via get, in this case the user's partial input
+      var config = {
+        params: {selection: term},
+      }
+      //sends the get request with input to the backend
+      axios.get('/autocomplete/', config)
+        // receives the list with string for the suggestions from the backend
+        .then(function(result){
+          // displays the suggestions in the input
+          suggest(result.data.suggestions);
+        })
+        .catch(function(error) {
+          console.error(error);
+        });
+    },
+    // when the user selects an item, sends a get request with the selected item
+    onSelect: function(event, term, item){
+      console.log(term);
+      if(term !== message_not_found){
+        // if the user chooses a valid item, submits the form
+        document.getElementById("search_form").submit();
+      }
+      else{
+        // if the user clicks on the "No match was found" message, cleans the input value
+        document.getElementById("search").value = "";
+      }
+    }
+  });
+</script>

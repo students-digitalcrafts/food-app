@@ -1,117 +1,86 @@
-<html>
-  <head>
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Listings</title>
+<div class="container">
+  <h1>results for '{{term}}'</h1>
+  <ul id="listing">
+    {{> list}}
+  </ul>
+  <form id="filter" onsubmit="checkFilter(); return false;">
+    <div class="switch">
+      <label for="gluten free">
+      <input id="gluten free" type="checkbox" name="diet_rest" value="1"/>
+      <span class="lever"></span>
+      Gluten Free</label>
+      <label for="vegetarian possible">
+      <input id="vegetarian possible" type="checkbox" name="diet_rest" value="2"/>
+      <span class="lever"></span>
+      Vegetarian Possible</label>
+      <label for="vegan">
+      <input id="vegan" type="checkbox" name="diet_rest" value="3"/>
+      <span class="lever"></span>
+      Vegan</label>
+      <label for="halal/kosher">
+      <input id="halal/kosher" type="checkbox" name="diet_rest" value="4"/>
+      <span class="lever"></span>
+      Halal/Kosher</label>
+      <label for="low carb">
+      <input id="low carb" type="checkbox" name="diet_rest" value="5"/>
+      <span class="lever"></span>
+      Low Carb</label>
+      <label for="dive">
+      <input id="dive" type="checkbox" name="atmosphere" value="dive"/>
+      <span class="lever"></span>
+      Dive</label>
+      <label for="casual">
+      <input id="casual" type="checkbox" name="atmosphere" value="casual"/>
+      <span class="lever"></span>
+      Casual</label>
+      <label for="fancy">
+      <input id="fancy" type="checkbox" name="atmosphere" value="fancy"/>
+      <span class="lever"></span>
+      Fancy</label>
+      <label for="open now">
+      <input id="open now" type="checkbox" name="open_now" value="true"/>
+      <span class="lever"></span>
+      Open Now</label>
+    </div>
+    <!-- NOTE: TO ADD SLIDER -->
+    <input id="food quickness" type="text" name="food_quickness"/>
+    <input type="submit" />
+  </form>
 
-    <!------------------ STYLES ------------------>
-    <link href="http://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/0.98.2/css/materialize.min.css">
-    <link rel="stylesheet" href="/static/css/materialize.min.css">
-    <link rel="stylesheet" href="/static/css/listing.css">
+</div><!-- .container -->
 
-  </head>
-  <body>
+<!------------------- SCRIPTS ------------------->
+<script src="/static/js/axios.min.js"></script>
 
-    <div class="container">
-
-      <h1>results for '{{term}}'</h1>
-      <ul>
-        {{#each results}}
-        <div class="row">
-          <li>
-            <div class="col s3">
-              <br>
-              <img src="{{image_url}}" class="responsive-img"><br>
-            </div>
-            <div class="col s9">
-              <!------ NOTE: Add link to restaurant detail page ------>
-              <br>
-              <strong><a href="/search/?search_term={{name}}">{{name}}</a></strong><br>
-              {{description}}<br>
-              <a href="http://maps.google.com/?q={{address}}">{{address}}</a><br>
-            </div>
-          </li>
-        </div><!-- .row -->
-        <div class="divider"></div>
-        {{/each}}
-      </ul>
-      <form id="filter" onsubmit="checkFilter(); return false;">
-        <div class="switch">
-          <label for="gluten free">
-          <input id="gluten free" type="checkbox" name="diet_rest"/>
-          <span class="lever"></span>
-          Gluten Free</label>
-          <label for="vegetarian possible">
-          <input id="vegetarian possible" type="checkbox" name="diet_rest"/>
-          <span class="lever"></span>
-          Vegetarian Possible</label>
-          <label for="vegan">
-          <input id="vegan" type="checkbox" name="diet_rest"/>
-          <span class="lever"></span>
-          Vegan</label>
-          <label for="halal/kosher">
-          <input id="halal/kosher" type="checkbox" name="diet_rest"/>
-          <span class="lever"></span>
-          Halal/Kosher</label>
-          <label for="low carb">
-          <input id="low carb" type="checkbox" name="diet_rest"/>
-          <span class="lever"></span>
-          Low Carb</label>
-          <label for="dive">
-          <input id="dive" type="checkbox" name="atmosphere"/>
-          <span class="lever"></span>
-          Dive</label>
-          <label for="casual">
-          <input id="casual" type="checkbox" name="atmosphere"/>
-          <span class="lever"></span>
-          Casual</label>
-          <label for="fancy">
-          <input id="fancy" type="checkbox" name="atmosphere"/>
-          <span class="lever"></span>
-          Fancy</label>
-          <label for="open now">
-          <input id="open now" type="checkbox" name="open_now"/>
-          <span class="lever"></span>
-          Open Now</label>
-        </div>
-
-        <input id="food quickness" type="text" name="food_quickness"/>
-        <input type="submit" />
-      </form>
-
-    </div><!-- .container -->
-
-    <!------------------- SCRIPTS ------------------->
-    <script type="text/javascript" src="https://code.jquery.com/jquery-2.1.1.min.js"></script>
-    <!------ NOTE: Fix reference to Google Fonts (see error in console) --->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/0.98.2/js/materialize.min.js"></script>
-    <script src="/static/js/axios.min.js"></script>
-    <script src="/static/js/hbs-helpers.js"></script>
-
-    <script>
-      // function checkValue(){
-      //   console.log(document.getElementById("gluten free").checked);
-      // }
+<script>
+  // function checkValue(){
+  //   console.log(document.getElementById("gluten free").checked);
+  // }
 
       function checkFilter (){
-        var config = {diet_rest: [], atmosphere: [], open_now: false, food_quickness: 0};
+        var data = {diet_rest: [], atmosphere: [], open_now: [], food_quickness: []};
         var list = [];
         var elements = document.getElementById("filter").elements;
         for (var i=0; i < elements.length-2; i++){
           if(elements[i].checked){
-            // config[elements.name].push(elements[i].id);
-            console.log(elements[i].getAttribute("name"));
-            config[elements[i].getAttribute("name")].push(elements[i].id);
+            data[elements[i].getAttribute("name")].push(elements[i].value);
           }
         }
-        console.log(config);
-        // axios.post("/filter/", config)
-        //   .then(function(result){
-        //     console.log(result);
-        //   })
+        axios.post("/filter/", data, {responseType: 'text'})
+          .then(function(result){
+            console.log(result);
+            document.getElementById('listing').innerHTML = result.data;
+            //result.data.forEach(function(item){
+            //  console.log(item.name);
+            //})
+          })
         return false;
       }
-    </script>
-  </body>
-</html>
+    }
+    axios.post("/filter/", config)
+      .then(function(result){
+        console.log(result.data);
+      })
+    return false;
+  }
+</script>
