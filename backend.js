@@ -302,21 +302,27 @@ app.get('/add_restaurant/', function (req, resp) {
 
 app.post('/submit_restaurant/', function (request, resp, next) {
   var req = request;
+  //Escape out of single quotes
+  req.body.name = req.body.name.replace(/'/g,"''");
+  req.body.description = req.body.description.replace(/'/g,"''");
   function insert_rest(req) {
-    console.log('req within insert_rest (name): '+req.body.name)
+  //Insert in to Restaurant table
     db.query(`INSERT INTO restaurant \
       (name, atmosphere, parking, busy, food_quickness, description) \
       VALUES ('${req.body.name}', '${req.body.atmosphere}', '${req.body.parking}', \
         '${req.body.busy}', '${req.body.food_quickness}', '${req.body.description}');`)
     .then(function(result0){
-      db.query(`SELECT id FROM restaurant ORDER BY id DESC LIMIT 1;`)
+  //Give id of newly inserted restaurant
+      return db.query(`SELECT id FROM restaurant ORDER BY id DESC LIMIT 1;`);
     })
+  //
     .then(function(result1){
-      console.log(req.body.diet_rest)
-      for (let i = 0; i < req.body.diet_rest.length; i++) {
-        db.query(`INSERT INTO restaurant_diet_rest_join (restaurant_id, diet_rest_id) VALUES `)
-         console.log(req.body.diet_rest[i]);
-      }
+      if (req.body.diet_rest) {
+        for (let i = 0; i < req.body.diet_rest.length; i++) {
+          db.query(`INSERT INTO restaurant_diet_rest_join \
+            (restaurant_id, diet_rest_id) VALUES (${result1[0].id}, ${req.body.diet_rest[i]});`)
+        }
+          }
     })
     .then(function(result2) {
       resp.render('add_restaurant.hbs', {req: req, result2: result2})
@@ -325,6 +331,39 @@ app.post('/submit_restaurant/', function (request, resp, next) {
   }
   insert_rest(req);
 });
+
+//Add dish form
+// app.get('/add_dish/', function (req, resp) {
+//   resp.render('add_dish.hbs', {title:'add new dish'});
+// });
+//
+// app.post('/submit_restaurant/', function (request, resp, next) {
+//   var req = request;
+//   function insert_rest(req) {
+//     console.log('req within insert_rest (name): '+req.body.name)
+//     db.query(`INSERT INTO restaurant \
+//       (name, atmosphere, parking, busy, food_quickness, description) \
+//       VALUES ('${req.body.name}', '${req.body.atmosphere}', '${req.body.parking}', \
+//         '${req.body.busy}', '${req.body.food_quickness}', '${req.body.description}');`)
+//     .then(function(result0){
+//       return db.query(`SELECT id FROM restaurant ORDER BY id DESC LIMIT 1;`);
+//     })
+//     .then(function(result1){
+//       console.log(result1[0].id)
+//       if (req.body.diet_rest) {
+//         for (let i = 0; i < req.body.diet_rest.length; i++) {
+//           db.query(`INSERT INTO restaurant_diet_rest_join \
+//             (restaurant_id, diet_rest_id) VALUES (${result1[0].id}, ${req.body.diet_rest[i]});`)
+//         }
+//           }
+//     })
+//     .then(function(result2) {
+//       resp.render('add_restaurant.hbs', {req: req, result2: result2, title:'add new dish again?'})
+//     })
+//     .catch(next);
+//   }
+//   insert_rest(req);
+// });
 
 //Get user location
 var getPosition = function (options) {
