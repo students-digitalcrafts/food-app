@@ -272,6 +272,12 @@ results.forEach(function (item){
   .catch(next);
 
 });
+/********* About Page ***********/
+//A lovely page describing the wonderful creators of foodformymood
+
+app.get('/about/', function(request, response) {
+  response.render('about.hbs', {});
+});
 
 
 /************ Restaurant Detail Page ***************/
