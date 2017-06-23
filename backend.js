@@ -248,17 +248,28 @@ app.get('/search/', function (req, resp, next) {
 app.get('/restaurants/', function (request, response, next) {
   db.query(`SELECT name FROM restaurant ORDER BY name`)
   .then(function(results) {
-    console.log(results);
-    console.log(results[0].name);
+    // console.log(results);
+    // console.log(results[0].name);
     for (let x = 0; x < results.length; x++) {
 
       results[x].namehtml = results[x].name.replace(/'/g,"%27");
       results[x].namehtml = results[x].name.replace(/ /g, "+");
     }
-    response.render('restaurants.hbs', {results: results});
+    var sorted = {};
+    var htmlname = [];
+results.forEach(function (item){
+  if(sorted[item.name[0]]){
+    sorted[item.name[0]].push({name: item.name, html: item.namehtml});
+  }
+  else{
+    sorted[item.name[0]] = [];
+    sorted[item.name[0]].push({name: item.name, html: item.namehtml});
+  }
+  console.log(sorted);
+})
+    response.render('restaurants.hbs', {results: results, sorted: sorted});
   })
   .catch(next);
-
 
 });
 
