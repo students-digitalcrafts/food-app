@@ -370,7 +370,7 @@ app.post("/filter/", function(request, response, next){
 
 //Add restaurant form
 app.get('/add_restaurant/', function (req, resp) {
-  resp.render('add_restaurant.hbs', {title:'add new restaurant'});
+  resp.render('add_restaurant.hbs', {title:'add new restaurant',layout:false});
 });
 
 app.post('/submit_restaurant/', function (request, resp, next) {
@@ -399,7 +399,7 @@ app.post('/submit_restaurant/', function (request, resp, next) {
           }
     })
     .then(function(result2) {
-      resp.render('add_restaurant.hbs', {req: req, result2: result2})
+      resp.render('add_restaurant.hbs', {req: req, result2: result2, layout:false})
     })
     .catch(next);
   }
