@@ -1,22 +1,32 @@
 
   <!----------------- Main ---------------->
   <div class="container center-align">
-  <br><br><br>
-  <img class="logo-img" src="static/images/logo.png" alt="logo">
-  <br>
-  <div class="input-field col s10">
-    <form id="search_form" action="/search/" method="GET">
-      <div class="row">
-      <input id="search" type="text" name="search_term">
-      <label for="search">I'm in the mood for . . .</label>
+
+    <div class="row">
+      <div class="col s8 offset-s2 m4 offset-m4">
+        <img class="responsive-img" src="static/images/logo.png" alt="Food for My Mood logo">
+      </div>
+      <div class="col s12">
+        <p>the app for houston foodies, by houston foodies</p>
+      </div>
+    </div><!-- .row -->
+
+    <div class="row">
+      <div class="col s12">
+        <div class="input-field">
+          <form id="search_form" action="/search/" method="GET">
+              <input id="search" type="text" name="search_term">
+              <label for="search"><i class="material-icons">search</i> I'm in the mood for . . .</label>
+              <br><br>
+              OR
+              <br><br>
+              <a class="waves-effect waves-light btn blue-grey lighten-1">Help me decide</a>
+          </form>
+        </div>
+      </div>
+
+      </div>
     </div>
-    </form>
-  </div>
-
-  <div class="center-align">
-    <a class="waves-effect waves-light btn orange">I don't know! Help me decide.</a>
-  </div>
-
 </div><!-- .container -->
 
 <!------------------- SCRIPTS ------------------->
