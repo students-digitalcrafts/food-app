@@ -57,30 +57,22 @@
   //   console.log(document.getElementById("gluten free").checked);
   // }
 
-      function checkFilter (){
-        var data = {diet_rest: [], atmosphere: [], open_now: [], food_quickness: []};
-        var list = [];
-        var elements = document.getElementById("filter").elements;
-        for (var i=0; i < elements.length-2; i++){
-          if(elements[i].checked){
-            data[elements[i].getAttribute("name")].push(elements[i].value);
-          }
+    function checkFilter (){
+      var data = {diet_rest: [], atmosphere: [], open_now: [], food_quickness: []};
+      var list = [];
+      var elements = document.getElementById("filter").elements;
+      for (var i=0; i < elements.length-2; i++){
+        if(elements[i].checked){
+          data[elements[i].getAttribute("name")].push(elements[i].value);
         }
-        axios.post("/filter/", data, {responseType: 'text'})
-          .then(function(result){
-            console.log(result);
-            document.getElementById('listing').innerHTML = result.data;
-            //result.data.forEach(function(item){
-            //  console.log(item.name);
-            //})
-          })
-        return false;
       }
+      axios.post("/filter/", data, {responseType: 'text'})
+        .then(function(result){
+          document.getElementById('listing').innerHTML = result.data;
+          //result.data.forEach(function(item){
+          //  console.log(item.name);
+          //})
+        })
+      return false;
     }
-    axios.post("/filter/", config)
-      .then(function(result){
-        console.log(result.data);
-      })
-    return false;
-  }
 </script>
