@@ -14,11 +14,13 @@
         <li>{{this}}</li>
       {{/each}}
     </ul>
+  Mood:
   <h2>Thanks for submitting! Submit again below?</h2>
 {{/if}}
-
 <br>
-<form action="/submit_restaurant" method="POST">
+<h1>{{title}}</h1>
+<br>
+<form action="/add_restaurant" method="POST">
   <input type="hidden" name="submitted" value=true>
 
   <label>Restaurant Name</label>
@@ -63,6 +65,12 @@
     <input type="checkbox" name="diet_rest" value=3>Vegan<br>
     <input type="checkbox" name="diet_rest" value=4>Halal/Kosher<br>
     <input type="checkbox" name="diet_rest" value=5>Low Carb<br>
+  <br><br>
+  <label>Mood</label><br>
+      {{#each mood}}
+      <input type="checkbox" name="mood" value="{{this.id}}">{{this.name}}<br>
+      {{/each}}
+  <br><br>
   <button type="submit">Submit</button>
 </form>
 <br>

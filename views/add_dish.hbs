@@ -14,6 +14,7 @@
     </ul>
   <h2>Thanks for submitting! Submit again below?</h2>
 {{/if}}
+
 <h1>{{title}}</h1>
 <br>
 <form action="/submit_dish" method="POST">
@@ -24,7 +25,7 @@
   <br><br>
   <label>Restaurant</label><br>
       {{#each restaurantName}}
-      {{this.name}}:<INPUT TYPE="radio" NAME="restaurantName" VALUE="{{this.id}}">
+      {{this.name}}:<INPUT TYPE="radio" NAME="restaurantId" VALUE="{{this.id}}">
       {{/each}}
     </select>
   <br><br>
@@ -35,6 +36,9 @@
       {{#each cuisineType}}
       {{this.name}}:<INPUT TYPE="radio" NAME="cuisineType" VALUE="{{this.id}}">
       {{/each}}
+  <label>Add new Cuisine Type</label>
+  <input type="text" name="add_cuisine">
+
     </select>
   <br><br>
   <label>Spiciness (from 1-5)</label>
@@ -74,6 +78,8 @@
       {{#each category}}
       {{this.name}}:<input type="checkbox" name="category" value="{{this.id}}">
       {{/each}}
+      <label>Add new Category</label>
+      <input type="text" name="add_category">
   <br><br>
   <label>Dietary Restrictions</label><br>
     <input type="checkbox" name="diet_rest" value=1>Gluten-free<br>
@@ -83,20 +89,6 @@
     <input type="checkbox" name="diet_rest" value=5>Low Carb<br>
   <button type="submit">Submit</button>
 </form>
-<h1>Add metadata</h2>
-<form action="/submit_cat" method="POST">
-  <label>Add new Category</label>
-  <input type="text" name="add_category">
-  <button type="submit">Submit</button>
 
-  <br><br>
-</form>
-<form action="/submit_meta" method="POST">
-  <label>Add new Cuisine Type</label>
-  <input type="text" name="add_cuisine">
-  <button type="submit">Submit</button>
-
-  <br><br>
-</form>
 <br>
 <a href="/">Nevermind, take me home</a>

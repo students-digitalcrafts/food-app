@@ -355,24 +355,45 @@ app.post("/filter/", function(request, response, next){
   }
 
 })
+//Function to Generate Add Restaurant form
+function addRestaurant(request, response){
+  var queryResults = [];
+  queryResults.push(request)
+  var moodQuery = "SELECT name, id FROM mood ORDER BY name ASC";
+  db.query(moodQuery)
+  .then(dbresults =>{
+    queryResults.push(dbresults);
+    return queryResults;
+  })
+  .then(function(queryResults){
+    response.render('add_restaurant.hbs', {title:'Add New Restaurant',
+      mood:queryResults[1],layout:false, req:queryResults[0]});
+  })
+
+}
 
 //Add restaurant form
+
 app.get('/add_restaurant/', function (req, resp) {
-  resp.render('add_restaurant.hbs', {title:'add new restaurant',layout:false});
+  addRestaurant(req, resp);
 });
 
-app.post('/submit_restaurant/', function (request, resp, next) {
+app.post('/add_restaurant/', function (request, resp, next) {
   var req = request;
   //Escape out of single quotes and convert restaurant name to lowercase
   req.body.name = req.body.name.replace(/'/g,"''");
   req.body.name = req.body.name.toLowerCase();
   req.body.description = req.body.description.replace(/'/g,"''");
   function insert_rest(req) {
-  //Insert in to Restaurant table
-    db.query(`INSERT INTO restaurant \
-      (name, atmosphere, parking, busy, food_quickness, description) \
-      VALUES ('${req.body.name}', '${req.body.atmosphere}', '${req.body.parking}', \
-        '${req.body.busy}', '${req.body.food_quickness}', '${req.body.description}');`)
+  // Insert in to Restaurant table
+  //Attempt at sanitizing inputs (not working)
+  var submit_restaurantValues = JSON.stringify(req.body);
+  console.log('Submit: '+submit_restaurantValues.name);
+  var restaurantInsert = `INSERT INTO restaurant \
+    (name, atmosphere, parking, busy, food_quickness, description) \
+    VALUES ('${req.body.name}', '${req.body.atmosphere}', '${req.body.parking}', \
+      '${req.body.busy}', '${req.body.food_quickness}', '${req.body.description}');`
+    db.result(restaurantInsert)
     .then(function(result0){
   //Give id of newly inserted restaurant
       return db.query(`SELECT id FROM restaurant ORDER BY id DESC LIMIT 1;`);
@@ -386,9 +407,21 @@ app.post('/submit_restaurant/', function (request, resp, next) {
               ${req.body.diet_rest[i]});`)
         }
           }
+      return result1;
+    })
+  //Insert in to mood join table
+    .then(function(result1){
+      if (req.body.mood) {
+        for (let i = 0; i < req.body.mood.length; i++) {
+          db.query(`INSERT INTO mood_restaurant_join \
+            (restaurant_id, mood_id) VALUES (${result1[0].id}, \
+              ${req.body.mood[i]});`)
+        }
+      }
     })
     .then(function(result2) {
-      resp.render('add_restaurant.hbs', {req: req, result2: result2, layout:false})
+      addRestaurant(req, resp);
+      // resp.render('add_restaurant.hbs', {req: req, titlelayout:false})
     })
     .catch(next);
   }
@@ -396,7 +429,7 @@ app.post('/submit_restaurant/', function (request, resp, next) {
 });
 
 
-//Create dish form function
+//Generate dish form function, pulling most recent values from database
 function add_dish_func (req, resp) {
   var queryResults = [];
   //Query for restaurant name and id and push to output array
@@ -434,36 +467,37 @@ app.get('/add_dish/', function (request, resp) {
   add_dish_func(request, resp);
 })
 
-app.post('/submit_dish/', function (request, resp, next) {
-  console.log('submit results: '+request.body.name)
+app.post('/add_dish/', function (request, resp, next) {
+  console.log('submit results: '+request.body.restaurantName)
   add_dish_func(request, resp);
-  // var req = request;
-  // function insert_rest(req) {
-  //   console.log('req within insert_rest (name): '+req.body.name)
-  //   db.query(`INSERT INTO restaurant \
-  //     (name, atmosphere, parking, busy, food_quickness, description) \
-  //     VALUES ('${req.body.name}', '${req.body.atmosphere}', '${req.body.parking}', \
-  //       '${req.body.busy}', '${req.body.food_quickness}', '${req.body.description}');`)
-  //   .then(function(result0){
-  //     return db.query(`SELECT id FROM restaurant ORDER BY id DESC LIMIT 1;`);
-  //   })
-  //   .then(function(result1){
-  //     console.log(result1[0].id)
-  //     if (req.body.diet_rest) {
-  //       for (let i = 0; i < req.body.diet_rest.length; i++) {
-  //         db.query(`INSERT INTO restaurant_diet_rest_join \
-  //           (restaurant_id, diet_rest_id) VALUES (${result1[0].id}, ${req.body.diet_rest[i]});`)
-  //       }
-  //         }
-  //   })
-  //   .then(function(result2) {
-      // resp.render('add_dish.hbs', {layout:false})
-      // {req: req, result2: result2,
-      //   title:'add new dish again?'})
-  //   })
-  //   .catch(next);
-  // }
-  // insert_rest(req);
+  //Copied from add restaurant
+  var req = request;
+  function insert_rest(req) {
+    console.log('req within insert_rest (name): '+req.body.name)
+    db.query(`INSERT INTO dish \
+      (name, atmosphere, parking, busy, food_quickness, description) \
+      VALUES ('${req.body.name}', '${req.body.atmosphere}', '${req.body.parking}', \
+        '${req.body.busy}', '${req.body.food_quickness}', '${req.body.description}');`)
+    .then(function(result0){
+      return db.query(`SELECT id FROM restaurant ORDER BY id DESC LIMIT 1;`);
+    })
+    .then(function(result1){
+      console.log(result1[0].id)
+      if (req.body.diet_rest) {
+        for (let i = 0; i < req.body.diet_rest.length; i++) {
+          db.query(`INSERT INTO restaurant_diet_rest_join \
+            (restaurant_id, diet_rest_id) VALUES (${result1[0].id}, ${req.body.diet_rest[i]});`)
+        }
+          }
+    })
+    // .then(function(result2) {
+    //   resp.render('add_dish.hbs', {layout:false})
+    //   {req: req, result2: result2,
+    //     title:'add new dish again?'})
+    // })
+    .catch(next);
+  }
+  insert_rest(req);
 });
 
 //Get user location
