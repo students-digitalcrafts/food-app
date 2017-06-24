@@ -1,23 +1,24 @@
 
   <!----------------- Main ---------------->
+  <main>
   <div class="container center-align">
-  <br><br><br>
-  <img class="logo-img" src="static/images/logo.png" alt="logo">
   <br>
+  <img class="logo-img" src="static/images/logo.png" alt="Food for My Mood logo">
+  <p>the app for houston foodies, by houston foodies</p>
   <div class="input-field col s10">
     <form id="search_form" action="/search/" method="GET">
       <div class="row">
       <input id="search" type="text" name="search_term">
-      <label for="search">I'm in the mood for . . .</label>
+      <label for="search"><i class="material-icons">search</i> I'm in the mood for . . .</label>
+      <br>
+      OR
+      <br><br>
+      <a class="waves-effect waves-light btn blue-grey lighten-2">Help me decide</a>
     </div>
     </form>
   </div>
 </div><!-- .container -->
-
-  <footer class="page-footer center-align">
-    <a class="waves-effect waves-light btn orange">I don't know! Help me decide.</a>
-  </footer>
-
+</main>
 
 <!------------------- SCRIPTS ------------------->
 <script src="static/js/axios.min.js"></script>
