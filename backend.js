@@ -382,7 +382,8 @@ app.post('/submit_restaurant/', function (request, resp, next) {
       if (req.body.diet_rest) {
         for (let i = 0; i < req.body.diet_rest.length; i++) {
           db.query(`INSERT INTO restaurant_diet_rest_join \
-            (restaurant_id, diet_rest_id) VALUES (${result1[0].id}, ${req.body.diet_rest[i]});`)
+            (restaurant_id, diet_rest_id) VALUES (${result1[0].id}, \
+              ${req.body.diet_rest[i]});`)
         }
           }
     })
@@ -394,42 +395,76 @@ app.post('/submit_restaurant/', function (request, resp, next) {
   insert_rest(req);
 });
 
-//Add dish form
-// app.get('/add_dish/', function (req, resp) {
-//   var
-//   db.query(`SELECT restaurant.name, dish.restaurant_id `)
-//   .then(function(dbresults){
-//     resp.render('add_dish.hbs', {title:'add new dish', dbresults:dbresults});
-//   })
-// });
-//
-// app.post('/submit_restaurant/', function (request, resp, next) {
-//   var req = request;
-//   function insert_rest(req) {
-//     console.log('req within insert_rest (name): '+req.body.name)
-//     db.query(`INSERT INTO restaurant \
-//       (name, atmosphere, parking, busy, food_quickness, description) \
-//       VALUES ('${req.body.name}', '${req.body.atmosphere}', '${req.body.parking}', \
-//         '${req.body.busy}', '${req.body.food_quickness}', '${req.body.description}');`)
-//     .then(function(result0){
-//       return db.query(`SELECT id FROM restaurant ORDER BY id DESC LIMIT 1;`);
-//     })
-//     .then(function(result1){
-//       console.log(result1[0].id)
-//       if (req.body.diet_rest) {
-//         for (let i = 0; i < req.body.diet_rest.length; i++) {
-//           db.query(`INSERT INTO restaurant_diet_rest_join \
-//             (restaurant_id, diet_rest_id) VALUES (${result1[0].id}, ${req.body.diet_rest[i]});`)
-//         }
-//           }
-//     })
-//     .then(function(result2) {
-//       resp.render('add_restaurant.hbs', {req: req, result2: result2, title:'add new dish again?'})
-//     })
-//     .catch(next);
-//   }
-//   insert_rest(req);
-// });
+
+//Create dish form function
+function add_dish_func (req, resp) {
+  var queryResults = [];
+  //Query for restaurant name and id and push to output array
+  var restaurantQuery = "SELECT name, id FROM restaurant ORDER BY name ASC";
+  db.query(restaurantQuery)
+  .then(dbresults =>{
+    queryResults.push(dbresults);
+  })
+  .then(function(){
+  //Query for cuisine type and id and push to output array
+    var cuisineQuery = "SELECT name, id FROM cuisine_type ORDER BY name ASC";
+    return db.query(cuisineQuery);
+  })
+  .then(function(cuisineQuery) {
+    queryResults.push(cuisineQuery);
+  })
+  //Query for category and id and push to output array
+  .then(function(){
+    var categoryQuery = "SELECT name, id from category ORDER BY name ASC";
+    return db.query(categoryQuery)
+  })
+  .then(function(categoryQuery){
+    queryResults.push(categoryQuery);
+    return queryResults;
+  })
+  .then(function(queryResults){
+    resp.render('add_dish.hbs', {title:'Add New Dish',
+      restaurantName:queryResults[0], cuisineType:queryResults[1],
+      category:queryResults[2], layout:false});
+  })
+}
+//Add dish form GET
+
+app.get('/add_dish/', function (request, resp) {
+  add_dish_func(request, resp);
+})
+
+app.post('/submit_dish/', function (request, resp, next) {
+  console.log('submit results: '+request.body.name)
+  add_dish_func(request, resp);
+  // var req = request;
+  // function insert_rest(req) {
+  //   console.log('req within insert_rest (name): '+req.body.name)
+  //   db.query(`INSERT INTO restaurant \
+  //     (name, atmosphere, parking, busy, food_quickness, description) \
+  //     VALUES ('${req.body.name}', '${req.body.atmosphere}', '${req.body.parking}', \
+  //       '${req.body.busy}', '${req.body.food_quickness}', '${req.body.description}');`)
+  //   .then(function(result0){
+  //     return db.query(`SELECT id FROM restaurant ORDER BY id DESC LIMIT 1;`);
+  //   })
+  //   .then(function(result1){
+  //     console.log(result1[0].id)
+  //     if (req.body.diet_rest) {
+  //       for (let i = 0; i < req.body.diet_rest.length; i++) {
+  //         db.query(`INSERT INTO restaurant_diet_rest_join \
+  //           (restaurant_id, diet_rest_id) VALUES (${result1[0].id}, ${req.body.diet_rest[i]});`)
+  //       }
+  //         }
+  //   })
+  //   .then(function(result2) {
+      // resp.render('add_dish.hbs', {layout:false})
+      // {req: req, result2: result2,
+      //   title:'add new dish again?'})
+  //   })
+  //   .catch(next);
+  // }
+  // insert_rest(req);
+});
 
 //Get user location
 var getPosition = function (options) {
