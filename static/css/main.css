@@ -1614,8 +1614,9 @@ nav {
   border: none !important;
   box-shadow: none !important;
   background-color: #41545e; }
-  nav ul a, nav nav i {
-    color: #8aa2ae; }
+
+.side-nav i {
+  color: #fb8c00 !important; }
 
 h1 {
   font-size: 2.5em;
@@ -1628,16 +1629,12 @@ strong {
   font-size: 1.2em;
   font-weight: 500; }
 
-.logo-img {
-  width: 225px;
-  height: 225px; }
-
 #search_form {
   margin-top: 60px; }
 
 .input-field label {
   color: #fb8c00;
-  font-size: 1.5em; }
+  font-size: 1.8em; }
 
 .input-field input[type=text] {
   border-bottom: 1px solid #fb8c00;
