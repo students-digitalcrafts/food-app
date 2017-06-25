@@ -241,6 +241,7 @@ app.get('/search/', function (req, resp, next) {
         })
     })
   });
+
 /********* restaurant a-z page ***********/
 //list of restaurants a-z that link to the individual restaurant pages.
 app.get('/restaurants/', function (request, response, next) {
@@ -283,6 +284,11 @@ app.get('/contribute/', function(request, response) {
   response.render('contribute.hbs');
 });
 
+/********* Moods Page ***********/
+
+app.get('/moods/', function(request, response) {
+  response.render('moods.hbs');
+})
 
 /************ Restaurant Detail Page ***************/
 
