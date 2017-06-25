@@ -2,11 +2,7 @@
 
 {{# if req.body.submitted}}
   <h2>You entered:</h2>
-  Name: {{req.body.name}}<br>
-  Atmosphere: {{req.body.atmosphere}}<br>
-  Parking: {{req.body.parking}}<br>
-  Busy: {{req.body.busy}}<br>
-  Food Quickness: {{req.body.food_quickness}}<br>
+  Dish Name: {{req.body.name}}<br>
   Description: {{req.body.description}}<br>
   Dietary restrictions:
     <ul>
@@ -17,7 +13,7 @@
 
 <h1>{{title}}</h1>
 <br>
-<form action="/submit_dish" method="POST">
+<form action="/add_dish" method="POST">
   <input type="hidden" name="submitted" value=true>
 
   <label>Dish Name</label>
@@ -25,41 +21,43 @@
   <br><br>
   <label>Restaurant</label><br>
       {{#each restaurantName}}
-      {{this.name}}:<INPUT TYPE="radio" NAME="restaurantId" VALUE="{{this.id}}">
+      {{this.name}}:<INPUT TYPE="radio" NAME="restaurantId" VALUE={{this.id}}><br>
       {{/each}}
     </select>
   <br><br>
   <label>Price (in whole numbers)</label>
-    <input type="text" pattern="\d+" />
+    <input type="text" name="price" pattern="\d+" />
   <br><br>
   <label>Cuisine</label><br>
       {{#each cuisineType}}
-      {{this.name}}:<INPUT TYPE="radio" NAME="cuisineType" VALUE="{{this.id}}">
+      {{this.name}}:<INPUT TYPE="radio" NAME="cuisineTypeId" VALUE={{this.id}}>
       {{/each}}
-  <label>Add new Cuisine Type</label>
+      <br>
+  <label>Add new Cuisine Type and associate with this new dish</label>
   <input type="text" name="add_cuisine">
 
     </select>
   <br><br>
   <label>Spiciness (from 1-5)</label>
     <select name="spicy">
-        <option value="1">1</option>
-        <option value="2">2</option>
-        <option value="3">3</option>
-        <option value="4">4</option>
-        <option value="5">5</option>
+        <option value=1>1</option>
+        <option value=2>2</option>
+        <option value=3>3</option>
+        <option value=4>4</option>
+        <option value=5>5</option>
     </select>
   <br><br>
   <label>Adventurous</label>
   <select name="adventurous">
-      <option value="true">yes</option>
-      <option value="false">no</option>
+      <option value=false>no</option>
+      <option value=true>yes</option>
   </select>
   <br><br>
   <label>Shareable</label>
   <select name="shareable">
-      <option value="true">yes</option>
-      <option value="false">no</option>
+      <option value=false>no</option>
+      <option value=true>yes</option>
+
   </select>
   <br><br>
   <label>Dish type</label>
@@ -76,9 +74,10 @@
   <br><br>
   <label>Category</label><br>
       {{#each category}}
-      {{this.name}}:<input type="checkbox" name="category" value="{{this.id}}">
+      {{this.name}}:<input type="checkbox" name="category" value={{this.id}}><br>
       {{/each}}
-      <label>Add new Category</label>
+      <br>
+      <label>Add new Category and associate with this new dish</label>
       <input type="text" name="add_category">
   <br><br>
   <label>Dietary Restrictions</label><br>

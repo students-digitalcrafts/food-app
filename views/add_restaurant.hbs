@@ -3,10 +3,6 @@
 {{# if req.body.submitted}}
   <h2>You entered:</h2>
   Name: {{req.body.name}}<br>
-  Atmosphere: {{req.body.atmosphere}}<br>
-  Parking: {{req.body.parking}}<br>
-  Busy: {{req.body.busy}}<br>
-  Food Quickness: {{req.body.food_quickness}}<br>
   Description: {{req.body.description}}<br>
   Dietary restrictions:
     <ul>
@@ -15,6 +11,11 @@
       {{/each}}
     </ul>
   Mood:
+  <ul>
+      {{#each req.body.mood}}
+        <li>{{this}}</li>
+      {{/each}}
+    </ul>
   <h2>Thanks for submitting! Submit again below?</h2>
 {{/if}}
 <br>
@@ -68,7 +69,7 @@
   <br><br>
   <label>Mood</label><br>
       {{#each mood}}
-      <input type="checkbox" name="mood" value="{{this.id}}">{{this.name}}<br>
+      <input type="checkbox" name="mood" value={{this.id}}>{{this.name}}<br>
       {{/each}}
   <br><br>
   <button type="submit">Submit</button>
