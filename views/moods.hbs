@@ -1,6 +1,8 @@
 
 <div class="container">
 
+<form method="POST" action="/choose_mood/">
+
 <!-- row for heading -->
 <div class="row">
   <h2> I am feeling...</h2>
@@ -14,21 +16,21 @@
 <div class='row center-align'>
   <div class="col s4">
     <label>
-      <input type="radio" name="fb" value="small" />
+      <input type="radio" name="relaxed" value="relaxed" />
       <img class="emojis hoverable circle responsive-img" src="static/images/relaxed.png">
       <h4> relaxed </h4>
     </label>
   </div>
   <div class="col s4">
     <label>
-      <input type="radio" name="fb" value="small" />
+      <input type="radio" name="hangry" value="hangry" />
       <img class="emojis hoverable circle responsive-img" src="static/images/hangry.png">
       <h4> hangry </h4>
     </label>
   </div>
   <div class="col s4">
     <label>
-      <input type="radio" name="fb" value="small" />
+      <input type="radio" name="sad" value="sad" />
       <img class="emojis hoverable circle responsive-img" src="static/images/sad.png">
       <h4> sad </h4>
     </label>
@@ -43,26 +45,28 @@
 <div class='row center-align'>
   <div class="col s4">
     <label>
-      <input type="radio" name="fb" value="small" />
+      <input type="radio" name="grungy" value="grungy" />
       <img class="emojis hoverable circle responsive-img" src="static/images/grungy.png">
       <h4> grungy </h4>
     </label>
   </div>
   <div class="col s4">
     <label>
-      <input type="radio" name="fb" value="small" />
+      <input type="radio" name="stressed" value="stressed" />
       <img class="emojis hoverable circle responsive-img" src="static/images/stressed.png">
       <h4> stressed </h4>
     </label>
   </div>
   <div class="col s4">
     <label>
-      <input type="radio" name="fb" value="small" />
+      <input type="radio" name="celebratory" value="celebratory" />
       <img class="emojis hoverable circle responsive-img" src="static/images/celebratory.png">
       <h4> celebratory </h4>
     </label>
   </div>
 </div>
+
+</form>
 
 <div class="row"></div>
 
