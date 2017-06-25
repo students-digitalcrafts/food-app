@@ -91,7 +91,7 @@ function sentenceCase (str) {
  return str.replace(/\w\S*/g, function(txt){return txt.charAt(0).toUpperCase() + txt.substr(1).toLowerCase();});
 }
 
-/**************autocomplete request****************/
+/************** Autocomplete Request ****************/
 
 app.get('/autocomplete/', function(request, response, next) {
   // gets the user inputs and adds % signs to both ends so it can accept characters on both sides on ILIKE
@@ -196,8 +196,7 @@ app.get('/search/', function (req, resp, next) {
                   if(last_updated && (Date.now() - last_updated) < 604800000) {
                     resp.redirect('/detail/');
                   } else {
-                    // hit Yelp API
-                    console.log("Contacting Yelp API");
+                    // Send Yelp API request w/ restaurant name
                     yelp_client.search({
                       term: term,
                       location: 'houston, tx'
@@ -264,7 +263,6 @@ results.forEach(function (item){
     sorted[item.name[0]] = [];
     sorted[item.name[0]].push({name: item.name, html: item.namehtml});
   }
-  console.log(sorted);
 })
     response.render('restaurants.hbs', {results: results, sorted: sorted});
   })
@@ -292,9 +290,6 @@ app.get('/moods/', function(request, response) {
 
 /************ Restaurant Detail Page ***************/
 
-// NOTE: Fix this page to use slug rather than GET params
-// NOTE: Unnecessary -- extended session length to 15 mins instead
-
 app.get("/detail/", function(req, resp, next) {
   // Restaurant selected by the user, assigned from GET params in search
   let restaurant = req.session.restaurant;
@@ -319,10 +314,13 @@ app.post("/filter/", function(request, response, next){
   // check for the length of toFilter
   var bodyLength = 0;
   // list of restaruant ids that were rendered in the listing page
-  var restId = []
+  var restId = [];
+  // list of yelp ids for open_now query
+  var yelpId = [];
   // pulls the restaurants objects from the session.list and pushes the restaurant id to the restId list
   request.session.list.forEach(function(item){
     restId.push(item.id);
+    yelpId.push(item.yelp_id);
   });
   // creates a query that queries the restaurants by id from the restId list
   var restIdQuery = "id IN (" + restId.toString() + ") AND ";
@@ -366,14 +364,26 @@ app.post("/filter/", function(request, response, next){
   else{
     var atmosphereQuery = "";
   }
-  // if the user filters by open now, queries YELP's api to check and return a boolean value
+  // if the user filters by open now, queries Yelp-Fusion Business
+  // API to check
   if(toFilter["open_now"]){
-    // NOTE: add promise for yelp open now
-    // restId is a list with all the rendered restaurants
+    // yelpId is a list of yelp ID's of all restaurants that were
+    // rendered on the listings page
+    yelpId.forEach(function(yelp_id) {
+      // For each restaurant, check if open now. Returns a boolean.
+      yelp_client.business(yelp_id)
+      .then(response => {
+        let api_response = response.jsonBody.hours[0].is_open_now;
+        // NOTE: if false, remove restaurant from restId and
+        // update restIdQuery? Ask Felipe
+        console.log(api_response);
+      })
+      .catch(err => {
+        console.error(err);
+      });
+    });
   }
-  else{
-    var open_nowQuery = ""; // to be deleted
-  }
+
   // if toFilter is an empty object (the user hasn't filtered), returns the list from the previous search, that was stored in sessions.list
   if(Object.keys(toFilter).length === 0 && toFilter.constructor === Object){
     // sends the list from the previous search to a partial, sends the partial html text to the frontend to be rendered
@@ -391,6 +401,8 @@ app.post("/filter/", function(request, response, next){
       })
   }
 })
+
+/********* Form to Add Items to Database ***********/
 //Function to Generate Add Restaurant form
 function addRestaurant(request, response){
   var queryResults = [];
