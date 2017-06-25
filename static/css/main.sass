@@ -4,10 +4,39 @@
 body
   background-color: $primary-color-dark
   color: lighten($primary-color-light, 20%)
+  display: flex
+  min-height: 100vh
+  flex-direction: column
+
+main
+  flex: 1 0 auto
+
+nav
+  border: none !important
+  box-shadow: none !important
+  background-color: $primary-color-dark
+
+.side-nav i
+  color: $secondary-color !important
 
 h1
-  font-size: 2em
+  font-size: 2.5em
+  font-weight: 600
 
-.logo-img
-  width: 225px
-  height: 225px
+h2
+  font-size: 1.8em
+
+strong
+  font-size: 1.2em
+  font-weight: 500
+
+#search_form
+  margin-top: 60px
+
+.input-field label
+  color: $secondary-color
+  font-size: 1.8em
+
+.input-field input[type=text]
+  border-bottom: 1px solid $secondary-color
+  box-shadow: 0 1px 0 0 $secondary-color
