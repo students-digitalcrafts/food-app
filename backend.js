@@ -506,6 +506,7 @@ app.post('/add_dish/', function (request, resp, next) {
   req.body.description = req.body.description.replace(/'/g,"''");
   function insert_rest(req, resp) {
     //Add one to one values in the Dish table
+    console.log('Insert this dish: '+req.body.name)
     db.query(`INSERT INTO dish (name, description, restaurant_id, price, dish_type, \
       spice, adventurous, shareable) \
       VALUES ('${req.body.name}', '${req.body.description}', ${req.body.restaurantId}, \
@@ -522,30 +523,26 @@ app.post('/add_dish/', function (request, resp, next) {
       }
       return newDishId[0].id;
     })
-    //If there are dietary restrictions, insert them here in the join table
-    .then(function(newDishId){
-      if (req.body.diet_rest) {
-        for (let i = 0; i < req.body.diet_rest.length; i++) {
-          db.query(`INSERT INTO diet_rest_dish_join \
-            (dish_id, diet_rest_id) VALUES (${newDishId}, ${req.body.diet_rest[i]});`)
-        }
-          }
-      return newDishId
-    })
     //If there are any checked categories, insert them here in join table
     .then(function(newDishId){
-      if(req.body.category) {
+      if(req.body.category=="") {
+
+      }
+      else {
         for (let i = 0; i < req.body.category.length; i++) {
+          console.log('req.body.category, should only trigger if there are any checked categories: '+req.body.category)
           db.query(`INSERT INTO category_dish_join \
             (dish_id, category_id) VALUES (${newDishId}, ${req.body.category[i]});`)
-        }
+      }
       }
       return newDishId;
     })
     //Add new Category if user added
     .then(function(newDishId){
     console.log("req.body.category: "+req.body.category)
-      if(req.body.add_category) {
+      if(req.body.add_category=="") {
+      }
+      else {
         db.query(`INSERT INTO category (name) VALUES ('${req.body.add_category}')`)
     //Get ID of newly added category
         .then(function(){
@@ -553,34 +550,36 @@ app.post('/add_dish/', function (request, resp, next) {
         })
     //Insert new category ID in to join table with new dish ID
         .then(function(newCatId){
+          console.log('newCatId[0].id, should only trigger if a new category is entered: '+newCatId[0].id)
           db.query(`INSERT INTO category_dish_join (dish_id, category_id) \
             VALUES (${newDishId}, ${newCatId[0].id})`)
-        })
-      }
+      })}
       return newDishId;
     })
     //Add new Cuisine Type if user added
     .then(function(newDishId){
-      if(req.body.add_category == "") {
-        console.log("blank add cat:"+req.body.add_category)
+    //I don't know why I couldn't get the opposite of this to work !=""
+      if(req.body.add_cuisine == "") {
+      }
+      else {
+        console.log("blank add cat:"+req.body.add_cuisine)
         db.query(`INSERT INTO cuisine_type (name) VALUES ('${req.body.add_cuisine}')`)
     //Get ID of newly added cuisine
         .then(function(){
           return db.query(`SELECT id FROM cuisine_type ORDER BY id DESC LIMIT 1;`)
         })
-    //Insert new cuisine ID in to join table with new dish ID
+    //Insert new cuisine ID in to dish table in the new dish's row
         .then(function(newCusId){
           console.log('New Cuisine ID:'+newCusId[0].id)
-          db.query(`INSERT INTO category_dish_join (dish_id, category_id) \
-            VALUES (${newDishId}, ${newCusId[0].id})`)
+          db.query(`UPDATE dish SET cuisine_type_id=${newCusId} WHERE id =${newDishId}`)
         })
       }
       return newDishId;
     })
-    //Add Dietary Restrictions
-    //If there are any checked categories, insert them here in join table
+    //If there are any checked diet restrictions, insert them here in join table
     .then(function(newDishId){
       if(req.body.diet_rest) {
+        console.log('req.body.diet_rest, should only trigger when there are dietary restriction accommodations'+req.body.diet_rest)
         for (let i = 0; i < req.body.diet_rest.length; i++) {
           db.query(`INSERT INTO diet_rest_dish_join \
             (dish_id, diet_rest_id) VALUES (${newDishId}, ${req.body.diet_rest[i]});`)
