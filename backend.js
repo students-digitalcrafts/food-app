@@ -312,7 +312,7 @@ function degrees_to_radians(degrees)
   return degrees * (pi/180);
 }
 
-function calculateDistance(lat1, lat2){
+function calculateDistance(lat1, lon1, lat2, lon2){
   var R = 6371e3; // metres
   var φ1 = lat1.toRadians();
   var φ2 = lat2.toRadians();
@@ -324,7 +324,7 @@ function calculateDistance(lat1, lat2){
         Math.sin(Δλ/2) * Math.sin(Δλ/2);
   var c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
 
-  var d = R * c;
+  var d = R * c / 1.609344;
   return d
 }
 
@@ -332,9 +332,14 @@ function calculateDistance(lat1, lat2){
   /********* Order By ****************/
 
 app.post("/order_by/", function(request, response, next){
-  if(request.body.order === "ratings"){
+  function order (category, session, body){
+    if(category === "distance"){
+      session.list.forEach(function(item){
+        session.list["distance"] = calculateDistance(session.list.lat, session.list.lon, body.lat, body.lon);
+      })
+    }
     var ordered = [];
-    request.session.list.forEach(function(item){
+    session.list.forEach(function(item){
       var added = false;
       if (ordered.length === 0){
         ordered.push(item);
@@ -342,7 +347,7 @@ app.post("/order_by/", function(request, response, next){
       }
       else{
         for(var i=0; i<ordered.length; i++){
-          if(item.ratings > ordered[i].ratings){
+          if(item[category] > ordered[i][category]){
             ordered.splice(i, 0, item);
             added = true;
             break;
@@ -353,13 +358,10 @@ app.post("/order_by/", function(request, response, next){
       }
       }
     })
+    return ordered
   }
-  if (ordered.length === 0){
-
-  }
-  else{
-    response.render('partials/list.hbs', {layout: false, results: ordered});
-  }
+  var ordered = order(request.body.order, request.session, request.body);
+  response.render('partials/list.hbs', {layout: false, results: ordered});
 })
 
 
