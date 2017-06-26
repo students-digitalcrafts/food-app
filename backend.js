@@ -460,24 +460,25 @@ app.post("/filter/", function(request, response, next){
         if(toFilter["open_now"]){
           result.forEach(function(restaurant) {
             console.log(restaurant.yelp_id);
-            // For each restaurant, check if open now.
+            // For each restaurant, create a promise to check if open now
             var p = yelp_client.business(restaurant.yelp_id);
+            // Create an array of promises
             promises.push(p);
+            // Create an array of restaurants queried
             restaurants.push(restaurant);
           });
 
+          // Wait for all promises to return
           promise.all(promises).then(yelps => {
             yelps.forEach(function (yelp_response, index) {
               // api_response is a boolean value
-              let api_response = yelp_response.jsonBody.hours[0].is_open_now;
-              console.log(api_response);
-              if(api_response) {
-                console.log(restaurants[index]);
+              let is_open = yelp_response.jsonBody.hours[0].is_open_now;
+              if(is_open) {
+                // add restaurant to list of open restaurants
+                // index for restaurants array matches index for promises array
                 open_results.push(restaurants[index]);
               }
             });
-
-            console.log('Open RESULTS: ' + open_results);
             // sends the query results to a partial, sends the partial html text to the frontend to be rendered
             response.render('partials/list.hbs', {layout: false, results: open_results});
           })
