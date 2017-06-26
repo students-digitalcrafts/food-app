@@ -1,51 +1,131 @@
+<!---------- Modal w/ Filters, Search Settings ----------->
+<div class="fixed-action-btn">
+  <a id="filter-menu" class="btn-floating btn-large orange darken-1 tooltipped" href="#filter-modal" data-position="top" data-delay="50" data-tooltip="search filters">
+    <i class="large material-icons blue-grey-text darken-2">filter_list</i>
+  </a>
+</div>
+
+<div id="filter-modal" class="modal bottom-sheet">
+  <div class="modal-content blue-grey darken-2">
+    <h2 class="center-align">SEARCH FILTERS</h2>
+    <form id="filter" onsubmit="checkFilter(); return false;">
+      <div class="switch">
+
+        <!----- Diet Options --->
+        <div class="row">
+          <p>dietary restrictions</p>
+          <div class="col s6">
+            <label for="vegetarian possible">
+              <input id="vegetarian possible" type="checkbox" name="diet_rest" value="2"/>
+              <span class="lever"></span>
+              vegetarian
+            </label>
+          </div>
+          <div class="col s6">
+            <label for="vegan">
+              <input id="vegan" type="checkbox" name="diet_rest" value="3"/>
+              <span class="lever"></span>
+              vegan
+            </label>
+          </div>
+          <br><br>
+          <div class="col s6">
+            <label for="gluten free">
+              <input id="gluten free" type="checkbox" name="diet_rest" value="1"/>
+              <span class="lever"></span>
+              gluten free
+            </label>
+          </div>
+          <div class="col s6">
+            <label for="low carb">
+              <input id="low carb" type="checkbox" name="diet_rest" value="5"/>
+              <span class="lever"></span>
+              low carb
+            </label>
+          </div>
+          <br><br>
+          <div class="col s6">
+            <label for="halal/kosher">
+              <input id="halal/kosher" type="checkbox" name="diet_rest" value="4"/>
+              <span class="lever"></span>
+              halal/kosher
+            </label>
+          </div>
+        </div><!-- .row -->
+      </div><!-- .switch -->
+      <br>
+
+      <!---- Restaurant Atmosphere ---->
+      <!-- NOTE: These should default to checked -->
+      <div class="row">
+        <p>restaurant atmosphere</p>
+        <div class="col s4">
+          <input id="dive" type="checkbox" name="atmosphere" value="dive"/>
+          <label for="dive">dive</label>
+        </div>
+        <div class="col s4">
+          <input id="casual" type="checkbox" name="atmosphere" value="casual"/>
+          <label for="casual">casual</label>
+        </div>
+        <div class="col s4">
+          <input id="fancy" type="checkbox" name="atmosphere" value="fancy"/>
+          <label for="fancy">fancy</label>
+        </div>
+      </div><!-- .row -->
+      <br>
+
+      <!---- Restaurant Hours ---->
+      <div class="row">
+        <!---- Service Speed ---->
+        <div class="col s6 left-align">
+          fast service
+        </div>
+        <div class="col s6 right-align">
+          slow service
+        </div>
+        <div class="col s12">
+          <p class="range-field">
+            <input type="range" id="food quickness" min="1" max="3" />
+          </p>
+        </div>
+      </div><!-- .row -->
+      <br>
+      <div class="row">
+        <div class="switch">
+            <label for="open now">
+              <input id="open now" type="checkbox" name="open_now" value="true"/>
+              <span class="lever"></span>
+              open right now</label>
+          </div><!-- .switch -->
+      </div><!-- .row -->
+      <br>
+
+      <div class="row center-align">
+        <input type="submit" value="apply filters" class="modal-action modal-close btn">
+      </div>
+    </form>
+  </div><!-- .modal-content -->
+</div><!--. filter-modal -->
+
+<!--------------- Main Content --------------->
 <div class="container">
-  <h1>results for '{{term}}'</h1>
+  <div class="row">
+    <div class="col s12">
+      <h1>results for '{{term}}'</h1>
+    </div>
+  </div><!-- .row -->
+
+
+  <select id="select_order_by" name="order_by" onchange="orderBy(); return false;">
+    <option value=""></option>
+    <option value="rating">Rating</option>
+    <option value="distance">Distance</option>
+  </select>
+
+  <div class="divider"></div>
   <ul id="listing">
     {{> list}}
   </ul>
-  <form id="filter" onsubmit="checkFilter(); return false;">
-    <div class="switch">
-      <label for="gluten free">
-      <input id="gluten free" type="checkbox" name="diet_rest" value="1"/>
-      <span class="lever"></span>
-      Gluten Free</label>
-      <label for="vegetarian possible">
-      <input id="vegetarian possible" type="checkbox" name="diet_rest" value="2"/>
-      <span class="lever"></span>
-      Vegetarian Possible</label>
-      <label for="vegan">
-      <input id="vegan" type="checkbox" name="diet_rest" value="3"/>
-      <span class="lever"></span>
-      Vegan</label>
-      <label for="halal/kosher">
-      <input id="halal/kosher" type="checkbox" name="diet_rest" value="4"/>
-      <span class="lever"></span>
-      Halal/Kosher</label>
-      <label for="low carb">
-      <input id="low carb" type="checkbox" name="diet_rest" value="5"/>
-      <span class="lever"></span>
-      Low Carb</label>
-      <label for="dive">
-      <input id="dive" type="checkbox" name="atmosphere" value="dive"/>
-      <span class="lever"></span>
-      Dive</label>
-      <label for="casual">
-      <input id="casual" type="checkbox" name="atmosphere" value="casual"/>
-      <span class="lever"></span>
-      Casual</label>
-      <label for="fancy">
-      <input id="fancy" type="checkbox" name="atmosphere" value="fancy"/>
-      <span class="lever"></span>
-      Fancy</label>
-      <label for="open now">
-      <input id="open now" type="checkbox" name="open_now" value="true"/>
-      <span class="lever"></span>
-      Open Now</label>
-    </div>
-    <!-- NOTE: TO ADD SLIDER -->
-    <input id="food quickness" type="text" name="food_quickness"/>
-    <input type="submit" />
-  </form>
 
 </div><!-- .container -->
 
@@ -66,13 +146,41 @@
           data[elements[i].getAttribute("name")].push(elements[i].value);
         }
       }
-      axios.post("/filter/", data, {responseType: 'text'})
+      axios.post("/filter/", data, {responseType: "text"})
         .then(function(result){
           document.getElementById('listing').innerHTML = result.data;
-          //result.data.forEach(function(item){
-          //  console.log(item.name);
-          //})
         })
       return false;
     }
+
+    function orderBy (){
+      var select = document.getElementById("select_order_by").value;
+      if (select){
+        data = {order: select};
+        axios.post("/order_by/", data, {responseType: "text"})
+          .then(function(result){
+            document.getElementById('listing').innerHTML = result.data;
+          })
+      }
+    }
+
+
+    //Get user location
+    var getPosition = function (options) {
+      return new Promise(function (resolve, reject) {
+        navigator.geolocation.getCurrentPosition(resolve, reject, options);
+      });
+    }
+    //Sample promise chain for coordinates
+    // getPosition()
+    //   .then((position) => {
+    //     return position;
+    //   })
+    //   .then((position) => {
+    //     console.log(position.coords.latitude+', ' +position.coords.longitude)
+    //   })
+    //   .catch((err) => {
+    //     console.error(err.message);
+    //   });
+
 </script>

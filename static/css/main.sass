@@ -1,6 +1,8 @@
 @import "../../node_modules/materialize-css/sass/components/color"
 @import "../../node_modules/materialize-css/sass/components/variables"
 
+$tablet-size: 500px
+
 body
   background-color: $primary-color-dark
   color: lighten($primary-color-light, 20%)
@@ -33,6 +35,14 @@ strong
   font-size: 1.2em
   font-weight: 500
 
+.margin
+  margin: 50px
+
+  // ******img classes ******
+
+.profile-pic
+  width: 175px
+
 .logo-img
   width: 225px
   height: 225px
@@ -40,7 +50,10 @@ strong
 .emojis
   width: 135px
 
+  @media (max-width: $tablet-size)
+    width: 96px
 
+// ******
 
 #search_form
   margin-top: 60px
