@@ -315,12 +315,9 @@ app.post("/filter/", function(request, response, next){
   var bodyLength = 0;
   // list of restaruant ids that were rendered in the listing page
   var restId = [];
-  // list of yelp ids for open_now query
-  var yelpId = [];
   // pulls the restaurants objects from the session.list and pushes the restaurant id to the restId list
   request.session.list.forEach(function(item){
     restId.push(item.id);
-    yelpId.push(item.yelp_id);
   });
   // creates a query that queries the restaurants by id from the restId list
   var restIdQuery = "id IN (" + restId.toString() + ") AND ";
@@ -364,25 +361,6 @@ app.post("/filter/", function(request, response, next){
   else{
     var atmosphereQuery = "";
   }
-  // if the user filters by open now, queries Yelp-Fusion Business
-  // API to check
-  if(toFilter["open_now"]){
-    // yelpId is a list of yelp ID's of all restaurants that were
-    // rendered on the listings page
-    yelpId.forEach(function(yelp_id) {
-      // For each restaurant, check if open now. Returns a boolean.
-      yelp_client.business(yelp_id)
-      .then(response => {
-        let api_response = response.jsonBody.hours[0].is_open_now;
-        // NOTE: if false, remove restaurant from restId and
-        // update restIdQuery? Ask Felipe
-        console.log(api_response);
-      })
-      .catch(err => {
-        console.error(err);
-      });
-    });
-  }
 
   // if toFilter is an empty object (the user hasn't filtered), returns the list from the previous search, that was stored in sessions.list
   if(Object.keys(toFilter).length === 0 && toFilter.constructor === Object){
@@ -393,6 +371,25 @@ app.post("/filter/", function(request, response, next){
   else{
     db.any(query+diet_restQuery+atmosphereQuery)
       .then(function (result){
+        // if the user filters by open now, queries Yelp-Fusion Business API
+        // NOTE: This filter should be applied last to minimize API hits
+        if(toFilter["open_now"]){
+          result.forEach(function(restaurant) {
+            // For each restaurant, check if open now. Returns a boolean.
+            yelp_client.business(restaurant.yelp_id)
+            .then(response => {
+              let api_response = response.jsonBody.hours[0].is_open_now;
+              // NOTE: if false, remove restaurant from restId and
+              // update restIdQuery? Ask Felipe
+              console.log(api_response);
+            })
+            .catch(err => {
+              console.error(err);
+            });
+          });
+        }
+
+
         // sends the query results to a partial, sends the partial html text to the frontend to be rendered
         response.render('partials/list.hbs', {layout: false, results: result});
       })

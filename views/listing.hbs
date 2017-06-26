@@ -1,7 +1,7 @@
 <!---------- Modal w/ Filters, Search Settings ----------->
 <div class="fixed-action-btn">
-  <a class="btn-floating btn-large orange lighten-1" href="#filter-modal">
-    <i class="large material-icons">equalizer</i>
+  <a id="filter-menu" class="btn-floating btn-large orange darken-1 tooltipped" href="#filter-modal" data-position="top" data-delay="50" data-tooltip="search filters">
+    <i class="large material-icons blue-grey-text darken-2">filter_list</i>
   </a>
 </div>
 
@@ -60,15 +60,15 @@
       <div class="row">
         <p>restaurant atmosphere</p>
         <div class="col s4">
-          <input checked="checked" id="dive" type="checkbox" name="atmosphere" value="dive"/>
+          <input id="dive" type="checkbox" name="atmosphere" value="dive"/>
           <label for="dive">dive</label>
         </div>
         <div class="col s4">
-          <input checked="checked" id="casual" type="checkbox" name="atmosphere" value="casual"/>
+          <input id="casual" type="checkbox" name="atmosphere" value="casual"/>
           <label for="casual">casual</label>
         </div>
         <div class="col s4">
-          <input checked="checked" id="fancy" type="checkbox" name="atmosphere" value="fancy"/>
+          <input id="fancy" type="checkbox" name="atmosphere" value="fancy"/>
           <label for="fancy">fancy</label>
         </div>
       </div><!-- .row -->
@@ -101,7 +101,7 @@
       <br>
 
       <div class="row center-align">
-        <input type="submit" class="modal-action modal-close btn">
+        <input type="submit" value="apply filters" class="modal-action modal-close btn">
       </div>
     </form>
   </div><!-- .modal-content -->
