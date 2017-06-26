@@ -1,6 +1,8 @@
 @import "../../node_modules/materialize-css/sass/components/color"
 @import "../../node_modules/materialize-css/sass/components/variables"
 
+$tablet-size: 500px
+
 body
   background-color: $primary-color-dark
   color: lighten($primary-color-light, 20%)
@@ -47,6 +49,9 @@ strong
 
 .emojis
   width: 135px
+
+  @media (max-width: $tablet-size)
+    width: 96px
 
 // ******
 

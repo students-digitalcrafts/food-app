@@ -1644,6 +1644,9 @@ strong {
 
 .emojis {
   width: 135px; }
+  @media (max-width: 500px) {
+    .emojis {
+      width: 96px; } }
 
 #search_form {
   margin-top: 60px; }
