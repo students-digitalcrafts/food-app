@@ -33,20 +33,24 @@
       </div>
       {{#each dishes}}
         <div class="col s11">
-          <strong>{{this.name}}</strong>
+          <strong>{{this.dishname}}</strong>
           {{#if adventurous}}
             [adventurous]
           {{/if}}
           {{#if shareable}}
              [shareable]
           {{/if}}<br>
+
         </div>
         <div class="col s1">
           ${{this.price}}
         </div>
         <div class="col s12">
           {{this.description}}<br>
-          Spicy? <img src="/static/img/spicy-{{spice}}.png" alt="icon courtesy of http://www.flaticon.com/authors/madebyoliver">
+          Spicy? <img src="/static/img/spicy-{{spice}}.png" alt="icon courtesy of http://www.flaticon.com/authors/madebyoliver"> <br>
+          {{#if diet_rest_name}}
+          [{{this.diet_rest_name}}]
+          {{/if}}
           <br><br>
         </div>
       {{/each}}
