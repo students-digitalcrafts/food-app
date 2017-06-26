@@ -53,14 +53,17 @@
 
     // On mobile phones, hide logo when search bar gains focus
     // to allow ample space for autocomplete suggestions
-    $("body").on("focusin", "#search", function() {
-      $("#logo").hide();
-      // Improve user experience; return to top after applying filters
-      window.scrollTo(0, 0);
-    });
-    $("body").on("focusout", "#search", function() {
-      $("#logo").show();
-    });
+    var screen_width = $(window).width();
+    if(screen_width < 700) {      
+      $("body").on("focusin", "#search", function() {
+        $("#logo").hide();
+        // Improve user experience; return to top after applying filters
+        window.scrollTo(0, 0);
+      });
+      $("body").on("focusout", "#search", function() {
+        $("#logo").show();
+      });
+    }
   });
 </script>
 </body>
