@@ -148,7 +148,6 @@ db.any(`SELECT name FROM cuisine_type WHERE name ILIKE '${selection}'`)
 // To test on your dev server: localhost:9000/search?search_term=piola
 app.get('/search/', function (req, resp, next) {
   let term = req.query.search_term.toLowerCase();
-
   // replace ' with '' for querying purposes
   let termquote = term.replace("'","''");
   let fields;
@@ -662,23 +661,7 @@ app.post('/add_dish/', function (request, resp, next) {
   insert_rest(req, resp);
 });
 
-//Get user location
-var getPosition = function (options) {
-  return new Promise(function (resolve, reject) {
-    navigator.geolocation.getCurrentPosition(resolve, reject, options);
-  });
-}
-//Sample promise chain for coordinates
-  // getPosition()
-  //   .then((position) => {
-  //     return position;
-  //   })
-  //   .then((position) => {
-  //     console.log(position.coords.latitude+', ' +position.coords.longitude)
-  //   })
-  //   .catch((err) => {
-  //     console.error(err.message);
-  //   });
+
 
 
 

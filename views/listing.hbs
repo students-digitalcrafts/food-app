@@ -75,4 +75,23 @@
         })
       return false;
     }
+
+    //Get user location
+    var getPosition = function (options) {
+      return new Promise(function (resolve, reject) {
+        navigator.geolocation.getCurrentPosition(resolve, reject, options);
+      });
+    }
+    //Sample promise chain for coordinates
+    // getPosition()
+    //   .then((position) => {
+    //     return position;
+    //   })
+    //   .then((position) => {
+    //     console.log(position.coords.latitude+', ' +position.coords.longitude)
+    //   })
+    //   .catch((err) => {
+    //     console.error(err.message);
+    //   });
+
 </script>
