@@ -155,6 +155,7 @@
       axios.post("/filter/", data, {responseType: 'text'})
         .then(function(result){
           document.getElementById('listing').innerHTML = result.data;
+          // Improve user experience; return to top after applying filters
           window.scrollTo(0, 0);
         })
       return false;
