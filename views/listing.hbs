@@ -1,51 +1,124 @@
+<!---------- Modal w/ Filters, Search Settings ----------->
+<div class="fixed-action-btn">
+  <a class="btn-floating btn-large orange lighten-1" href="#filter-modal">
+    <i class="large material-icons">equalizer</i>
+  </a>
+</div>
+
+<div id="filter-modal" class="modal bottom-sheet">
+  <div class="modal-content blue-grey darken-2">
+    <h2 class="center-align">SEARCH FILTERS</h2>
+    <form id="filter" onsubmit="checkFilter(); return false;">
+      <div class="switch">
+
+        <!----- Diet Options --->
+        <div class="row">
+          <p>dietary restrictions</p>
+          <div class="col s6">
+            <label for="vegetarian possible">
+              <input id="vegetarian possible" type="checkbox" name="diet_rest" value="2"/>
+              <span class="lever"></span>
+              vegetarian
+            </label>
+          </div>
+          <div class="col s6">
+            <label for="vegan">
+              <input id="vegan" type="checkbox" name="diet_rest" value="3"/>
+              <span class="lever"></span>
+              vegan
+            </label>
+          </div>
+          <br><br>
+          <div class="col s6">
+            <label for="gluten free">
+              <input id="gluten free" type="checkbox" name="diet_rest" value="1"/>
+              <span class="lever"></span>
+              gluten free
+            </label>
+          </div>
+          <div class="col s6">
+            <label for="low carb">
+              <input id="low carb" type="checkbox" name="diet_rest" value="5"/>
+              <span class="lever"></span>
+              low carb
+            </label>
+          </div>
+          <br><br>
+          <div class="col s6">
+            <label for="halal/kosher">
+              <input id="halal/kosher" type="checkbox" name="diet_rest" value="4"/>
+              <span class="lever"></span>
+              halal/kosher
+            </label>
+          </div>
+        </div><!-- .row -->
+      </div><!-- .switch -->
+      <br>
+
+      <!---- Restaurant Atmosphere ---->
+      <!-- NOTE: These should default to checked -->
+      <div class="row">
+        <p>restaurant atmosphere</p>
+        <div class="col s4">
+          <input checked="checked" id="dive" type="checkbox" name="atmosphere" value="dive"/>
+          <label for="dive">dive</label>
+        </div>
+        <div class="col s4">
+          <input checked="checked" id="casual" type="checkbox" name="atmosphere" value="casual"/>
+          <label for="casual">casual</label>
+        </div>
+        <div class="col s4">
+          <input checked="checked" id="fancy" type="checkbox" name="atmosphere" value="fancy"/>
+          <label for="fancy">fancy</label>
+        </div>
+      </div><!-- .row -->
+      <br>
+
+      <!---- Restaurant Hours ---->
+      <div class="row">
+        <!---- Service Speed ---->
+        <div class="col s6 left-align">
+          fast service
+        </div>
+        <div class="col s6 right-align">
+          slow service
+        </div>
+        <div class="col s12">
+          <p class="range-field">
+            <input type="range" id="food quickness" min="1" max="3" />
+          </p>
+        </div>
+      </div><!-- .row -->
+      <br>
+      <div class="row">
+        <div class="switch">
+            <label for="open now">
+              <input id="open now" type="checkbox" name="open_now" value="true"/>
+              <span class="lever"></span>
+              open right now</label>
+          </div><!-- .switch -->
+      </div><!-- .row -->
+      <br>
+
+      <div class="row center-align">
+        <input type="submit" class="modal-action modal-close btn">
+      </div>
+    </form>
+  </div><!-- .modal-content -->
+</div><!--. filter-modal -->
+
+<!--------------- Main Content --------------->
 <div class="container">
-  <h1>results for '{{term}}'</h1>
+  <div class="row">
+    <div class="col s12">
+      <h1>results for '{{term}}'</h1>
+    </div>
+  </div><!-- .row -->
+
+  <div class="divider"></div>
   <ul id="listing">
     {{> list}}
   </ul>
-  <form id="filter" onsubmit="checkFilter(); return false;">
-    <div class="switch">
-      <label for="gluten free">
-      <input id="gluten free" type="checkbox" name="diet_rest" value="1"/>
-      <span class="lever"></span>
-      Gluten Free</label>
-      <label for="vegetarian possible">
-      <input id="vegetarian possible" type="checkbox" name="diet_rest" value="2"/>
-      <span class="lever"></span>
-      Vegetarian Possible</label>
-      <label for="vegan">
-      <input id="vegan" type="checkbox" name="diet_rest" value="3"/>
-      <span class="lever"></span>
-      Vegan</label>
-      <label for="halal/kosher">
-      <input id="halal/kosher" type="checkbox" name="diet_rest" value="4"/>
-      <span class="lever"></span>
-      Halal/Kosher</label>
-      <label for="low carb">
-      <input id="low carb" type="checkbox" name="diet_rest" value="5"/>
-      <span class="lever"></span>
-      Low Carb</label>
-      <label for="dive">
-      <input id="dive" type="checkbox" name="atmosphere" value="dive"/>
-      <span class="lever"></span>
-      Dive</label>
-      <label for="casual">
-      <input id="casual" type="checkbox" name="atmosphere" value="casual"/>
-      <span class="lever"></span>
-      Casual</label>
-      <label for="fancy">
-      <input id="fancy" type="checkbox" name="atmosphere" value="fancy"/>
-      <span class="lever"></span>
-      Fancy</label>
-      <label for="open now">
-      <input id="open now" type="checkbox" name="open_now" value="true"/>
-      <span class="lever"></span>
-      Open Now</label>
-    </div>
-    <!-- NOTE: TO ADD SLIDER -->
-    <input id="food quickness" type="text" name="food_quickness"/>
-    <input type="submit" />
-  </form>
 
 </div><!-- .container -->
 
