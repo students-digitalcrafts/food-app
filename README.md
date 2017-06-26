@@ -35,7 +35,7 @@ Enter **Food for My Mood**, an app written *by local foodies, for local foodies*
 ### Stretch Goals
 - [ ] retrieve open/close hours from Google Places API, filter dishes by breakfast/lunch/dinner
 - [ ] allow user to search restaurants by mood
-- [ ] allow user to filter data in various ways (distance, dietary restrictions, etc.)
+- [x] allow user to filter data in various ways (distance, dietary restrictions, etc.) **- Done! Jun. 26**
 - [x] add Google Maps to display restaurant locations **- Done! Jun. 22 (Aspen)**
 - [ ] add social media, SMS buttons to share restaurant location
 - [ ] upvote/downvote buttons for restaurants, dishes
@@ -217,7 +217,7 @@ JOIN (SELECT * FROM restaurant_diet_rest_join WHERE diet_rest_id =3) AS t3 ON t1
 - [ ] Connect to Groupon, LivingSocial, etc. to check for deals
 - [x] Add server-side logic to filter by food service speed **- Done! Jun. 26 (Aspen)**
 - [ ] Add media query to shrink filters modal on med and above screens
-- [ ] Increase line height on autocomplete, change blue to match existing color scheme
+- [x] Increase line height on autocomplete, change blue to match existing color scheme **- Done! Jun. 26 (Ronda)**
 - [x] Allow listings to be sorted by distance, ratings **- Done! Jun. 26 (Felipe)**
 
 #### Challenges
