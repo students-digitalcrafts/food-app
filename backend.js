@@ -17,6 +17,8 @@ const pgp = require('pg-promise')({
 //Development database settings
 const db = pgp(process.env.DATABASE_URL||{
   host: 'localhost',
+  // NOTE: change to your preferred port for development --
+  // Must match your Postico settings
   port: 9001,
   database: 'fooddev',
   user: 'postgres',
@@ -89,7 +91,7 @@ function sentenceCase (str) {
  return str.replace(/\w\S*/g, function(txt){return txt.charAt(0).toUpperCase() + txt.substr(1).toLowerCase();});
 }
 
-/************** Autocomplete Request ****************/
+/**************autocomplete request****************/
 
 app.get('/autocomplete/', function(request, response, next) {
   // gets the user inputs and adds % signs to both ends so it can accept characters on both sides on ILIKE
@@ -146,6 +148,7 @@ db.any(`SELECT name FROM cuisine_type WHERE name ILIKE '${selection}'`)
 // To test on your dev server: localhost:9000/search?search_term=piola
 app.get('/search/', function (req, resp, next) {
   let term = req.query.search_term.toLowerCase();
+
   // replace ' with '' for querying purposes
   let termquote = term.replace("'","''");
   let fields;
@@ -193,7 +196,8 @@ app.get('/search/', function (req, resp, next) {
                   if(last_updated && (Date.now() - last_updated) < 604800000) {
                     resp.redirect('/detail/');
                   } else {
-                    // Send Yelp API request w/ restaurant name
+                    // hit Yelp API
+                    console.log("Contacting Yelp API");
                     yelp_client.search({
                       term: term,
                       location: 'houston, tx'
@@ -202,13 +206,11 @@ app.get('/search/', function (req, resp, next) {
                       let api_response = response.jsonBody.businesses[0];
                       fields = {
                         name: term,
-                        last_updated: Date.now(),
+                        last_updated: Date.now,
                         image_url: api_response.image_url,
                         yelp_id: api_response.id,
                         phone: api_response.phone,
-                        address: api_response.location.display_address.join(', '),
-                        latitude: api_response.coordinates.latitude,
-                        longitude: api_response.coordinates.longitude
+                        address: api_response.location.display_address.join(', ')
                       };
                       // SQL statement to save fields to database
                       let query = "UPDATE restaurant \
@@ -216,10 +218,8 @@ app.get('/search/', function (req, resp, next) {
                         yelp_id = ${yelp_id}, \
                         phone = ${phone}, \
                         address = ${address}, \
-                        last_updated = ${last_updated}, \
-                        latitude = ${latitude}, \
-                        longitude = ${longitude} \
-                        WHERE name = ${name};";
+                        last_updated = ${last_updated} \
+                        WHERE name = ${name}";
                       db.result(query, fields)
                       .then(function (update_result) {
                         // Takes fields from API response and merges them with db result fields
@@ -263,6 +263,7 @@ results.forEach(function (item){
     sorted[item.name[0]] = [];
     sorted[item.name[0]].push({name: item.name, html: item.namehtml});
   }
+  console.log(sorted);
 })
     response.render('restaurants.hbs', {results: results, sorted: sorted});
   })
@@ -289,23 +290,47 @@ app.get('/moods/', function(request, response) {
 });
 
 
-
 /************ Restaurant Detail Page ***************/
+
+// NOTE: Fix this page to use slug rather than GET params
+// NOTE: Unnecessary -- extended session length to 15 mins instead
 
 app.get("/detail/", function(req, resp, next) {
   // Restaurant selected by the user, assigned from GET params in search
   let restaurant = req.session.restaurant;
+
   // Select dishes that correspond to the restaurant
-  let query = `SELECT * FROM dish \
-    WHERE restaurant_id = ${restaurant.id}`;
-  db.any(query)
-    .then(function(result) {
+  // let query = `SELECT * FROM dish \
+  //   WHERE restaurant_id = ${restaurant.id}`;
+  let query =`SELECT dish.name as dishname, dish.adventurous as adventurous, \
+  dish.shareable as shareable, diet_rest.name as diet_rest_name, dish.price as price, \
+  dish.spice as spice, dish.description as description FROM dish \
+FULL OUTER JOIN diet_rest_dish_join ON dish.id = diet_rest_dish_join.dish_id \
+FULL OUTER JOIN diet_rest ON diet_rest_dish_join.diet_rest_id = diet_rest.id \
+WHERE dish.restaurant_id = ${restaurant.id};`
+  //Select moods that correspond to the restaurant
+  let mood_query = `SELECT * FROM mood_restaurant_join \
+   WHERE restaurant_id = ${restaurant.id}`;
+   //Select dietary restrictions from diet_rest_dish_join
+//    let diet_query = `SELECT diet_rest.name, dish.name FROM dish
+// FULL OUTER JOIN diet_rest_dish_join ON dish.id = diet_rest_dish_join.dish_id
+// FULL OUTER JOIN diet_rest ON diet_rest_dish_join.diet_rest_id = diet_rest.id
+// WHERE dish.restaurant_id = 2;`
+
+  //return all promises
+  var promises = [db.any(query), db.any(mood_query)];
+  promise.all(promises)
+    .then(function (results) {
+      //results[0] from query
+      //results[1] from mood_query
+      console.log(results[2]);
       resp.render('detail.hbs', {
         restaurant: restaurant,
-        dishes: result,
+        dishes: results[0],
+        moods: results[1],
         map_key: process.env.GOOGLE_STATIC_MAP_KEY});
+      });
     })
-})
 
   /********* Calculate Distance ******/
 function degrees_to_radians(degrees)
@@ -314,7 +339,7 @@ function degrees_to_radians(degrees)
   return degrees * (pi/180);
 }
 
-function calculateDistance(lat1, lon1, lat2, lon2){
+function calculateDistance(lat1, lat2){
   var R = 6371e3; // metres
   var φ1 = lat1.toRadians();
   var φ2 = lat2.toRadians();
@@ -326,7 +351,7 @@ function calculateDistance(lat1, lon1, lat2, lon2){
         Math.sin(Δλ/2) * Math.sin(Δλ/2);
   var c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
 
-  var d = R * c / 1.609344;
+  var d = R * c;
   return d
 }
 
@@ -334,14 +359,9 @@ function calculateDistance(lat1, lon1, lat2, lon2){
   /********* Order By ****************/
 
 app.post("/order_by/", function(request, response, next){
-  function order (category, session, body){
-    if(category === "distance"){
-      session.list.forEach(function(item){
-        session.list["distance"] = calculateDistance(session.list.lat, session.list.lon, body.lat, body.lon);
-      })
-    }
+  if(request.body.order === "ratings"){
     var ordered = [];
-    session.list.forEach(function(item){
+    request.session.list.forEach(function(item){
       var added = false;
       if (ordered.length === 0){
         ordered.push(item);
@@ -349,7 +369,7 @@ app.post("/order_by/", function(request, response, next){
       }
       else{
         for(var i=0; i<ordered.length; i++){
-          if(item[category] > ordered[i][category]){
+          if(item.ratings > ordered[i].ratings){
             ordered.splice(i, 0, item);
             added = true;
             break;
@@ -360,10 +380,13 @@ app.post("/order_by/", function(request, response, next){
       }
       }
     })
-    return ordered
   }
-  var ordered = order(request.body.order, request.session, request.body);
-  response.render('partials/list.hbs', {layout: false, results: ordered});
+  if (ordered.length === 0){
+
+  }
+  else{
+    response.render('partials/list.hbs', {layout: false, results: ordered});
+  }
 })
 
 
@@ -375,7 +398,7 @@ app.post("/filter/", function(request, response, next){
   // check for the length of toFilter
   var bodyLength = 0;
   // list of restaruant ids that were rendered in the listing page
-  var restId = [];
+  var restId = []
   // pulls the restaurants objects from the session.list and pushes the restaurant id to the restId list
   request.session.list.forEach(function(item){
     restId.push(item.id);
@@ -422,7 +445,14 @@ app.post("/filter/", function(request, response, next){
   else{
     var atmosphereQuery = "";
   }
-
+  // if the user filters by open now, queries YELP's api to check and return a boolean value
+  if(toFilter["open_now"]){
+    // NOTE: add promise for yelp open now
+    // restId is a list with all the rendered restaurants
+  }
+  else{
+    var open_nowQuery = ""; // to be deleted
+  }
   // if toFilter is an empty object (the user hasn't filtered), returns the list from the previous search, that was stored in sessions.list
   if(Object.keys(toFilter).length === 0 && toFilter.constructor === Object){
     // sends the list from the previous search to a partial, sends the partial html text to the frontend to be rendered
@@ -432,25 +462,6 @@ app.post("/filter/", function(request, response, next){
   else{
     db.any(query+diet_restQuery+atmosphereQuery)
       .then(function (result){
-        // if the user filters by open now, queries Yelp-Fusion Business API
-        // NOTE: This filter should be applied last to minimize API hits
-        if(toFilter["open_now"]){
-          result.forEach(function(restaurant) {
-            // For each restaurant, check if open now. Returns a boolean.
-            yelp_client.business(restaurant.yelp_id)
-            .then(response => {
-              let api_response = response.jsonBody.hours[0].is_open_now;
-              // NOTE: if false, remove restaurant from restId and
-              // update restIdQuery? Ask Felipe
-              console.log(api_response);
-            })
-            .catch(err => {
-              console.error(err);
-            });
-          });
-        }
-
-
         // sends the query results to a partial, sends the partial html text to the frontend to be rendered
         response.render('partials/list.hbs', {layout: false, results: result});
       })
@@ -460,7 +471,7 @@ app.post("/filter/", function(request, response, next){
   }
 })
 
-/********* Form to Add Items to Database ***********/
+
 //Function to Generate Add Restaurant form
 function addRestaurant(request, response){
   var queryResults = [];
@@ -671,7 +682,23 @@ app.post('/add_dish/', function (request, resp, next) {
   insert_rest(req, resp);
 });
 
-
+//Get user location
+var getPosition = function (options) {
+  return new Promise(function (resolve, reject) {
+    navigator.geolocation.getCurrentPosition(resolve, reject, options);
+  });
+}
+//Sample promise chain for coordinates
+  // getPosition()
+  //   .then((position) => {
+  //     return position;
+  //   })
+  //   .then((position) => {
+  //     console.log(position.coords.latitude+', ' +position.coords.longitude)
+  //   })
+  //   .catch((err) => {
+  //     console.error(err.message);
+  //   });
 
 
 
