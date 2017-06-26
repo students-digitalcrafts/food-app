@@ -292,16 +292,26 @@ app.get('/moods/', function(request, response) {
 app.get("/detail/", function(req, resp, next) {
   // Restaurant selected by the user, assigned from GET params in search
   let restaurant = req.session.restaurant;
-  // Select dishes that correspond to the restaurant
-  let query = `SELECT * FROM dish \
-    WHERE restaurant_id = ${restaurant.id}`;
-  db.any(query)
-    .then(function(result) {
+  // Select dishes etc. that correspond to the restaurant
+   let query =`SELECT dish.name as dishname, dish.adventurous as adventurous, \
+   dish.shareable as shareable, diet_rest.name as diet_rest_name, dish.price as price, \
+   dish.spice as spice, dish.description as description FROM dish \
+   FULL OUTER JOIN diet_rest_dish_join ON dish.id = diet_rest_dish_join.dish_id \
+   FULL OUTER JOIN diet_rest ON diet_rest_dish_join.diet_rest_id = diet_rest.id \
+   WHERE dish.restaurant_id = ${restaurant.id};`
+ //Select moods that correspond to the restaurant
+    let mood_query = `SELECT * FROM mood_restaurant_join \
+     WHERE restaurant_id = ${restaurant.id}`;
+     //Select dietary restrictions from diet_rest_dish_join
+     var promises = [db.any(query), db.any(mood_query)];
+     promise.all(promises)
+      .then(function (results) {
       resp.render('detail.hbs', {
         restaurant: restaurant,
-        dishes: result,
+         dishes: results[0],
+         moods: results[1],
         map_key: process.env.GOOGLE_STATIC_MAP_KEY});
-    })
+    });
 })
 
   /********* Calculate Distance ******/
@@ -480,6 +490,7 @@ app.post("/filter/", function(request, response, next){
     // list of results that meet the 'open now' criteria
     let open_results = [];
     ///////////////////////////////////////////////
+
     // if the user filtered, apply the query
     db.any(query+diet_restQuery+atmosphereQuery+food_quicknessQuery)
       .then(function (result){
@@ -513,8 +524,6 @@ app.post("/filter/", function(request, response, next){
           })
           .catch(next);
         }
-        // sends the query results to a partial, sends the partial html text to the frontend to be rendered
-        response.render('partials/list.hbs', {layout: false, results: result});
       })
       .catch(function(error){
         console.error(error);
