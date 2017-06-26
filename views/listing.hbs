@@ -119,6 +119,13 @@
     </div>
   </div><!-- .row -->
 
+
+  <select id="select_order_by" name="order_by" onchange="orderBy(); return false;">
+    <option value=""></option>
+    <option value="rating">Rating</option>
+    <option value="distance">Distance</option>
+  </select>
+
   <div class="divider"></div>
   <ul id="listing">
     {{> list}}
@@ -149,10 +156,38 @@
         .then(function(result){
           document.getElementById('listing').innerHTML = result.data;
           window.scrollTo(0, 0);
-          // result.data.forEach(function(item){
-          //  console.log(item.name);
-          // })
         })
       return false;
     }
+
+    function orderBy (){
+      var select = document.getElementById("select_order_by").value;
+      if (select){
+        data = {order: select};
+        axios.post("/order_by/", data, {responseType: "text"})
+          .then(function(result){
+            document.getElementById('listing').innerHTML = result.data;
+          })
+      }
+    }
+
+
+    //Get user location
+    var getPosition = function (options) {
+      return new Promise(function (resolve, reject) {
+        navigator.geolocation.getCurrentPosition(resolve, reject, options);
+      });
+    }
+    //Sample promise chain for coordinates
+    // getPosition()
+    //   .then((position) => {
+    //     return position;
+    //   })
+    //   .then((position) => {
+    //     console.log(position.coords.latitude+', ' +position.coords.longitude)
+    //   })
+    //   .catch((err) => {
+    //     console.error(err.message);
+    //   });
+
 </script>

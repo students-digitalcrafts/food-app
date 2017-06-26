@@ -439,10 +439,18 @@ app.post("/filter/", function(request, response, next){
     response.render('partials/list.hbs', {layout: false, results: request.session.list});
   }
   else{
+    ////////////////////////////////////////////////
+    // Arrays for keeping track of Yelp API queries
+    ////////////////////////////////////////////////
+    //
+    // keep track of promises from querying Yelp API
+    let promises = [];
+    // keep track of restaurants being queried
+    let restaurants = [];
     // list of results that meet the 'open now' criteria
     let open_results = [];
-    let promises = [];
-    let restaurants = [];
+    ///////////////////////////////////////////////
+
     // if the user filtered, apply the query
     db.any(query+diet_restQuery+atmosphereQuery+food_quicknessQuery)
       .then(function (result){
