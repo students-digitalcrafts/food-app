@@ -1642,6 +1642,9 @@ strong {
   width: 225px;
   height: 225px; }
 
+.sm-emojis {
+  width: 50px; }
+
 .emojis {
   width: 135px; }
   @media (max-width: 500px) {
