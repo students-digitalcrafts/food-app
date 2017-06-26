@@ -456,11 +456,7 @@ app.post("/filter/", function(request, response, next){
   }
 })
 
-<<<<<<< HEAD
 /********* Form to Add Items to Database ***********/
-=======
-
->>>>>>> master
 //Function to Generate Add Restaurant form
 function addRestaurant(request, response){
   var queryResults = [];
