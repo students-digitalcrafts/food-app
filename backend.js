@@ -305,13 +305,16 @@ app.get("/detail/", function(req, resp, next) {
 })
 
   /********* Calculate Distance ******/
+
+// converts from degrees to radians
 function toRadians(degrees)
 {
   var pi = Math.PI;
   return degrees * (pi/180);
 }
 
-function calculateDistance(lat1, lat2){
+// receives two positions (lat and long for each) and calculate the distance a crow can fly
+function calculateDistance(lat1, lon1, lat2, lon2){
   var R = 6371e3; // metres
   var φ1 = toRadians(lat1);
   var φ2 = toRadians(lat2);
@@ -325,7 +328,7 @@ function calculateDistance(lat1, lat2){
 
 
   var d = R * c / 1609.34;
-
+  // returns the distance in miles
   return d
 }
 
@@ -333,20 +336,24 @@ function calculateDistance(lat1, lat2){
   /********* Order By ****************/
 
 app.post("/order_by/", function(request, response, next){
+  // updates the data with new coordinates into the session, if necessary
   if(request.body.lat && request.body.long){
     request.session["lat"] = request.body.lat;
     request.session["long"] = request.body.long;
   };
+  // function to sort ascending or descending and return a list of objects ordered
   function order (category, session){
+    // if the user wants to order by distance
     if(category === "distance"){
+      // calculates the distance for each restaurant from the user position
       session.list.forEach(function(item){
-        // console.log(session.list.latitude, session.list.longitude, body.lat, body.long);
+        // stores the distance in the session in the distance field
         item["distance"] = calculateDistance(item.latitude, item.longitude, session.lat, session.long);
-        console.log(item["name"] + ":" + item["distance"]);
       })
     }
     var ordered = [];
-    request.session.list.forEach(function(item){
+    // sorts the objects
+    session.list.forEach(function(item){
       var added = false;
       if (ordered.length === 0){
         ordered.push(item);
@@ -354,6 +361,7 @@ app.post("/order_by/", function(request, response, next){
       }
       else{
         for(var i=0; i<ordered.length; i++){
+          // if the user selects ratings, orders from higher to lower ratings
           if(category === "rating"){
             if(item[category] > ordered[i][category]){
               ordered.splice(i, 0, item);
@@ -361,6 +369,7 @@ app.post("/order_by/", function(request, response, next){
               break;
             }
           }
+          // if the user selects distance, orders from closer to farther
           else if(category === "distance"){
             if(item[category] < ordered[i][category]){
               ordered.splice(i, 0, item);
@@ -374,8 +383,11 @@ app.post("/order_by/", function(request, response, next){
       }
       }
     })
+    return ordered
   }
+  // execute the ordering function
   var ordered = order(request.body.order, request.session);
+  // sends the data to the partial list and then sends the html text back to the frontend
   response.render('partials/list.hbs', {layout: false, results: ordered});
 })
 
