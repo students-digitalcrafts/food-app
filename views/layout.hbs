@@ -50,7 +50,16 @@
     $('.slider').slider();
     $('select').material_select();
     $('.modal').modal();
-  })
+
+    // On mobile phones, hide logo when search bar gains focus
+    // to allow ample space for autocomplete suggestions
+    $("body").on("focusin", "#search", function() {
+      $("#logo").hide();
+    });
+    $("body").on("focusout", "#search", function() {
+      $("#logo").show();
+    });
+  });
 </script>
 </body>
 </html>

@@ -91,7 +91,7 @@ function sentenceCase (str) {
  return str.replace(/\w\S*/g, function(txt){return txt.charAt(0).toUpperCase() + txt.substr(1).toLowerCase();});
 }
 
-/**************autocomplete request****************/
+/************** Autocomplete Request ****************/
 
 app.get('/autocomplete/', function(request, response, next) {
   // gets the user inputs and adds % signs to both ends so it can accept characters on both sides on ILIKE
@@ -196,8 +196,7 @@ app.get('/search/', function (req, resp, next) {
                   if(last_updated && (Date.now() - last_updated) < 604800000) {
                     resp.redirect('/detail/');
                   } else {
-                    // hit Yelp API
-                    console.log("Contacting Yelp API");
+                    // Send Yelp API request w/ restaurant name
                     yelp_client.search({
                       term: term,
                       location: 'houston, tx'
@@ -225,7 +224,6 @@ app.get('/search/', function (req, resp, next) {
                         // Takes fields from API response and merges them with db result fields
                         result = Object.assign(result, fields);
                         req.session.restaurant = result;
-                        // NOTE: Add redirect to detail page
                         resp.redirect('/detail/');
                         pgp.end();
                       });
@@ -247,14 +245,15 @@ app.get('/search/', function (req, resp, next) {
 app.get('/restaurants/', function (request, response, next) {
   db.query(`SELECT name FROM restaurant ORDER BY name`)
   .then(function(results) {
-    //creates the html link name for the result page
+    // console.log(results);
+    // console.log(results[0].name);
     for (let x = 0; x < results.length; x++) {
+
       results[x].namehtml = results[x].name.replace(/'/g,"%27");
       results[x].namehtml = results[x].name.replace(/ /g, "+");
     }
     var sorted = {};
     var htmlname = [];
-//creates sorted object with restuarnt names with an array for the html names
 results.forEach(function (item){
   if(sorted[item.name[0]]){
     sorted[item.name[0]].push({name: item.name, html: item.namehtml});
@@ -263,7 +262,6 @@ results.forEach(function (item){
     sorted[item.name[0]] = [];
     sorted[item.name[0]].push({name: item.name, html: item.namehtml});
   }
-  console.log(sorted);
 })
     response.render('restaurants.hbs', {results: results, sorted: sorted});
   })
@@ -286,51 +284,25 @@ app.get('/contribute/', function(request, response) {
 /********* Moods Page ***********/
 
 app.get('/moods/', function(request, response) {
-  response.render('moods.hbs', {});
-});
-
+  response.render('moods.hbs');
+})
 
 /************ Restaurant Detail Page ***************/
-
-// NOTE: Fix this page to use slug rather than GET params
-// NOTE: Unnecessary -- extended session length to 15 mins instead
 
 app.get("/detail/", function(req, resp, next) {
   // Restaurant selected by the user, assigned from GET params in search
   let restaurant = req.session.restaurant;
-
   // Select dishes that correspond to the restaurant
-  // let query = `SELECT * FROM dish \
-  //   WHERE restaurant_id = ${restaurant.id}`;
-  let query =`SELECT dish.name as dishname, dish.adventurous as adventurous, \
-  dish.shareable as shareable, diet_rest.name as diet_rest_name, dish.price as price, \
-  dish.spice as spice, dish.description as description FROM dish \
-FULL OUTER JOIN diet_rest_dish_join ON dish.id = diet_rest_dish_join.dish_id \
-FULL OUTER JOIN diet_rest ON diet_rest_dish_join.diet_rest_id = diet_rest.id \
-WHERE dish.restaurant_id = ${restaurant.id};`
-  //Select moods that correspond to the restaurant
-  let mood_query = `SELECT * FROM mood_restaurant_join \
-   WHERE restaurant_id = ${restaurant.id}`;
-   //Select dietary restrictions from diet_rest_dish_join
-//    let diet_query = `SELECT diet_rest.name, dish.name FROM dish
-// FULL OUTER JOIN diet_rest_dish_join ON dish.id = diet_rest_dish_join.dish_id
-// FULL OUTER JOIN diet_rest ON diet_rest_dish_join.diet_rest_id = diet_rest.id
-// WHERE dish.restaurant_id = 2;`
-
-  //return all promises
-  var promises = [db.any(query), db.any(mood_query)];
-  promise.all(promises)
-    .then(function (results) {
-      //results[0] from query
-      //results[1] from mood_query
-      console.log(results[2]);
+  let query = `SELECT * FROM dish \
+    WHERE restaurant_id = ${restaurant.id}`;
+  db.any(query)
+    .then(function(result) {
       resp.render('detail.hbs', {
         restaurant: restaurant,
-        dishes: results[0],
-        moods: results[1],
+        dishes: result,
         map_key: process.env.GOOGLE_STATIC_MAP_KEY});
-      });
     })
+})
 
   /********* Calculate Distance ******/
 function degrees_to_radians(degrees)
@@ -398,7 +370,7 @@ app.post("/filter/", function(request, response, next){
   // check for the length of toFilter
   var bodyLength = 0;
   // list of restaruant ids that were rendered in the listing page
-  var restId = []
+  var restId = [];
   // pulls the restaurants objects from the session.list and pushes the restaurant id to the restId list
   request.session.list.forEach(function(item){
     restId.push(item.id);
@@ -435,35 +407,82 @@ app.post("/filter/", function(request, response, next){
     // converts the list of atmosphere options selected by the user into a string
     var atmosphereQuery = "atmosphere IN ('" + toFilter["atmosphere"].toString() + "')";
     // add single quotes to each element to be used in the query
-    atmosphereQuery = atmosphereQuery.replace(",", "\',\'");
+    atmosphereQuery = atmosphereQuery.replace(/,/g, "\',\'");
     // if there is filter by food_quickness, adds AND to the end of the query
     if(toFilter["food_quickness"]){
-      atmosphereQuery += " AND ";
+       atmosphereQuery += " AND ";
     }
+    // console.log(toFilter);
   }
   // if it doesn't filter by atmosphere, sets the query to an empty string
   else{
     var atmosphereQuery = "";
   }
-  // if the user filters by open now, queries YELP's api to check and return a boolean value
-  if(toFilter["open_now"]){
-    // NOTE: add promise for yelp open now
-    // restId is a list with all the rendered restaurants
+
+  // If user filters by food quickness, creates a query that will find all restaurants
+  // within the desired service speed range
+  //
+  // Food quickness is defined on a scale of 1-3, 1 being the fastest service
+  if(toFilter["food_quickness"]){
+     // converts the food_quickness integer input to a query string
+     var food_quicknessQuery = "food_quickness <= " + toFilter["food_quickness"].toString();
   }
+  // // if it doesn't filter by atmosphere, sets the query to an empty string
   else{
-    var open_nowQuery = ""; // to be deleted
+     var food_quicknessQuery = "";
   }
+
+
   // if toFilter is an empty object (the user hasn't filtered), returns the list from the previous search, that was stored in sessions.list
   if(Object.keys(toFilter).length === 0 && toFilter.constructor === Object){
     // sends the list from the previous search to a partial, sends the partial html text to the frontend to be rendered
     response.render('partials/list.hbs', {layout: false, results: request.session.list});
   }
-  // if the user filtered, apply the query
   else{
-    db.any(query+diet_restQuery+atmosphereQuery)
+    ////////////////////////////////////////////////
+    // Arrays for keeping track of Yelp API queries
+    ////////////////////////////////////////////////
+    //
+    // keep track of promises from querying Yelp API
+    let promises = [];
+    // keep track of restaurants being queried
+    let restaurants = [];
+    // list of results that meet the 'open now' criteria
+    let open_results = [];
+    ///////////////////////////////////////////////
+
+    // if the user filtered, apply the query
+    db.any(query+diet_restQuery+atmosphereQuery+food_quicknessQuery)
       .then(function (result){
-        // sends the query results to a partial, sends the partial html text to the frontend to be rendered
-        response.render('partials/list.hbs', {layout: false, results: result});
+        // if the user filters by open now, queries Yelp-Fusion Business API
+        // NOTE: This filter should be applied last to minimize API hits
+
+        if(toFilter["open_now"]){
+          result.forEach(function(restaurant) {
+            console.log(restaurant.yelp_id);
+            // For each restaurant, check if open now.
+            var p = yelp_client.business(restaurant.yelp_id);
+            promises.push(p);
+            restaurants.push(restaurant);
+          });
+
+          promise.all(promises).then(yelps => {
+            yelps.forEach(function (yelp_response, index) {
+              // api_response is a boolean value
+              let api_response = yelp_response.jsonBody.hours[0].is_open_now;
+              console.log(api_response);
+              if(api_response) {
+                console.log(restaurants[index]);
+                open_results.push(restaurants[index]);
+              }
+            });
+
+            console.log('Open RESULTS: ' + open_results);
+            // sends the query results to a partial, sends the partial html text to the frontend to be rendered
+            response.render('partials/list.hbs', {layout: false, results: open_results});
+          })
+          .catch(next);
+        }
       })
       .catch(function(error){
         console.error(error);
@@ -471,7 +490,7 @@ app.post("/filter/", function(request, response, next){
   }
 })
 
-
+/********* Form to Add Items to Database ***********/
 //Function to Generate Add Restaurant form
 function addRestaurant(request, response){
   var queryResults = [];
