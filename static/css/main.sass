@@ -38,7 +38,7 @@ strong
 .margin
   margin: 50px
 
-  // ******img classes ******
+  // ****** img classes ******
 
 .profile-pic
   width: 175px
@@ -55,7 +55,7 @@ strong
   @media (max-width: $tablet-size)
     width: 96px
 
-// ******
+// ****** search input styles *******
 
 #search_form
   margin-top: 60px
@@ -67,3 +67,22 @@ strong
 .input-field input[type=text]
   border-bottom: 1px solid $secondary-color
   box-shadow: 0 1px 0 0 $secondary-color
+
+// ********** radio button styles
+
+label > input
+  visibility: hidden
+  position: absolute
+
+label > input + img
+  cursor: pointer
+  border: 2px solid transparent
+
+label > input:checked + img
+  border: 2px solid $secondary-color
+
+label > input + i
+  cursor: pointer
+
+label > input:checked + i
+  color: $secondary-color
