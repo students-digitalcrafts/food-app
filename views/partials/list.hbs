@@ -9,11 +9,23 @@
       <br>
     </div>
     <div class="col s9">
-      <!------ NOTE: Add link to restaurant detail page ------>
       <br>
       <strong><a href="/search/?search_term={{name}}">{{name}}</a></strong><br>
       {{description}}<br>
       <a href="http://maps.google.com/?q={{address}}">{{address}}</a><br>
+
+      <!-- NOTE: Add code to display overall ratings -->
+      <form id="{{id}}" onchange="addRating()">
+        <label>
+          <input type="radio" name="{{name}}" value="1">
+          <i class="material-icons">thumb_up</i>
+        </label>
+        <label>
+          <input type="radio" name="{{name}}" value="-1">
+          <i class="material-icons">thumb_down</i>
+        </label>
+      </form>
+
     </div>
   </li>
 </div><!-- .row -->
