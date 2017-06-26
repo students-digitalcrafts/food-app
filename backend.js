@@ -156,7 +156,7 @@ app.get('/search/', function (req, resp, next) {
   db.many(`SELECT DISTINCT restaurant.* FROM restaurant \
           JOIN dish ON dish.restaurant_id = restaurant.id \
           JOIN cuisine_type ON dish.cuisine_type_id = cuisine_type.id \
-          WHERE cuisine_type.name = '${termquote}'`)
+          WHERE cuisine_type.name = '${termquote}' ORDER BY restaurant.name`)
     .then(function(result){
       req.session.list = result;
       // Pass search term to display on Listings page
@@ -168,7 +168,7 @@ app.get('/search/', function (req, resp, next) {
               JOIN dish ON dish.restaurant_id = restaurant.id \
               JOIN category_dish_join ON category_dish_join.dish_id = dish.id \
               JOIN category ON category_dish_join.category_id = category.id \
-              WHERE category.name = '${termquote}'`)
+              WHERE category.name = '${termquote}' ORDER BY restaurant.name`)
         .then(function(result){
           req.session.list = result;
           resp.render("listing.hbs", {results: result, term: term});
@@ -179,7 +179,7 @@ app.get('/search/', function (req, resp, next) {
                   JOIN dish ON dish.restaurant_id = restaurant.id \
                   JOIN diet_rest_dish_join ON diet_rest_dish_join.dish_id = dish.id \
                   JOIN diet_rest ON diet_rest_dish_join.diet_rest_id = diet_rest.id \
-                  WHERE diet_rest.name = '${termquote}'`)
+                  WHERE diet_rest.name = '${termquote}' ORDER BY restaurant.name`)
             .then(function(result){
               req.session.list = result;
               resp.render("listing.hbs", {results: result, term: term});
@@ -310,6 +310,63 @@ app.get("/detail/", function(req, resp, next) {
     })
 })
 
+  /********* Calculate Distance ******/
+function degrees_to_radians(degrees)
+{
+  var pi = Math.PI;
+  return degrees * (pi/180);
+}
+
+function calculateDistance(lat1, lat2){
+  var R = 6371e3; // metres
+  var φ1 = lat1.toRadians();
+  var φ2 = lat2.toRadians();
+  var Δφ = (lat2-lat1).toRadians();
+  var Δλ = (lon2-lon1).toRadians();
+
+  var a = Math.sin(Δφ/2) * Math.sin(Δφ/2) +
+        Math.cos(φ1) * Math.cos(φ2) *
+        Math.sin(Δλ/2) * Math.sin(Δλ/2);
+  var c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
+
+  var d = R * c;
+  return d
+}
+
+
+  /********* Order By ****************/
+
+app.post("/order_by/", function(request, response, next){
+  if(request.body.order === "ratings"){
+    var ordered = [];
+    request.session.list.forEach(function(item){
+      var added = false;
+      if (ordered.length === 0){
+        ordered.push(item);
+        added = true;
+      }
+      else{
+        for(var i=0; i<ordered.length; i++){
+          if(item.ratings > ordered[i].ratings){
+            ordered.splice(i, 0, item);
+            added = true;
+            break;
+          }
+        }
+      if(!added){
+        ordered.push(item);
+      }
+      }
+    })
+  }
+  if (ordered.length === 0){
+
+  }
+  else{
+    response.render('partials/list.hbs', {layout: false, results: ordered});
+  }
+})
+
 
   /********* Filter Engine ***********/
 
@@ -391,6 +448,8 @@ app.post("/filter/", function(request, response, next){
       })
   }
 })
+
+
 //Function to Generate Add Restaurant form
 function addRestaurant(request, response){
   var queryResults = [];
