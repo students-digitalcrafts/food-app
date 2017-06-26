@@ -210,9 +210,10 @@ JOIN (SELECT * FROM restaurant_diet_rest_join WHERE diet_rest_id =3) AS t3 ON t1
 - [ ] Create a custom 404 page
 - [ ] Add server-side logic to search by mood
 - [x] When filtering by "open now", query Yelp-Fusion API for each restaurant in current session **- Done! Jun. 25 (Aspen)**
-- [ ] Add map of all restaurants when user filters by location?
+- [ ] Add map of all restaurants to listings page when user filters by location?
 - [ ] Add distance slider to bottom of moods page
 - [ ] Get lat/long from YelpFusion API
+- [ ] Hide logo on search bar focus for mobile screens
 
 #### Challenges
 * Creating a new database table to store restaurant hours on various days of the week and writing the logic to check the table when filtering for "open now" restaurants, seemed to be more trouble than it was worth. However, we couldn't use the "open now" boolean data from the Yelp API, because we are caching data from the Yelp API for 7 days to improve performance. The solution is to send a new request to the Yelp API only when a user chooses to filter restaurants that are open now. This means it will take a little longer to check for open restaurants, but most users will experience better performance because other data from Yelp will still be cached.
