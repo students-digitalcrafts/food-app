@@ -21,12 +21,12 @@
   <br><br>
   <label>Restaurant</label><br>
       {{#each restaurantName}}
-      {{this.name}}:<INPUT TYPE="radio" NAME="restaurantId" VALUE={{this.id}}><br>
+      {{this.name}}:<INPUT TYPE="radio" NAME="restaurantId" REQUIRED VALUE={{this.id}}><br>
       {{/each}}
     </select>
   <br><br>
-  <label>Price (in whole numbers)</label>
-    <input type="text" name="price" pattern="\d+" />
+  <label>Price (in whole numbers, REQUIRED!)</label>
+    <input type="text" name="price" required pattern="\d+" />
   <br><br>
   <label>Cuisine</label><br>
       {{#each cuisineType}}
