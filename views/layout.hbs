@@ -14,14 +14,12 @@
     <link rel="stylesheet" href="/static/css/main.css">
     <link rel="stylesheet" href="/static/css/listing.css">
 
-
   </head>
   <body>
 
       <!---------------- Navbar ---------------->
       <nav style="border: 0;">
         <div class="nav-wrapper">
-
           <ul class="right hide-on-med-and-down">
             <li><a href="/"><i class="material-icons left">search</i>Search</a></li>
             <li><a href="/restaurants/"><i class="material-icons left">view_list</i>Restaurants A-Z</a></li>
@@ -49,6 +47,8 @@
 <script>
   $(document).ready(function() {
     $(".button-collapse").sideNav();
+    $('select').material_select();
+    $('.modal').modal();
   })
 </script>
 </body>
