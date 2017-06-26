@@ -305,7 +305,7 @@ app.get("/detail/", function(req, resp, next) {
 })
 
   /********* Calculate Distance ******/
-function degrees_to_radians(degrees)
+function toRadians(degrees)
 {
   var pi = Math.PI;
   return degrees * (pi/180);
@@ -313,17 +313,19 @@ function degrees_to_radians(degrees)
 
 function calculateDistance(lat1, lat2){
   var R = 6371e3; // metres
-  var φ1 = lat1.toRadians();
-  var φ2 = lat2.toRadians();
-  var Δφ = (lat2-lat1).toRadians();
-  var Δλ = (lon2-lon1).toRadians();
+  var φ1 = toRadians(lat1);
+  var φ2 = toRadians(lat2);
+  var Δφ = toRadians(lat2-lat1);
+  var Δλ = toRadians(lon2-lon1);
 
   var a = Math.sin(Δφ/2) * Math.sin(Δφ/2) +
         Math.cos(φ1) * Math.cos(φ2) *
         Math.sin(Δλ/2) * Math.sin(Δλ/2);
   var c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
 
-  var d = R * c;
+
+  var d = R * c / 1609.34;
+
   return d
 }
 
@@ -331,7 +333,18 @@ function calculateDistance(lat1, lat2){
   /********* Order By ****************/
 
 app.post("/order_by/", function(request, response, next){
-  if(request.body.order === "ratings"){
+  if(request.body.lat && request.body.long){
+    request.session["lat"] = request.body.lat;
+    request.session["long"] = request.body.long;
+  };
+  function order (category, session){
+    if(category === "distance"){
+      session.list.forEach(function(item){
+        // console.log(session.list.latitude, session.list.longitude, body.lat, body.long);
+        item["distance"] = calculateDistance(item.latitude, item.longitude, session.lat, session.long);
+        console.log(item["name"] + ":" + item["distance"]);
+      })
+    }
     var ordered = [];
     request.session.list.forEach(function(item){
       var added = false;
@@ -341,10 +354,19 @@ app.post("/order_by/", function(request, response, next){
       }
       else{
         for(var i=0; i<ordered.length; i++){
-          if(item.ratings > ordered[i].ratings){
-            ordered.splice(i, 0, item);
-            added = true;
-            break;
+          if(category === "rating"){
+            if(item[category] > ordered[i][category]){
+              ordered.splice(i, 0, item);
+              added = true;
+              break;
+            }
+          }
+          else if(category === "distance"){
+            if(item[category] < ordered[i][category]){
+              ordered.splice(i, 0, item);
+              added = true;
+              break;
+            }
           }
         }
       if(!added){
@@ -353,12 +375,8 @@ app.post("/order_by/", function(request, response, next){
       }
     })
   }
-  if (ordered.length === 0){
-
-  }
-  else{
-    response.render('partials/list.hbs', {layout: false, results: ordered});
-  }
+  var ordered = order(request.body.order, request.session);
+  response.render('partials/list.hbs', {layout: false, results: ordered});
 })
 
 
@@ -460,24 +478,25 @@ app.post("/filter/", function(request, response, next){
         if(toFilter["open_now"]){
           result.forEach(function(restaurant) {
             console.log(restaurant.yelp_id);
-            // For each restaurant, check if open now.
+            // For each restaurant, create a promise to check if open now
             var p = yelp_client.business(restaurant.yelp_id);
+            // Create an array of promises
             promises.push(p);
+            // Create an array of restaurants queried
             restaurants.push(restaurant);
           });
 
+          // Wait for all promises to return
           promise.all(promises).then(yelps => {
             yelps.forEach(function (yelp_response, index) {
               // api_response is a boolean value
-              let api_response = yelp_response.jsonBody.hours[0].is_open_now;
-              console.log(api_response);
-              if(api_response) {
-                console.log(restaurants[index]);
+              let is_open = yelp_response.jsonBody.hours[0].is_open_now;
+              if(is_open) {
+                // add restaurant to list of open restaurants
+                // index for restaurants array matches index for promises array
                 open_results.push(restaurants[index]);
               }
             });
-
-            console.log('Open RESULTS: ' + open_results);
             // sends the query results to a partial, sends the partial html text to the frontend to be rendered
             response.render('partials/list.hbs', {layout: false, results: open_results});
           })

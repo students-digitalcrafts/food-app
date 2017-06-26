@@ -137,10 +137,11 @@
 <script src="/static/js/axios.min.js"></script>
 
 <script>
-  // function checkValue(){
-  //   console.log(document.getElementById("gluten free").checked);
-  // }
 
+    // function to check which filter was selected and pass it to the backend using axios
+    // receives html back and replace the content from the element with id = "listing"
+
+    
     function checkFilter (){
       var data = {diet_rest: [], atmosphere: [], open_now: [], food_quickness: []};
       var list = [];
@@ -155,22 +156,11 @@
       axios.post("/filter/", data, {responseType: 'text'})
         .then(function(result){
           document.getElementById('listing').innerHTML = result.data;
+          // Improve user experience; return to top after applying filters
           window.scrollTo(0, 0);
         })
       return false;
     }
-
-    function orderBy (){
-      var select = document.getElementById("select_order_by").value;
-      if (select){
-        data = {order: select};
-        axios.post("/order_by/", data, {responseType: "text"})
-          .then(function(result){
-            document.getElementById('listing').innerHTML = result.data;
-          })
-      }
-    }
-
 
     //Get user location
     var getPosition = function (options) {
@@ -178,14 +168,64 @@
         navigator.geolocation.getCurrentPosition(resolve, reject, options);
       });
     }
+
+    function orderBy (){
+      console.log(sessionStorage.getItem("lat"));
+      console.log(sessionStorage.getItem("long"));
+      var select = document.getElementById("select_order_by").value;
+      var data = {order: select};
+      if (select === "distance"){
+        if (sessionStorage.getItem("lat") && sessionStorage.getItem("long")){
+          data["lat"] = sessionStorage.getItem("lat");
+          data["long"] = sessionStorage.getItem("long");
+          console.log(sessionStorage.getItem("lat"));
+          console.log(sessionStorage.getItem("long"));
+          axios.post("/order_by/", data, {responseType: "text"})
+            .then((result) => {
+              document.getElementById('listing').innerHTML = result.data;
+            })
+            .catch((err) => {
+              console.error(err.message);
+            });
+        }
+        else{
+          getPosition()
+            .then((position) => {
+              data["lat"] = position.coords.latitude;
+              data["long"] = position.coords.longitude;
+              sessionStorage.setItem("lat", position.coords.latitude);
+              sessionStorage.setItem("long", position.coords.longitude);
+              return axios.post("/order_by/", data, {responseType: "text"})
+            })
+            .then((result) => {
+                document.getElementById('listing').innerHTML = result.data;
+              })
+            .catch((err) => {
+              console.error(err.message);
+            });
+          }
+    }
+      else if (select === "rating"){
+        axios.post("/order_by/", data, {responseType: "text"})
+          .then(function(result){
+            document.getElementById('listing').innerHTML = result.data;
+          })
+          .catch(function(error){
+            console.error(error);
+          })
+      }
+    }
+
+
+
     //Sample promise chain for coordinates
     // getPosition()
     //   .then((position) => {
     //     return position;
     //   })
-    //   .then((position) => {
-    //     console.log(position.coords.latitude+', ' +position.coords.longitude)
-    //   })
+      // .then((position) => {
+      //   console.log(position.coords.latitude+', ' +position.coords.longitude)
+      // })
     //   .catch((err) => {
     //     console.error(err.message);
     //   });
