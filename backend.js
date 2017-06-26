@@ -17,8 +17,6 @@ const pgp = require('pg-promise')({
 //Development database settings
 const db = pgp(process.env.DATABASE_URL||{
   host: 'localhost',
-  // NOTE: change to your preferred port for development --
-  // Must match your Postico settings
   port: 9001,
   database: 'fooddev',
   user: 'postgres',
@@ -148,7 +146,6 @@ db.any(`SELECT name FROM cuisine_type WHERE name ILIKE '${selection}'`)
 // To test on your dev server: localhost:9000/search?search_term=piola
 app.get('/search/', function (req, resp, next) {
   let term = req.query.search_term.toLowerCase();
-
   // replace ' with '' for querying purposes
   let termquote = term.replace("'","''");
   let fields;
@@ -206,11 +203,13 @@ app.get('/search/', function (req, resp, next) {
                       let api_response = response.jsonBody.businesses[0];
                       fields = {
                         name: term,
-                        last_updated: Date.now,
+                        last_updated: Date.now(),
                         image_url: api_response.image_url,
                         yelp_id: api_response.id,
                         phone: api_response.phone,
-                        address: api_response.location.display_address.join(', ')
+                        address: api_response.location.display_address.join(', '),
+                        latitude: api_response.coordinates.latitude,
+                        longitude: api_response.coordinates.longitude
                       };
                       // SQL statement to save fields to database
                       let query = "UPDATE restaurant \
@@ -218,8 +217,10 @@ app.get('/search/', function (req, resp, next) {
                         yelp_id = ${yelp_id}, \
                         phone = ${phone}, \
                         address = ${address}, \
-                        last_updated = ${last_updated} \
-                        WHERE name = ${name}";
+                        last_updated = ${last_updated}, \
+                        latitude = ${latitude}, \
+                        longitude = ${longitude} \
+                        WHERE name = ${name};";
                       db.result(query, fields)
                       .then(function (update_result) {
                         // Takes fields from API response and merges them with db result fields
@@ -331,7 +332,7 @@ function degrees_to_radians(degrees)
   return degrees * (pi/180);
 }
 
-function calculateDistance(lat1, lat2){
+function calculateDistance(lat1, lon1, lat2, lon2){
   var R = 6371e3; // metres
   var φ1 = lat1.toRadians();
   var φ2 = lat2.toRadians();
@@ -343,7 +344,7 @@ function calculateDistance(lat1, lat2){
         Math.sin(Δλ/2) * Math.sin(Δλ/2);
   var c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
 
-  var d = R * c;
+  var d = R * c / 1.609344;
   return d
 }
 
@@ -351,9 +352,14 @@ function calculateDistance(lat1, lat2){
   /********* Order By ****************/
 
 app.post("/order_by/", function(request, response, next){
-  if(request.body.order === "ratings"){
+  function order (category, session, body){
+    if(category === "distance"){
+      session.list.forEach(function(item){
+        session.list["distance"] = calculateDistance(session.list.lat, session.list.lon, body.lat, body.lon);
+      })
+    }
     var ordered = [];
-    request.session.list.forEach(function(item){
+    session.list.forEach(function(item){
       var added = false;
       if (ordered.length === 0){
         ordered.push(item);
@@ -361,7 +367,7 @@ app.post("/order_by/", function(request, response, next){
       }
       else{
         for(var i=0; i<ordered.length; i++){
-          if(item.ratings > ordered[i].ratings){
+          if(item[category] > ordered[i][category]){
             ordered.splice(i, 0, item);
             added = true;
             break;
@@ -372,13 +378,10 @@ app.post("/order_by/", function(request, response, next){
       }
       }
     })
+    return ordered
   }
-  if (ordered.length === 0){
-
-  }
-  else{
-    response.render('partials/list.hbs', {layout: false, results: ordered});
-  }
+  var ordered = order(request.body.order, request.session, request.body);
+  response.render('partials/list.hbs', {layout: false, results: ordered});
 })
 
 
@@ -674,23 +677,7 @@ app.post('/add_dish/', function (request, resp, next) {
   insert_rest(req, resp);
 });
 
-//Get user location
-var getPosition = function (options) {
-  return new Promise(function (resolve, reject) {
-    navigator.geolocation.getCurrentPosition(resolve, reject, options);
-  });
-}
-//Sample promise chain for coordinates
-  // getPosition()
-  //   .then((position) => {
-  //     return position;
-  //   })
-  //   .then((position) => {
-  //     console.log(position.coords.latitude+', ' +position.coords.longitude)
-  //   })
-  //   .catch((err) => {
-  //     console.error(err.message);
-  //   });
+
 
 
 
