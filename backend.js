@@ -246,15 +246,14 @@ app.get('/search/', function (req, resp, next) {
 app.get('/restaurants/', function (request, response, next) {
   db.query(`SELECT name FROM restaurant ORDER BY name`)
   .then(function(results) {
-    // console.log(results);
-    // console.log(results[0].name);
+    //creates the html link name for the result page
     for (let x = 0; x < results.length; x++) {
-
       results[x].namehtml = results[x].name.replace(/'/g,"%27");
       results[x].namehtml = results[x].name.replace(/ /g, "+");
     }
     var sorted = {};
     var htmlname = [];
+//creates sorted object with restuarnt names with an array for the html names
 results.forEach(function (item){
   if(sorted[item.name[0]]){
     sorted[item.name[0]].push({name: item.name, html: item.namehtml});
@@ -285,8 +284,10 @@ app.get('/contribute/', function(request, response) {
 /********* Moods Page ***********/
 
 app.get('/moods/', function(request, response) {
-  response.render('moods.hbs');
-})
+  response.render('moods.hbs', {});
+});
+
+
 
 /************ Restaurant Detail Page ***************/
 

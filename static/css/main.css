@@ -1626,11 +1626,17 @@ h2 {
   font-size: 1.8em; }
 
 h4 {
-  font-size: 1.3em; }
+  font-size: 1.5em; }
 
 strong {
   font-size: 1.2em;
   font-weight: 500; }
+
+.margin {
+  margin: 50px; }
+
+.profile-pic {
+  width: 175px; }
 
 .logo-img {
   width: 225px;
@@ -1638,6 +1644,9 @@ strong {
 
 .emojis {
   width: 135px; }
+  @media (max-width: 500px) {
+    .emojis {
+      width: 96px; } }
 
 #search_form {
   margin-top: 60px; }
