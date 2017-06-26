@@ -224,7 +224,6 @@ app.get('/search/', function (req, resp, next) {
                         // Takes fields from API response and merges them with db result fields
                         result = Object.assign(result, fields);
                         req.session.restaurant = result;
-                        // NOTE: Add redirect to detail page
                         resp.redirect('/detail/');
                         pgp.end();
                       });
@@ -408,47 +407,74 @@ app.post("/filter/", function(request, response, next){
     // converts the list of atmosphere options selected by the user into a string
     var atmosphereQuery = "atmosphere IN ('" + toFilter["atmosphere"].toString() + "')";
     // add single quotes to each element to be used in the query
-    atmosphereQuery = atmosphereQuery.replace(",", "\',\'");
+    atmosphereQuery = atmosphereQuery.replace(/,/g, "\',\'");
     // if there is filter by food_quickness, adds AND to the end of the query
     if(toFilter["food_quickness"]){
-      atmosphereQuery += " AND ";
+       atmosphereQuery += " AND ";
     }
+    // console.log(toFilter);
   }
   // if it doesn't filter by atmosphere, sets the query to an empty string
   else{
     var atmosphereQuery = "";
   }
 
+  // If user filters by food quickness, creates a query that will find all restaurants
+  // within the desired service speed range
+  //
+  // Food quickness is defined on a scale of 1-3, 1 being the fastest service
+  if(toFilter["food_quickness"]){
+     // converts the food_quickness integer input to a query string
+     var food_quicknessQuery = "food_quickness <= " + toFilter["food_quickness"].toString();
+  }
+  // // if it doesn't filter by atmosphere, sets the query to an empty string
+  else{
+     var food_quicknessQuery = "";
+  }
+
+
   // if toFilter is an empty object (the user hasn't filtered), returns the list from the previous search, that was stored in sessions.list
   if(Object.keys(toFilter).length === 0 && toFilter.constructor === Object){
     // sends the list from the previous search to a partial, sends the partial html text to the frontend to be rendered
     response.render('partials/list.hbs', {layout: false, results: request.session.list});
   }
-  // if the user filtered, apply the query
   else{
-    db.any(query+diet_restQuery+atmosphereQuery)
+    // list of results that meet the 'open now' criteria
+    let open_results = [];
+    let promises = [];
+    let restaurants = [];
+    // if the user filtered, apply the query
+    db.any(query+diet_restQuery+atmosphereQuery+food_quicknessQuery)
       .then(function (result){
         // if the user filters by open now, queries Yelp-Fusion Business API
         // NOTE: This filter should be applied last to minimize API hits
+
         if(toFilter["open_now"]){
           result.forEach(function(restaurant) {
-            // For each restaurant, check if open now. Returns a boolean.
-            yelp_client.business(restaurant.yelp_id)
-            .then(response => {
-              let api_response = response.jsonBody.hours[0].is_open_now;
-              // NOTE: if false, remove restaurant from restId and
-              // update restIdQuery? Ask Felipe
-              console.log(api_response);
-            })
-            .catch(err => {
-              console.error(err);
-            });
+            console.log(restaurant.yelp_id);
+            // For each restaurant, check if open now.
+            var p = yelp_client.business(restaurant.yelp_id);
+            promises.push(p);
+            restaurants.push(restaurant);
           });
+
+          promise.all(promises).then(yelps => {
+            yelps.forEach(function (yelp_response, index) {
+              // api_response is a boolean value
+              let api_response = yelp_response.jsonBody.hours[0].is_open_now;
+              console.log(api_response);
+              if(api_response) {
+                console.log(restaurants[index]);
+                open_results.push(restaurants[index]);
+              }
+            });
+
+            console.log('Open RESULTS: ' + open_results);
+            // sends the query results to a partial, sends the partial html text to the frontend to be rendered
+            response.render('partials/list.hbs', {layout: false, results: open_results});
+          })
+          .catch(next);
         }
-
-
-        // sends the query results to a partial, sends the partial html text to the frontend to be rendered
-        response.render('partials/list.hbs', {layout: false, results: result});
       })
       .catch(function(error){
         console.error(error);
