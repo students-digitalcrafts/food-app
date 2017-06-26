@@ -17,8 +17,6 @@ const pgp = require('pg-promise')({
 //Development database settings
 const db = pgp(process.env.DATABASE_URL||{
   host: 'localhost',
-  // NOTE: change to your preferred port for development --
-  // Must match your Postico settings
   port: 9001,
   database: 'fooddev',
   user: 'postgres',
@@ -148,7 +146,6 @@ db.any(`SELECT name FROM cuisine_type WHERE name ILIKE '${selection}'`)
 // To test on your dev server: localhost:9000/search?search_term=piola
 app.get('/search/', function (req, resp, next) {
   let term = req.query.search_term.toLowerCase();
-
   // replace ' with '' for querying purposes
   let termquote = term.replace("'","''");
   let fields;
@@ -205,11 +202,13 @@ app.get('/search/', function (req, resp, next) {
                       let api_response = response.jsonBody.businesses[0];
                       fields = {
                         name: term,
-                        last_updated: Date.now,
+                        last_updated: Date.now(),
                         image_url: api_response.image_url,
                         yelp_id: api_response.id,
                         phone: api_response.phone,
-                        address: api_response.location.display_address.join(', ')
+                        address: api_response.location.display_address.join(', '),
+                        latitude: api_response.coordinates.latitude,
+                        longitude: api_response.coordinates.longitude
                       };
                       // SQL statement to save fields to database
                       let query = "UPDATE restaurant \
@@ -217,8 +216,10 @@ app.get('/search/', function (req, resp, next) {
                         yelp_id = ${yelp_id}, \
                         phone = ${phone}, \
                         address = ${address}, \
-                        last_updated = ${last_updated} \
-                        WHERE name = ${name}";
+                        last_updated = ${last_updated}, \
+                        latitude = ${latitude}, \
+                        longitude = ${longitude} \
+                        WHERE name = ${name};";
                       db.result(query, fields)
                       .then(function (update_result) {
                         // Takes fields from API response and merges them with db result fields
@@ -668,23 +669,7 @@ app.post('/add_dish/', function (request, resp, next) {
   insert_rest(req, resp);
 });
 
-//Get user location
-var getPosition = function (options) {
-  return new Promise(function (resolve, reject) {
-    navigator.geolocation.getCurrentPosition(resolve, reject, options);
-  });
-}
-//Sample promise chain for coordinates
-  // getPosition()
-  //   .then((position) => {
-  //     return position;
-  //   })
-  //   .then((position) => {
-  //     console.log(position.coords.latitude+', ' +position.coords.longitude)
-  //   })
-  //   .catch((err) => {
-  //     console.error(err.message);
-  //   });
+
 
 
 
