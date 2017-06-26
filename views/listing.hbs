@@ -1,6 +1,6 @@
 <!---------- Modal w/ Filters, Search Settings ----------->
 <div class="fixed-action-btn">
-  <a id="filter-menu" class="btn-floating btn-large orange darken-1 tooltipped" href="#filter-modal" data-position="top" data-delay="50" data-tooltip="search filters">
+  <a id="filter-menu" class="btn-floating btn-large orange darken-1 tooltipped" href="#filter-modal">
     <i class="large material-icons blue-grey-text darken-2">filter_list</i>
   </a>
 </div>
@@ -56,36 +56,39 @@
       <br>
 
       <!---- Restaurant Atmosphere ---->
-      <!-- NOTE: These should default to checked -->
+      <!-- NOTE: User-test whether these should default to checked -->
       <div class="row">
         <p>restaurant atmosphere</p>
         <div class="col s4">
-          <input id="dive" type="checkbox" name="atmosphere" value="dive"/>
+          <input checked="checked" id="dive" type="checkbox" name="atmosphere" value="dive"/>
           <label for="dive">dive</label>
         </div>
         <div class="col s4">
-          <input id="casual" type="checkbox" name="atmosphere" value="casual"/>
+          <input checked="checked" id="casual" type="checkbox" name="atmosphere" value="casual"/>
           <label for="casual">casual</label>
         </div>
         <div class="col s4">
-          <input id="fancy" type="checkbox" name="atmosphere" value="fancy"/>
+          <input checked="checked" id="fancy" type="checkbox" name="atmosphere" value="fancy"/>
           <label for="fancy">fancy</label>
         </div>
       </div><!-- .row -->
-      <br>
+      <br><br>
 
       <!---- Restaurant Hours ---->
       <div class="row">
         <!---- Service Speed ---->
-        <div class="col s6 left-align">
+        <div class="col s3 left-align">
           fast service
         </div>
-        <div class="col s6 right-align">
+        <div class="col s3 right-align">
           slow service
         </div>
-        <div class="col s12">
+      </div><!-- .row -->
+      <div class="row">
+        <div class="col s6">
           <p class="range-field">
-            <input type="range" id="food quickness" min="1" max="3" />
+            <!-- checked property included for ease of selecting w/ JS -->
+            <input checked="checked" type="range" id="food quickness" name="food_quickness" min="1" max="3" value="3" />
           </p>
         </div>
       </div><!-- .row -->
@@ -93,7 +96,7 @@
       <div class="row">
         <div class="switch">
             <label for="open now">
-              <input id="open now" type="checkbox" name="open_now" value="true"/>
+              <input id="open now" type="checkbox" name="open_now" value="open"/>
               <span class="lever"></span>
               open right now</label>
           </div><!-- .switch -->
@@ -103,6 +106,7 @@
       <div class="row center-align">
         <input type="submit" value="apply filters" class="modal-action modal-close btn">
       </div>
+
     </form>
   </div><!-- .modal-content -->
 </div><!--. filter-modal -->
@@ -133,37 +137,30 @@
 <script src="/static/js/axios.min.js"></script>
 
 <script>
-  // function checkValue(){
-  //   console.log(document.getElementById("gluten free").checked);
-  // }
 
+    // function to check which filter was selected and pass it to the backend using axios
+    // receives html back and replace the content from the element with id = "listing"
+
+    
     function checkFilter (){
       var data = {diet_rest: [], atmosphere: [], open_now: [], food_quickness: []};
       var list = [];
       var elements = document.getElementById("filter").elements;
-      for (var i=0; i < elements.length-2; i++){
+      console.log(elements);
+      for (var i=0; i < elements.length-1; i++){
         if(elements[i].checked){
           data[elements[i].getAttribute("name")].push(elements[i].value);
         }
       }
-      axios.post("/filter/", data, {responseType: "text"})
+      console.log(data);
+      axios.post("/filter/", data, {responseType: 'text'})
         .then(function(result){
           document.getElementById('listing').innerHTML = result.data;
+          // Improve user experience; return to top after applying filters
+          window.scrollTo(0, 0);
         })
       return false;
     }
-
-    function orderBy (){
-      var select = document.getElementById("select_order_by").value;
-      if (select){
-        data = {order: select};
-        axios.post("/order_by/", data, {responseType: "text"})
-          .then(function(result){
-            document.getElementById('listing').innerHTML = result.data;
-          })
-      }
-    }
-
 
     //Get user location
     var getPosition = function (options) {
@@ -171,14 +168,64 @@
         navigator.geolocation.getCurrentPosition(resolve, reject, options);
       });
     }
+
+    function orderBy (){
+      console.log(sessionStorage.getItem("lat"));
+      console.log(sessionStorage.getItem("long"));
+      var select = document.getElementById("select_order_by").value;
+      var data = {order: select};
+      if (select === "distance"){
+        if (sessionStorage.getItem("lat") && sessionStorage.getItem("long")){
+          data["lat"] = sessionStorage.getItem("lat");
+          data["long"] = sessionStorage.getItem("long");
+          console.log(sessionStorage.getItem("lat"));
+          console.log(sessionStorage.getItem("long"));
+          axios.post("/order_by/", data, {responseType: "text"})
+            .then((result) => {
+              document.getElementById('listing').innerHTML = result.data;
+            })
+            .catch((err) => {
+              console.error(err.message);
+            });
+        }
+        else{
+          getPosition()
+            .then((position) => {
+              data["lat"] = position.coords.latitude;
+              data["long"] = position.coords.longitude;
+              sessionStorage.setItem("lat", position.coords.latitude);
+              sessionStorage.setItem("long", position.coords.longitude);
+              return axios.post("/order_by/", data, {responseType: "text"})
+            })
+            .then((result) => {
+                document.getElementById('listing').innerHTML = result.data;
+              })
+            .catch((err) => {
+              console.error(err.message);
+            });
+          }
+    }
+      else if (select === "rating"){
+        axios.post("/order_by/", data, {responseType: "text"})
+          .then(function(result){
+            document.getElementById('listing').innerHTML = result.data;
+          })
+          .catch(function(error){
+            console.error(error);
+          })
+      }
+    }
+
+
+
     //Sample promise chain for coordinates
     // getPosition()
     //   .then((position) => {
     //     return position;
     //   })
-    //   .then((position) => {
-    //     console.log(position.coords.latitude+', ' +position.coords.longitude)
-    //   })
+      // .then((position) => {
+      //   console.log(position.coords.latitude+', ' +position.coords.longitude)
+      // })
     //   .catch((err) => {
     //     console.error(err.message);
     //   });
