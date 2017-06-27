@@ -54,7 +54,9 @@
     // On mobile phones, hide logo when search bar gains focus
     // to allow ample space for autocomplete suggestions
     var screen_width = $(window).width();
-    if(screen_width < 700) {      
+    if(screen_width < 700) {
+      // Improve mobile experience by changing filters modal to bottom menu
+      $("#filter-modal").removeClass("modal-fixed-footer").addClass("bottom-sheet");
       $("body").on("focusin", "#search", function() {
         $("#logo").hide();
         // Improve user experience; return to top after applying filters
