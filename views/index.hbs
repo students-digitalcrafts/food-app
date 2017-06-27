@@ -36,6 +36,14 @@
 <script src="static/js/auto-complete.min.js"></script>
 <script>
   var data = {};
+
+  // Get user location through the browser
+  var getPosition = function (options) {
+    return new Promise(function (resolve, reject) {
+      navigator.geolocation.getCurrentPosition(resolve, reject, options);
+    });
+  }
+  
   // Get user location through the browser
   if (sessionStorage.getItem("lat") && sessionStorage.getItem("long")){
     // sends the data to the backend
