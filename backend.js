@@ -283,6 +283,7 @@ app.get('/contribute/', function(request, response) {
   response.render('contribute.hbs');
 });
 
+
 /********* Calculate Distance ******/
 
 // converts from degrees to radians
@@ -323,11 +324,13 @@ app.post("/update_location/", function(request, response, next){
 })
 
 
+
 /********* Moods Page ***********/
 
-app.get('/moods/', function(request, response, next) {
+app.get('/moods/', function(request, response) {
   response.render('moods.hbs');
 })
+
 
 app.get('/moods_check/', function(request, response, next) {
   // console.log(request.session);
@@ -364,8 +367,6 @@ app.get('/moods_check/', function(request, response, next) {
     response.render("listing.hbs", {results: result, term: mood});
     })
 })
-
-
 
 
 
