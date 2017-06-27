@@ -52,8 +52,14 @@
           {{this.description}}<br>
           Spicy? <img src="/static/img/spicy-{{spice}}.png" alt="icon courtesy of http://www.flaticon.com/authors/madebyoliver"> <br>
           {{#if diet_rest_name}}
-          [{{this.diet_rest_name}}]
+            [{{this.diet_rest_name}}]
           {{/if}}
+            {{this.diet_rest_name}}
+
+            {{#each this.diet_rest_name}}
+              {{@index}}: {{this}}
+            {{/each}}
+          {{diet_rest_name}}
           <br><br>
         </div>
       {{/each}}
