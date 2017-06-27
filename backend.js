@@ -295,25 +295,69 @@ app.get("/detail/", function(req, resp, next) {
   // Restaurant selected by the user, assigned from GET params in search
   let restaurant = req.session.restaurant;
   // Select dishes etc. that correspond to the restaurant
-   let query =`SELECT dish.name as dishname, dish.adventurous as adventurous, \
-   dish.shareable as shareable, diet_rest.name as diet_rest_name, dish.price as price, \
-   dish.spice as spice, dish.description as description FROM dish \
-   FULL OUTER JOIN diet_rest_dish_join ON dish.id = diet_rest_dish_join.dish_id \
-   FULL OUTER JOIN diet_rest ON diet_rest_dish_join.diet_rest_id = diet_rest.id \
-   WHERE dish.restaurant_id = ${restaurant.id};`
+   let query =`SELECT dish.id as id, dish.name as dishname, dish.adventurous as adventurous,
+   dish.shareable as shareable, dish.price as price,
+   dish.spice as spice, dish.description as description FROM dish
+      WHERE dish.restaurant_id = ${restaurant.id};`
  //Select moods that correspond to the restaurant
     let mood_query = `SELECT * FROM mood_restaurant_join \
      WHERE restaurant_id = ${restaurant.id}`;
      //Select dietary restrictions from diet_rest_dish_join
      var promises = [db.any(query), db.any(mood_query)];
+     var moods;
+     var dishes;
+
      promise.all(promises)
+      .then(function(results){
+        moods = results[1];
+        dishes = results[0];
+
+        for (let i = 0; i < dishes.length; i++) {
+          // console.log('Dish name of dish query '+dishes[i].dishname)
+          db.query(`SELECT diet_rest.name as dietname FROM diet_rest JOIN diet_rest_dish_join ON \
+            diet_rest.id = diet_rest_dish_join.diet_rest_id WHERE dish_id = ${dishes[i].id}`)
+          .then(function(dietrestresults){
+            var restrictionList = [];
+            if(dietrestresults.length > 0){
+              // console.log('Dietary list lenght: '+dietrestresults.length +'Dishname:' +dishes[i].dishname)
+              dietrestresults.forEach(function(dietrestresults){
+                // console.log(' Dishname: '+dishes[i].dishname);
+                // console.log('dietrestresults for '+dishes[i].dishname+' '+dietrestresults.dietname);
+                let x = [dietrestresults.dietname];
+                restrictionList.push(x)
+                // console.log('temp x is '+x)
+                // console.log('restrictionList had this pushed to it: '+restrictionList)
+              })
+              // console.log('restrictionList for '+dishes[i].dishname+': '+restrictionList)
+              restrictionList=restrictionList.toString();
+              // console.log('Make sure dishes[i].diet_rest_name is properly loaded: '+dishes[i].diet_rest_name)
+            }
+          return restrictionList;
+          })
+          .then(function(restrictionList){
+            // console.log('restrictionList for '+dishes[i].dishname+': '+restrictionList)
+            dishes[i].diet_rest_name = restrictionList;
+          })
+          .then(function(){
+            console.log('Make sure restrictionList is loaded into dish '+dishes[i].dishname+' '+dishes[i].diet_rest_name)
+          })
+        }
+        return dishes;
+      })
+      .then(function(dishes){
+        // for(let l = 0; l < dishes.length; l++){
+        //   console.log('Make sure restrictionList is loaded into dish '+dishes[l].dishname+' '+dishes[l].diet_rest_name)
+        // }
+      })
       .then(function (results) {
-      resp.render('detail.hbs', {
-        restaurant: restaurant,
-         dishes: results[0],
-         moods: results[1],
-        map_key: process.env.GOOGLE_STATIC_MAP_KEY});
-    });
+
+        resp.render('detail.hbs', {
+          restaurant: restaurant,
+           dishes: dishes,
+           moods: moods,
+          map_key: process.env.GOOGLE_STATIC_MAP_KEY
+        });
+      });
 })
 
   /********* Calculate Distance ******/
