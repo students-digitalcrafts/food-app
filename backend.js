@@ -147,6 +147,8 @@ db.any(`SELECT name FROM cuisine_type WHERE name ILIKE '${selection}'`)
 
 // To test on your dev server: localhost:9000/search?search_term=piola
 app.get('/search/', function (req, resp, next) {
+  req.session.filtered = [];
+  req.session.order = "";
   let term = req.query.search_term.toLowerCase();
 
   // replace ' with '' for querying purposes
@@ -292,73 +294,121 @@ app.get('/moods/', function(request, response) {
 app.get("/detail/", function(req, resp, next) {
   // Restaurant selected by the user, assigned from GET params in search
   let restaurant = req.session.restaurant;
-  // Select dishes that correspond to the restaurant
-  let query = `SELECT * FROM dish \
-    WHERE restaurant_id = ${restaurant.id}`;
-  db.any(query)
-    .then(function(result) {
+  // Select dishes etc. that correspond to the restaurant
+   let query =`SELECT dish.name as dishname, dish.adventurous as adventurous, \
+   dish.shareable as shareable, diet_rest.name as diet_rest_name, dish.price as price, \
+   dish.spice as spice, dish.description as description FROM dish \
+   FULL OUTER JOIN diet_rest_dish_join ON dish.id = diet_rest_dish_join.dish_id \
+   FULL OUTER JOIN diet_rest ON diet_rest_dish_join.diet_rest_id = diet_rest.id \
+   WHERE dish.restaurant_id = ${restaurant.id};`
+ //Select moods that correspond to the restaurant
+    let mood_query = `SELECT * FROM mood_restaurant_join \
+     WHERE restaurant_id = ${restaurant.id}`;
+     //Select dietary restrictions from diet_rest_dish_join
+     var promises = [db.any(query), db.any(mood_query)];
+     promise.all(promises)
+      .then(function (results) {
       resp.render('detail.hbs', {
         restaurant: restaurant,
-        dishes: result,
+         dishes: results[0],
+         moods: results[1],
         map_key: process.env.GOOGLE_STATIC_MAP_KEY});
-    })
+    });
 })
 
   /********* Calculate Distance ******/
-function degrees_to_radians(degrees)
+
+// converts from degrees to radians
+function toRadians(degrees)
 {
   var pi = Math.PI;
   return degrees * (pi/180);
 }
 
-function calculateDistance(lat1, lat2){
+// receives two positions (lat and long for each) and calculate the distance a crow can fly
+function calculateDistance(lat1, lon1, lat2, lon2){
   var R = 6371e3; // metres
-  var φ1 = lat1.toRadians();
-  var φ2 = lat2.toRadians();
-  var Δφ = (lat2-lat1).toRadians();
-  var Δλ = (lon2-lon1).toRadians();
+  var φ1 = toRadians(lat1);
+  var φ2 = toRadians(lat2);
+  var Δφ = toRadians(lat2-lat1);
+  var Δλ = toRadians(lon2-lon1);
 
   var a = Math.sin(Δφ/2) * Math.sin(Δφ/2) +
         Math.cos(φ1) * Math.cos(φ2) *
         Math.sin(Δλ/2) * Math.sin(Δλ/2);
   var c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
 
-  var d = R * c;
+
+  var d = R * c / 1609.34;
+  // returns the distance in miles
   return d
+}
+
+// function to sort ascending or descending and return a list of objects ordered
+function order (category, session, list){
+  // if the user wants to order by distance
+  if(category === "distance"){
+    // calculates the distance for each restaurant from the user position
+    list.forEach(function(item){
+      // stores the distance in the session in the distance field
+      item["distance"] = calculateDistance(item.latitude, item.longitude, session.lat, session.long);
+      console.log(item.name + ":" + item.distance );
+    })
+  }
+  var ordered = [];
+  // sorts the objects
+  list.forEach(function(item){
+    var added = false;
+    if (ordered.length === 0){
+      ordered.push(item);
+      added = true;
+    }
+    else{
+      for(var i=0; i<ordered.length; i++){
+        // if the user selects ratings, orders from higher to lower ratings
+        if(category === "rating"){
+          if(item[category] > ordered[i][category]){
+            ordered.splice(i, 0, item);
+            added = true;
+            break;
+          }
+        }
+        // if the user selects distance, orders from closer to farther
+        else if(category === "distance"){
+          if(item[category] < ordered[i][category]){
+            ordered.splice(i, 0, item);
+            added = true;
+            break;
+          }
+        }
+      }
+    if(!added){
+      ordered.push(item);
+    }
+    }
+  })
+  return ordered
 }
 
 
   /********* Order By ****************/
 
 app.post("/order_by/", function(request, response, next){
-  if(request.body.order === "ratings"){
-    var ordered = [];
-    request.session.list.forEach(function(item){
-      var added = false;
-      if (ordered.length === 0){
-        ordered.push(item);
-        added = true;
-      }
-      else{
-        for(var i=0; i<ordered.length; i++){
-          if(item.ratings > ordered[i].ratings){
-            ordered.splice(i, 0, item);
-            added = true;
-            break;
-          }
-        }
-      if(!added){
-        ordered.push(item);
-      }
-      }
-    })
-  }
-  if (ordered.length === 0){
-
+  request.session.order = request.body.order;
+  // updates the data with new coordinates into the session, if necessary
+  if(request.body.lat && request.body.long){
+    request.session["lat"] = request.body.lat;
+    request.session["long"] = request.body.long;
+  };
+  // execute the ordering function
+  if (request.session.filtered.length > 0){
+    var ordered = order(request.body.order, request.session, request.session.filtered);
   }
   else{
-    response.render('partials/list.hbs', {layout: false, results: ordered});
+    var ordered = order(request.body.order, request.session, request.session.list);
   }
+  // sends the data to the partial list and then sends the html text back to the frontend
+  response.render('partials/list.hbs', {layout: false, results: ordered});
 })
 
 
@@ -375,9 +425,10 @@ app.post("/filter/", function(request, response, next){
   request.session.list.forEach(function(item){
     restId.push(item.id);
   });
+  var list_to_string = restId.toString()
   // creates a query that queries the restaurants by id from the restId list
-  var restIdQuery = "id IN (" + restId.toString() + ") AND ";
-  let query = `SELECT * FROM restaurant WHERE ` + restIdQuery;
+  var restIdQuery = `id IN (${list_to_string}) AND `;
+  let query = `SELECT * FROM restaurant WHERE ${restIdQuery}`;
   // generates an object that will store the filter attributes sent through a POST internal api
   for(var key in request.body){
     if (request.body[key].length > 0){
@@ -387,9 +438,9 @@ app.post("/filter/", function(request, response, next){
   }
   // if the user filters by any dietary restrition, creates a query that will query for all of them using the logical operator OR
   if(toFilter["diet_rest"]){
-    var diet_restQuery = "id IN (SELECT DISTINCT restaurant_id FROM restaurant_diet_rest_join WHERE ";
+    var diet_restQuery = `id IN (SELECT DISTINCT restaurant_id FROM restaurant_diet_rest_join WHERE `;
     toFilter["diet_rest"].forEach(function(item){
-      diet_restQuery += "diet_rest_id=" + item + " OR ";
+      diet_restQuery += `diet_rest_id=${item} OR `;
     })
     // removes the OR from the last adition in the forEach
     diet_restQuery = diet_restQuery.slice(0,-4) + ")";
@@ -405,9 +456,10 @@ app.post("/filter/", function(request, response, next){
   // if the user filters by any atmosphere, creates a query that will query for all of them through a tuple of cases
   if(toFilter["atmosphere"]){
     // converts the list of atmosphere options selected by the user into a string
-    var atmosphereQuery = "atmosphere IN ('" + toFilter["atmosphere"].toString() + "')";
+    list_to_string = toFilter["atmosphere"].toString();
     // add single quotes to each element to be used in the query
-    atmosphereQuery = atmosphereQuery.replace(/,/g, "\',\'");
+    list_to_string = list_to_string.replace(/,/g, "\',\'");
+    var atmosphereQuery = `atmosphere IN ('${list_to_string}')`;
     // if there is filter by food_quickness, adds AND to the end of the query
     if(toFilter["food_quickness"]){
        atmosphereQuery += " AND ";
@@ -425,7 +477,8 @@ app.post("/filter/", function(request, response, next){
   // Food quickness is defined on a scale of 1-3, 1 being the fastest service
   if(toFilter["food_quickness"]){
      // converts the food_quickness integer input to a query string
-     var food_quicknessQuery = "food_quickness <= " + toFilter["food_quickness"].toString();
+     var int_to_string = toFilter["food_quickness"].toString();
+     var food_quicknessQuery = `food_quickness <= ${int_to_string}`;
   }
   // // if it doesn't filter by atmosphere, sets the query to an empty string
   else{
@@ -480,10 +533,24 @@ app.post("/filter/", function(request, response, next){
               }
             });
             // sends the query results to a partial, sends the partial html text to the frontend to be rendered
+            if (request.session.order){
+              open_results = order(request.body.order, request.session, open_results);
+            }
+            request.session.filtered = open_results;
+
             response.render('partials/list.hbs', {layout: false, results: open_results});
           })
           .catch(next);
         }
+        // sends the query results to a partial, sends the partial html text to the frontend to be rendered
+        console.log(request.session.order);
+        if (request.session.order){
+            console.log("test")
+            result = order(request.session.order, request.session, result);
+            console.log(result);
+        }
+        request.session.filtered = result;
+        response.render('partials/list.hbs', {layout: false, results: result});
       })
       .catch(function(error){
         console.error(error);

@@ -212,7 +212,7 @@ JOIN (SELECT * FROM restaurant_diet_rest_join WHERE diet_rest_id =3) AS t3 ON t1
 - [ ] Add form/template to search by mood **- Done! Jun. 26 (Ronda)**
 - [x] When filtering by "open now", query Yelp-Fusion API for each restaurant in current session **- Done! Jun. 25 (Aspen)**
 - [ ] Add map of all restaurants to listings page when user filters by location?
-- [x] Add distance slider to bottom of moods page **- Done! Jun. 26 (Ronda)**
+- [x] Add distance slider to bottom of moods page **- Done! Jun. 26(Ronda)**
 - [x] Get lat/long from YelpFusion API **- Done! Jun. 26 (Ryan)**
 - [x] Hide logo on search bar focus for mobile screens **- Done! Jun. 26 (Aspen)**
 - [ ] Connect to Groupon, LivingSocial, etc. to check for deals

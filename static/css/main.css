@@ -1646,10 +1646,13 @@ strong {
   width: 50px; }
 
 .emojis {
-  width: 135px; }
+  width: 100px; }
   @media (max-width: 500px) {
     .emojis {
-      width: 96px; } }
+      width: 70px; } }
+
+.emojis:hover {
+  cursor: pointer; }
 
 #search_form {
   margin-top: 60px; }

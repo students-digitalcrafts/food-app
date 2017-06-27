@@ -137,23 +137,25 @@
 <script src="/static/js/axios.min.js"></script>
 
 <script>
-  // function checkValue(){
-  //   console.log(document.getElementById("gluten free").checked);
-  // }
 
+    // function to check which filter was selected and pass it to the backend using axios
+    // receives html back and replace the content from the element with id = "listing"
     function checkFilter (){
       var data = {diet_rest: [], atmosphere: [], open_now: [], food_quickness: []};
       var list = [];
+      // gets all input elements inside the form with id = "filter"
       var elements = document.getElementById("filter").elements;
-      console.log(elements);
+      // loops through all input elements minus the submit input
       for (var i=0; i < elements.length-1; i++){
+        // if the element is checked, adds it to the data to be sent to the backend
         if(elements[i].checked){
           data[elements[i].getAttribute("name")].push(elements[i].value);
         }
       }
-      console.log(data);
+      // sends the data to the filter view and receives back text with the html to be rendered
       axios.post("/filter/", data, {responseType: 'text'})
         .then(function(result){
+          // replaces the content from the element with id = "listing" with the filtered data
           document.getElementById('listing').innerHTML = result.data;
           // Improve user experience; return to top after applying filters
           window.scrollTo(0, 0);
@@ -161,34 +163,69 @@
       return false;
     }
 
-    function orderBy (){
-      var select = document.getElementById("select_order_by").value;
-      if (select){
-        data = {order: select};
-        axios.post("/order_by/", data, {responseType: "text"})
-          .then(function(result){
-            document.getElementById('listing').innerHTML = result.data;
-          })
-      }
-    }
-
-
-    //Get user location
+    // Get user location through the browser
     var getPosition = function (options) {
       return new Promise(function (resolve, reject) {
         navigator.geolocation.getCurrentPosition(resolve, reject, options);
       });
     }
-    //Sample promise chain for coordinates
-    // getPosition()
-    //   .then((position) => {
-    //     return position;
-    //   })
-    //   .then((position) => {
-    //     console.log(position.coords.latitude+', ' +position.coords.longitude)
-    //   })
-    //   .catch((err) => {
-    //     console.error(err.message);
-    //   });
 
+    // function to order the results by distance or by ratings, it's called when the user changes the selection on the select menu
+    function orderBy (){
+      // gets the value of the select menu
+      var select = document.getElementById("select_order_by").value;
+      // adds the value to the data to be sent to backend
+      var data = {order: select};
+      // if the user orders by distance
+      if (select === "distance"){
+        // if sessionStorage already contains lat and long
+        if (sessionStorage.getItem("lat") && sessionStorage.getItem("long")){
+          // sends the data to the backend
+          data["lat"] = sessionStorage.getItem("lat");
+          data["long"] = sessionStorage.getItem("long");
+          // sends the data to order_by view and receives back text with the html to be rendered
+          axios.post("/order_by/", data, {responseType: "text"})
+            .then((result) => {
+              // replaces the content from the element with id = "listing" with the ordered data
+              document.getElementById('listing').innerHTML = result.data;
+            })
+            .catch((err) => {
+              console.error(err.message);
+            });
+        }
+        else{
+          // if the lat and long are not stored in the sessionStorage, gets the user position through its browser
+          getPosition()
+            .then((position) => {
+              // sends the data to the backend
+              data["lat"] = position.coords.latitude;
+              data["long"] = position.coords.longitude;
+              // stores the lat and long in the sessionStorage
+              sessionStorage.setItem("lat", position.coords.latitude);
+              sessionStorage.setItem("long", position.coords.longitude);
+              // sends the data to order_by view and receives back text with the html to be rendered
+              return axios.post("/order_by/", data, {responseType: "text"})
+            })
+            .then((result) => {
+                // replaces the content from the element with id = "listing" with the ordered data
+                document.getElementById('listing').innerHTML = result.data;
+              })
+            .catch((err) => {
+              console.error(err.message);
+            });
+          }
+    }
+      // if the user orders by rating
+      else if (select === "rating"){
+        // sends the data to the backend, data = {order: select};
+        axios.post("/order_by/", data, {responseType: "text"})
+          .then(function(result){
+            // replaces the content from the element with id = "listing" with the ordered data
+            document.getElementById('listing').innerHTML = result.data;
+          })
+          .catch(function(error){
+            console.error(error);
+          })
+      }
+    }
 </script>
