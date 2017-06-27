@@ -20,7 +20,7 @@
       <p> We recommend especially when you are feeling: </p>
       {{/if}}
       {{#each moods}}
-        <img class="sm-emojis"src="/static/images/{{this.mood_id}}.png">
+        <img class="sm-emojis" src="/static/images/{{this.mood_id}}.png">
       {{/each}}
 
     </div>
@@ -36,7 +36,7 @@
       </div>
       {{#each dishes}}
         <div class="col s11">
-          <strong>{{this.dishname}}</strong>
+          <strong>{{this.name}}</strong>
           {{#if adventurous}}
             [adventurous]
           {{/if}}
@@ -54,6 +54,8 @@
           {{#if diet_rest_name}}
           [{{this.diet_rest_name}}]
           {{/if}}
+          <br>
+
           <br><br>
         </div>
       {{/each}}
