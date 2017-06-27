@@ -1,7 +1,7 @@
 
 <div class="container">
 
-<form id="mood-form" method="GET" action="/moods_check/" >
+<form id="mood-form" method="POST" action="/">
 
 <!-- row for heading -->
   <div class="row">
@@ -89,7 +89,7 @@
     </div>
     <div class="col s12 center-align">
       <p class="range-field sm-slider responsive">
-        <input type="range" id="distance" name="distance" min="1" max="20" />
+        <input type="range" id="distance" min="1" max="20" />
       </p>
     </div>
 </div>
@@ -101,45 +101,3 @@
   </div>
 </form>
 </div>
-<script src="/static/js/axios.min.js"></script>
-<script>
-// Get user location through the browser
-// function getUserPosition(){
-//   var data = {};
-//   if (sessionStorage.getItem("lat") && sessionStorage.getItem("long")){
-//     // sends the data to the backend
-//     data["lat"] = sessionStorage.getItem("lat");
-//     data["long"] = sessionStorage.getItem("long");
-//     console.log(data);
-//     // sends the data to order_by view and receives back text with the html to be rendered
-//     axios.post("/update_location/", data)
-//       .catch((err) => {
-//         console.error(err.message);
-//       });
-//   }
-//   else{
-//     // if the lat and long are not stored in the sessionStorage, gets the user position through its browser
-//     getPosition()
-//       .then((position) => {
-//         // sends the data to the backend
-//         data["lat"] = position.coords.latitude;
-//         data["long"] = position.coords.longitude;
-//         console.log(data);
-//         // stores the lat and long in the sessionStorage
-//         sessionStorage.setItem("lat", position.coords.latitude);
-//         sessionStorage.setItem("long", position.coords.longitude);
-//         // sends the data to order_by view and receives back text with the html to be rendered
-//         return axios.post("/update_location/", data)
-//       })
-//       .then((result) => {
-//           // replaces the content from the element with id = "listing" with the ordered data
-//           var x;
-//         })
-//       .catch((err) => {
-//         console.error(err.message);
-//       });
-//     }
-//   return true;
-// }
-
-</script>
