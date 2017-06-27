@@ -283,11 +283,92 @@ app.get('/contribute/', function(request, response) {
   response.render('contribute.hbs');
 });
 
+
+/********* Calculate Distance ******/
+
+// converts from degrees to radians
+function toRadians(degrees)
+{
+var pi = Math.PI;
+return degrees * (pi/180);
+}
+
+// receives two positions (lat and long for each) and calculate the distance a crow can fly
+function calculateDistance(lat1, lon1, lat2, lon2){
+var R = 6371e3; // metres
+var φ1 = toRadians(lat1);
+var φ2 = toRadians(lat2);
+var Δφ = toRadians(lat2-lat1);
+var Δλ = toRadians(lon2-lon1);
+
+var a = Math.sin(Δφ/2) * Math.sin(Δφ/2) +
+      Math.cos(φ1) * Math.cos(φ2) *
+      Math.sin(Δλ/2) * Math.sin(Δλ/2);
+var c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
+
+
+var d = R * c / 1609.34;
+// returns the distance in miles
+return d
+}
+
+/************ Get user position ********************/
+
+app.post("/update_location/", function(request, response, next){
+  // updates the data with new coordinates into the session, if necessary
+  if(request.body.lat && request.body.long){
+    request.session["lat"] = request.body.lat;
+    request.session["long"] = request.body.long;
+  };
+  // console.log(request.session.lat, request.session.long, "check");
+})
+
+
+
 /********* Moods Page ***********/
 
 app.get('/moods/', function(request, response) {
   response.render('moods.hbs');
 })
+
+
+app.get('/moods_check/', function(request, response, next) {
+  // console.log(request.session);
+  // console.log(request.session.lat, request.session.long, "test");
+  let mood = request.query.moods.toLowerCase();
+  if(request.query.distance){
+    try{
+      var distance = parseInt(request.query.distance);
+      if (distance === 20){
+        distance = 100;
+      }
+    }
+    catch(e){
+      var distance = 100;
+    }
+  }
+  else {
+    var distance = 100;
+  }
+  let query = `SELECT restaurant.* FROM restaurant\
+              JOIN mood_restaurant_join ON mood_restaurant_join.restaurant_id = restaurant.id\
+              JOIN mood ON mood_restaurant_join.mood_id = mood.id\
+              WHERE mood.name = '${mood}' ORDER BY restaurant.name`;
+  db.query(query)
+    .then(function(result){
+    //   if(result){
+    //     result.forEach(function(item){
+    //       // stores the distance in the session in the distance field
+    //       item["distance"] = calculateDistance(item.latitude, item.longitude, request.session.lat, request.session.long);
+    //       // console.log(item.name + ":" + item.latitude + " " + item.longitude);
+    //       // console.log(request.session.lat, request.session.long);
+    //   })
+    // }
+    response.render("listing.hbs", {results: result, term: mood});
+    })
+})
+
+
 
 /************ Restaurant Detail Page ***************/
 
@@ -360,33 +441,6 @@ app.get("/detail/", function(req, resp, next) {
       });
 })
 
-  /********* Calculate Distance ******/
-
-// converts from degrees to radians
-function toRadians(degrees)
-{
-  var pi = Math.PI;
-  return degrees * (pi/180);
-}
-
-// receives two positions (lat and long for each) and calculate the distance a crow can fly
-function calculateDistance(lat1, lon1, lat2, lon2){
-  var R = 6371e3; // metres
-  var φ1 = toRadians(lat1);
-  var φ2 = toRadians(lat2);
-  var Δφ = toRadians(lat2-lat1);
-  var Δλ = toRadians(lon2-lon1);
-
-  var a = Math.sin(Δφ/2) * Math.sin(Δφ/2) +
-        Math.cos(φ1) * Math.cos(φ2) *
-        Math.sin(Δλ/2) * Math.sin(Δλ/2);
-  var c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
-
-
-  var d = R * c / 1609.34;
-  // returns the distance in miles
-  return d
-}
 
 // function to sort ascending or descending and return a list of objects ordered
 function order (category, session, list){
