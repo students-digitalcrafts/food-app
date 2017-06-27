@@ -20,7 +20,7 @@
       <p> We recommend especially when you are feeling: </p>
       {{/if}}
       {{#each moods}}
-        <img class="sm-emojis"src="/static/images/{{this.mood_id}}.png">
+        <img class="sm-emojis" src="/static/images/{{this.mood_id}}.png">
       {{/each}}
 
     </div>
@@ -52,7 +52,7 @@
           {{this.description}}<br>
           Spicy? <img src="/static/img/spicy-{{spice}}.png" alt="icon courtesy of http://www.flaticon.com/authors/madebyoliver"> <br>
           {{#if diet_rest_name}}
-          [{{this.diet_rest_name}}]
+            [{{this.diet_rest_name}}]
           {{/if}}
           <br><br>
         </div>

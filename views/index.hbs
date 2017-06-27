@@ -23,7 +23,7 @@
           <br><br>
           OR
           <br><br>
-          <a href="/moods/" class="waves-effect waves-light btn blue-grey lighten-1">Help me decide</a>
+          <a class="waves-effect waves-light btn blue-grey lighten-1" href="/moods/">Help me decide</a>
 
       </div>
       </div>
@@ -35,6 +35,7 @@
 <script src="static/js/axios.min.js"></script>
 <script src="static/js/auto-complete.min.js"></script>
 <script>
+
   var data = {};
   // Get user location through the browser
   if (sessionStorage.getItem("lat") && sessionStorage.getItem("long")){
@@ -70,6 +71,7 @@
         console.error(err.message);
       });
   }
+
 
   // initialize
   var message_not_found = "No match was found";

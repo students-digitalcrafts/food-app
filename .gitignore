@@ -65,3 +65,7 @@ SECRETS.ENV
 
 # node_modules folder
 /node_modules
+
+#SSL
+certificate.crt
+private.key
