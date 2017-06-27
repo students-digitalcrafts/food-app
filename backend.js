@@ -319,7 +319,8 @@ app.post("/update_location/", function(request, response, next){
     request.session["lat"] = request.body.lat;
     request.session["long"] = request.body.long;
   };
-  // console.log(request.session.lat, request.session.long, "check");
+  console.log(request.session.lat, request.session.long, "check");
+  response.send('OK');
 })
 
 
@@ -330,8 +331,8 @@ app.get('/moods/', function(request, response, next) {
 })
 
 app.get('/moods_check/', function(request, response, next) {
-  // console.log(request.session);
-  // console.log(request.session.lat, request.session.long, "test");
+  console.log(request.session);
+  console.log(request.session.lat, request.session.long, "test");
   let mood = request.query.moods.toLowerCase();
   if(request.query.distance){
     try{
@@ -353,14 +354,14 @@ app.get('/moods_check/', function(request, response, next) {
               WHERE mood.name = '${mood}' ORDER BY restaurant.name`;
   db.query(query)
     .then(function(result){
-    //   if(result){
-    //     result.forEach(function(item){
-    //       // stores the distance in the session in the distance field
-    //       item["distance"] = calculateDistance(item.latitude, item.longitude, request.session.lat, request.session.long);
-    //       // console.log(item.name + ":" + item.latitude + " " + item.longitude);
-    //       // console.log(request.session.lat, request.session.long);
-    //   })
-    // }
+      if(result){
+        result.forEach(function(item){
+          // stores the distance in the session in the distance field
+          item["distance"] = calculateDistance(item.latitude, item.longitude, request.session.lat, request.session.long);
+          // console.log(item.name + ":" + item.latitude + " " + item.longitude);
+          // console.log(request.session.lat, request.session.long);
+      })
+    }
     response.render("listing.hbs", {results: result, term: mood});
     })
 })
