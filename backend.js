@@ -320,7 +320,6 @@ app.post("/update_location/", function(request, response, next){
     request.session["lat"] = request.body.lat;
     request.session["long"] = request.body.long;
   };
-  console.log(request.session.lat, request.session.long, "check");
   response.send('OK');
 })
 
@@ -334,9 +333,9 @@ app.get('/moods/', function(request, response) {
 
 
 app.get('/moods_check/', function(request, response, next) {
-  console.log(request.session);
-  console.log(request.session.lat, request.session.long, "test");
+  // gets the values for the moods choice and distance
   let mood = request.query.moods.toLowerCase();
+  // if there is a distance, tries to parseInt the value, if not an integer, set the distance to 100
   if(request.query.distance){
     try{
       var distance = parseInt(request.query.distance);
@@ -351,24 +350,29 @@ app.get('/moods_check/', function(request, response, next) {
   else {
     var distance = 100;
   }
+  // query the database by the mood
   let query = `SELECT restaurant.* FROM restaurant\
               JOIN mood_restaurant_join ON mood_restaurant_join.restaurant_id = restaurant.id\
               JOIN mood ON mood_restaurant_join.mood_id = mood.id\
               WHERE mood.name = '${mood}' ORDER BY restaurant.name`;
   db.query(query)
     .then(function(result){
+      // initializes the session list
+      request.session.list = [];
       if(result){
+        // loops through the result from the query
         result.forEach(function(item){
-          // stores the distance in the session in the distance field
+          // stores the distance in the distance field
           item["distance"] = calculateDistance(item.latitude, item.longitude, request.session.lat, request.session.long);
-          // console.log(item.name + ":" + item.latitude + " " + item.longitude);
-          // console.log(request.session.lat, request.session.long);
+          // if the distance is less or equal to the selected by the user, add that item to the session list
+          if(item["distance"] <= distance){
+            request.session.list.push(item);
+          }
       })
     }
-    response.render("listing.hbs", {results: result, term: mood});
+    response.render("listing.hbs", {results: request.session.list, term: mood});
     })
 })
-
 
 
 /************ Restaurant Detail Page ***************/
