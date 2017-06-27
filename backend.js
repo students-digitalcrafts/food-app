@@ -319,7 +319,7 @@ app.post("/update_location/", function(request, response, next){
     request.session["lat"] = request.body.lat;
     request.session["long"] = request.body.long;
   };
-  console.log(request.session.lat, request.session.long, "check");
+  // console.log(request.session.lat, request.session.long, "check");
 })
 
 
@@ -330,8 +330,8 @@ app.get('/moods/', function(request, response, next) {
 })
 
 app.get('/moods_check/', function(request, response, next) {
-  console.log(request.session);
-  console.log(request.session.lat, request.session.long, "test");
+  // console.log(request.session);
+  // console.log(request.session.lat, request.session.long, "test");
   let mood = request.query.moods.toLowerCase();
   if(request.query.distance){
     try{
@@ -396,33 +396,6 @@ app.get("/detail/", function(req, resp, next) {
     });
 })
 
-  /********* Calculate Distance ******/
-
-// converts from degrees to radians
-function toRadians(degrees)
-{
-  var pi = Math.PI;
-  return degrees * (pi/180);
-}
-
-// receives two positions (lat and long for each) and calculate the distance a crow can fly
-function calculateDistance(lat1, lon1, lat2, lon2){
-  var R = 6371e3; // metres
-  var φ1 = toRadians(lat1);
-  var φ2 = toRadians(lat2);
-  var Δφ = toRadians(lat2-lat1);
-  var Δλ = toRadians(lon2-lon1);
-
-  var a = Math.sin(Δφ/2) * Math.sin(Δφ/2) +
-        Math.cos(φ1) * Math.cos(φ2) *
-        Math.sin(Δλ/2) * Math.sin(Δλ/2);
-  var c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
-
-
-  var d = R * c / 1609.34;
-  // returns the distance in miles
-  return d
-}
 
 // function to sort ascending or descending and return a list of objects ordered
 function order (category, session, list){
