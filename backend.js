@@ -19,7 +19,7 @@ const db = pgp(process.env.DATABASE_URL||{
   host: 'localhost',
   // NOTE: change to your preferred port for development --
   // Must match your Postico settings
-  port: 9001,
+  port: 5432,
   database: 'fooddev',
   user: 'postgres',
 });
@@ -887,7 +887,7 @@ var getPosition = function (options) {
 
 
 
-let PORT = process.env.PORT || 9000;
+let PORT = process.env.PORT || 9002;
 app.listen(PORT, function () {
   console.log('Listening on port ' + PORT);
 
